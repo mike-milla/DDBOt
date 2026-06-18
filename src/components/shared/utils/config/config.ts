@@ -79,30 +79,24 @@ export const getDefaultAppIdAndUrl = () => {
 };
 
 export const getAppId = () => {
-    let app_id = null;
-    const config_app_id = window.localStorage.getItem('config.app_id');
+    // 1. Build-time env var — NUMERIC app ID from deriv.com/account/api-token
+    //    Do NOT put your OAuth client_id here (that's OAUTH_CLIENT_ID in .env)
+    if (process.env.WS_APP_ID) return process.env.WS_APP_ID;
+
+    // 2. Domain/environment fallback (source-controlled, not user-editable at runtime)
     const current_domain = getCurrentProductionDomain() ?? '';
-
-    if (config_app_id) {
-        app_id = config_app_id;
-    } else if (isStaging()) {
-        app_id = APP_IDS.STAGING;
-    } else if (isTestLink()) {
-        app_id = APP_IDS.LOCALHOST;
-    } else {
-        app_id = domain_app_ids[current_domain as keyof typeof domain_app_ids] ?? APP_IDS.PRODUCTION;
-    }
-
-    return app_id;
+    if (isStaging()) return APP_IDS.STAGING;
+    if (isTestLink()) return APP_IDS.LOCALHOST;
+    return domain_app_ids[current_domain as keyof typeof domain_app_ids] ?? APP_IDS.PRODUCTION;
 };
 
 export const getSocketURL = () => {
-    const local_storage_server_url = window.localStorage.getItem('config.server_url');
-    if (local_storage_server_url) return local_storage_server_url;
+    // 1. Build-time env var — WebSocket hostname only, e.g. ws.derivws.com
+    //    Do NOT put oauth.deriv.com here — that is the auth server, not the WS server
+    if (process.env.WS_SERVER_URL) return process.env.WS_SERVER_URL;
 
-    const server_url = getDefaultServerURL();
-
-    return server_url;
+    // 2. Auto-detect from login state (green = real, blue = demo)
+    return getDefaultServerURL();
 };
 
 export const checkAndSetEndpointFromUrl = () => {

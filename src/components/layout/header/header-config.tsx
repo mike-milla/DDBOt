@@ -3,6 +3,7 @@ import { standalone_routes } from '@/components/shared';
 import {
     LegacyCashierIcon as CashierLogo,
     LegacyChartsIcon as AnalyticsLogo,
+    LegacyCircleTrendUpIcon as DCirclesLogo,
     LegacyDerivIcon as RobotLogo,
     LegacyHomeNewIcon as TradershubLogo,
     LegacyReportsIcon as ReportsLogo,
@@ -76,6 +77,7 @@ export const TRADERS_HUB_LINK_CONFIG = {
     label: "Trader's Hub",
 };
 
+// Items shown only when logged in
 export const MenuItems: MenuItemsConfig[] = [
     {
         as: 'a',
@@ -102,3 +104,6 @@ export const MenuItems: MenuItemsConfig[] = [
         label: localize('Analysis Tool'),
     },
 ];
+
+// Items always visible regardless of auth state
+export const PublicMenuItems: MenuItemsConfig[] = [];

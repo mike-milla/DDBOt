@@ -42,6 +42,9 @@ export default defineConfig({
                 GROWTHBOOK_CLIENT_KEY: JSON.stringify(process.env.GROWTHBOOK_CLIENT_KEY),
                 GROWTHBOOK_DECRYPTION_KEY: JSON.stringify(process.env.GROWTHBOOK_DECRYPTION_KEY),
                 ENDPOINT_PASSPHRASE: JSON.stringify(process.env.ENDPOINT_PASSPHRASE),
+                WS_APP_ID: JSON.stringify(process.env.WS_APP_ID),
+                WS_SERVER_URL: JSON.stringify(process.env.WS_SERVER_URL),
+                OAUTH_CLIENT_ID: JSON.stringify(process.env.OAUTH_CLIENT_ID),
             },
         },
         alias: {

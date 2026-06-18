@@ -23,7 +23,7 @@ import {
     LabelPairedObjectsColumnCaptionRegularIcon,
     LabelPairedPuzzlePieceTwoCaptionBoldIcon,
 } from '@deriv/quill-icons/LabelPaired';
-import { LegacyGuide1pxIcon } from '@deriv/quill-icons/Legacy';
+import { LegacyCircleTrendUpIcon, LegacyGuide1pxIcon } from '@deriv/quill-icons/Legacy';
 import { requestOidcAuthentication } from '@deriv-com/auth-client';
 import { Localize, localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
@@ -37,6 +37,7 @@ const ChartWrapper = lazy(() => import('../chart/chart-wrapper'));
 const Tutorial = lazy(() => import('../tutorials'));
 const FreeBots = lazy(() => import('../free-bots'));
 const AnalysisTool = lazy(() => import('../analysis-tool'));
+const DCircles = lazy(() => import('../dcircles'));
 
 const AppWrapper = observer(() => {
     const { connectionStatus } = useApiBase();
@@ -71,7 +72,7 @@ const AppWrapper = observer(() => {
 
     const tabIconFill = (tabIdx: number) =>
         active_tab === tabIdx ? 'var(--brand-teal)' : 'var(--text-less-prominent)';
-    const hash = ['dashboard', 'bot_builder', 'chart', 'tutorial', 'free_bots', 'analysis_tool'];
+    const hash = ['dashboard', 'bot_builder', 'chart', 'tutorial', 'free_bots', 'analysis_tool', 'dcircles'];
     const { isDesktop } = useDevice();
     const location = useLocation();
     const navigate = useNavigate();
@@ -398,6 +399,30 @@ const AppWrapper = observer(() => {
                                         }
                                     >
                                         <AnalysisTool />
+                                    </Suspense>
+                                </div>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LegacyCircleTrendUpIcon
+                                            height='18px'
+                                            width='18px'
+                                            fill={tabIconFill(DBOT_TABS.DCIRCLES)}
+                                            className='icon-general-fill-g-path'
+                                        />
+                                        <Localize i18n_default_text='DCircles' />
+                                    </>
+                                }
+                                id='id-dcircles'
+                            >
+                                <div className='dcircles-wrapper'>
+                                    <Suspense
+                                        fallback={
+                                            <ChunkLoader message={localize('Please wait, loading DCircles...')} />
+                                        }
+                                    >
+                                        <DCircles />
                                     </Suspense>
                                 </div>
                             </div>

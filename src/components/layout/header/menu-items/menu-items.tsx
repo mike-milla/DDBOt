@@ -6,7 +6,7 @@ import useStoreWalletAccountsList from '@/hooks/useStoreWalletAccountsList';
 import { handleTraderHubRedirect } from '@/utils/traders-hub-redirect';
 import { useTranslations } from '@deriv-com/translations';
 import { MenuItem, Text, useDevice } from '@deriv-com/ui';
-import { MenuItems as items, TRADERS_HUB_LINK_CONFIG } from '../header-config';
+import { MenuItems as items, PublicMenuItems, TRADERS_HUB_LINK_CONFIG } from '../header-config';
 import './menu-items.scss';
 
 export const MenuItems = observer(() => {
@@ -55,6 +55,12 @@ export const MenuItems = observer(() => {
     // TODO : need to add the skeleton loader when growthbook is not loaded
     return (
         <>
+            {isDesktop &&
+                PublicMenuItems.map(({ as, href, icon, label }) => (
+                    <MenuItem as={as} className='app-header__menu' href={href} key={label} leftComponent={icon}>
+                        <Text>{localize(label)}</Text>
+                    </MenuItem>
+                ))}
             {is_logged_in &&
                 (isDesktop
                     ? filtered_items.map(({ as, href, icon, label }) => (

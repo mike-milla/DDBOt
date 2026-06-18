@@ -8,27 +8,27 @@ export type TSidebarItem = {
 
 export const SIDEBAR_INTRO = (): TSidebarItem[] => [
     {
-        label: localize('Welcome to Deriv Bot!'),
+        label: localize('Welcome to BossMillan Bot!'),
         content: [
             {
                 data: localize(
-                    'Ready to automate your trading strategy without writing any code? You’ve come to the right place.'
+                    'Ready to automate your trading strategy without writing any code? You have arrived at the right destination.'
                 ),
             },
-            { data: localize('Check out these guides and FAQs to learn more about building your bot:') },
+            { data: localize('Explore these guides and FAQs to master the art of building your bot:') },
         ],
         link: false,
     },
     {
         label: localize('Guide'),
-        content: [{ data: localize('Deriv Bot - your automated trading partner') }],
+        content: [{ data: localize('BossMillan Bot - your intelligent automated trading companion') }],
         link: true,
     },
     {
         label: localize('FAQs'),
         content: [
             {
-                data: localize('What is Deriv Bot?'),
+                data: localize('What is BossMillan Bot?'),
                 faq_id: 'faq-0',
             },
             {

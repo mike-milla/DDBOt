@@ -1,9 +1,8 @@
 import React from 'react';
 import { useFormik } from 'formik';
-import { getAppId, getDefaultAppIdAndUrl, getSocketURL } from '@/components/shared';
+import { getAppId, getSocketURL } from '@/components/shared';
 import { isLocal } from '@/components/shared/utils/config/config';
 import { Button, Input, Text } from '@deriv-com/ui';
-import { LocalStorageConstants } from '@deriv-com/utils';
 import './endpoint.scss';
 
 const PASSPHRASE = process.env.ENDPOINT_PASSPHRASE ?? '';
@@ -78,52 +77,33 @@ const Endpoint = () => {
     return (
         <div className='endpoint'>
             <Text weight='bold' className='endpoint__title'>
-                Change API endpoint
+                API Endpoint (read-only)
             </Text>
+            <p style={{ fontSize: '1.3rem', color: '#64748B', marginBottom: '1.6rem' }}>
+                Connection values are locked to build-time environment variables. To change them, update{' '}
+                <code>.env</code> and rebuild.
+            </p>
             <form onSubmit={formik.handleSubmit} className='endpoint__form'>
                 <Input
                     data-testid='dt_endpoint_server_url_input'
-                    label='Server'
+                    label='Server (active)'
                     name='serverUrl'
                     message={formik.errors.serverUrl as string}
                     onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
                     value={formik.values.serverUrl}
+                    disabled
                 />
                 <Input
                     data-testid='dt_endpoint_app_id_input'
-                    label='OAuth App ID'
+                    label='WebSocket App ID (active)'
                     name='appId'
                     message={formik.errors.appId as string}
                     onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
                     value={formik.values.appId}
+                    disabled
                 />
-                <div>
-                    <Button className='endpoint__button' disabled={!formik.dirty || !formik.isValid} type='submit'>
-                        Submit
-                    </Button>
-                    <Button
-                        className='endpoint__button'
-                        color='black'
-                        onClick={() => {
-                            const { server_url, app_id } = getDefaultAppIdAndUrl();
-                            localStorage.setItem(LocalStorageConstants.configServerURL, server_url);
-                            localStorage.setItem(LocalStorageConstants.configAppId, app_id.toString());
-                            formik.resetForm({
-                                values: {
-                                    appId: app_id,
-                                    serverUrl: server_url,
-                                },
-                            });
-                            window.location.reload();
-                        }}
-                        variant='outlined'
-                        type='button'
-                    >
-                        Reset to original settings
-                    </Button>
-                </div>
             </form>
         </div>
     );

@@ -18,6 +18,7 @@ const Layout = lazy(() => import('../components/layout'));
 const AppRoot = lazy(() => import('./app-root'));
 const FreeBots = lazy(() => import('../pages/free-bots'));
 const AnalysisTool = lazy(() => import('../pages/analysis-tool'));
+const DCircles = lazy(() => import('../pages/dcircles'));
 const LandingPage = lazy(() => import('../pages/landing'));
 
 const { TRANSLATIONS_CDN_URL, R2_PROJECT_NAME, CROWDIN_BRANCH_NAME } = process.env;
@@ -62,6 +63,7 @@ const router = createBrowserRouter(
                 <Route path='callback' element={<CallbackPage />} />
                 <Route path='free-bots' element={<FreeBots />} />
                 <Route path='analysis-tool' element={<AnalysisTool />} />
+                <Route path='dcircles' element={<DCircles />} />
             </Route>
         </>
     )
