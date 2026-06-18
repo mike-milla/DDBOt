@@ -2,15 +2,14 @@ import { initSurvicate } from '../public-path';
 import { lazy, Suspense } from 'react';
 import React from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
-import ChunkLoader from '@/components/loader/chunk-loader';
+import GooLoader from '@/components/loader/goo-loader';
 import RoutePromptDialog from '@/components/route-prompt-dialog';
 import { crypto_currencies_display_order, fiat_currencies_display_order } from '@/components/shared';
-import { useOfflineDetection } from '@/hooks/useOfflineDetection';
 import { StoreProvider } from '@/hooks/useStore';
 import CallbackPage from '@/pages/callback';
 import Endpoint from '@/pages/endpoint';
 import { TAuthData } from '@/types/api-types';
-import { initializeI18n, localize, TranslationProvider } from '@deriv-com/translations';
+import { initializeI18n, TranslationProvider } from '@deriv-com/translations';
 import CoreStoreProvider from './CoreStoreProvider';
 import './app-root.scss';
 
@@ -26,14 +25,7 @@ const i18nInstance = initializeI18n({
 
 // Simple Suspense wrapper without timeout that causes dark landing page
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => {
-    const { isOnline } = useOfflineDetection();
-
-    const getLoadingMessage = () => {
-        if (!isOnline) return localize('Loading offline dashboard...');
-        return localize('Please wait while we connect to the server...');
-    };
-
-    return <Suspense fallback={<ChunkLoader message={getLoadingMessage()} />}>{children}</Suspense>;
+    return <Suspense fallback={<GooLoader />}>{children}</Suspense>;
 };
 
 const router = createBrowserRouter(

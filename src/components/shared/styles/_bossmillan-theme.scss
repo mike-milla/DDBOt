@@ -1,0 +1,162 @@
+@use './constants';
+
+// ============================================================
+// BossMillan Theme  —  dark, high-contrast trading aesthetic
+// Apply via:  <body class="theme theme--bossmillan">
+// ============================================================
+
+:root {
+    .theme--bossmillan {
+        // ── General surfaces ──────────────────────────────────
+        --general-main-1: #{constants.$bm-black};
+        --general-main-2: #{constants.$bm-surface};
+        --general-main-3: #{constants.$bm-surface-2};
+        --general-main-4: #{constants.$bm-surface-3};
+        --general-section-1: #{constants.$bm-border};
+        --general-section-2: #{constants.$bm-surface};
+        --general-section-3: #{constants.$bm-surface-2};
+        --general-section-4: #{constants.$bm-surface-3};
+        --general-section-5: #{constants.$bm-surface-2};
+        --general-section-6: #{constants.$bm-border-light};
+        --general-disabled: #{constants.$bm-surface-3};
+        --general-hover: #{constants.$bm-surface-3};
+        --general-active: #{constants.$bm-surface-2};
+
+        // ── Brand overrides ───────────────────────────────────
+        --brand-white: #{constants.$bm-silver};
+        --brand-dark-grey: #{constants.$bm-black};
+        --brand-red-coral: #{constants.$bm-teal}; // replaces Deriv red with BM teal
+        --brand-orange: #{constants.$bm-orange};
+        --brand-secondary: #{constants.$bm-teal};
+        --brand-purple: #{constants.$bm-purple};
+        --brand-teal: #{constants.$bm-teal};
+        --brand-teal-dark: #{constants.$bm-teal-dark};
+        --brand-teal-glow: #{constants.$bm-teal-glow};
+        --brand-purple-glow: #{constants.$bm-purple-glow};
+        --brand-orange-glow: #{constants.$bm-orange-glow};
+
+        // ── Typography ────────────────────────────────────────
+        --text-prominent: #{constants.$bm-silver};
+        --text-general: #{constants.$bm-text};
+        --text-less-prominent: #{constants.$bm-text-muted};
+        --text-primary: #{constants.$bm-text-muted};
+        --text-disabled: #{constants.$bm-text-dim};
+        --text-disabled-1: #{constants.$bm-text-dim};
+        --text-hint: #{constants.$bm-text-muted};
+        --text-colored-background: #{constants.$bm-black};
+        --text-profit-success: #{constants.$bm-mint};
+        --text-loss-danger: #{constants.$bm-orange};
+        --text-warning: #{constants.$bm-orange};
+        --text-red: #{constants.$bm-orange};
+        --text-green: #{constants.$bm-mint};
+        --text-blue: #{constants.$bm-teal};
+        --text-info-blue: #{constants.$bm-teal};
+        --text-info-blue-background: #{constants.$bm-teal-glow};
+        --text-status-info-blue: #{constants.$bm-teal};
+
+        // ── Icons ─────────────────────────────────────────────
+        --icon-light-background: #{constants.$bm-text-muted};
+        --icon-dark-background: #{constants.$bm-silver};
+        --icon-grey-background: #{constants.$bm-surface-2};
+        --icon-black-plus: #{constants.$bm-silver};
+
+        // ── Buttons ───────────────────────────────────────────
+        --button-primary-default: #{constants.$bm-teal};
+        --button-primary-hover: #{constants.$bm-teal-dark};
+        --button-primary-light-default: #{constants.$bm-teal-glow};
+        --button-primary-light-hover: #{constants.$bm-teal-glow};
+        --button-secondary-default: #{constants.$bm-border-light};
+        --button-secondary-hover: #{constants.$bm-surface-3};
+        --button-tertiary-default: transparent;
+        --button-tertiary-hover: #{constants.$bm-teal-glow};
+        --button-toggle-primary: #{constants.$bm-teal};
+        --button-toggle-secondary: #{constants.$bm-surface-3};
+        --button-toggle-alternate: #{constants.$bm-surface-3};
+        --button-get-started-bg: #{constants.$bm-silver};
+
+        // ── Purchase (Rise/Fall) ──────────────────────────────
+        --purchase-main-1: #{constants.$bm-mint};
+        --purchase-section-1: rgb(46 204 113 / 15%);
+        --purchase-main-2: #{constants.$bm-orange};
+        --purchase-section-2: #{constants.$bm-orange-glow};
+        --purchase-disabled-main: #{constants.$bm-surface-3};
+        --purchase-disabled-section: #{constants.$bm-surface};
+
+        // ── Borders ───────────────────────────────────────────
+        --border-normal: #{constants.$bm-border};
+        --border-normal-1: #{constants.$bm-border};
+        --border-normal-2: #{constants.$bm-border-light};
+        --border-normal-3: #{constants.$bm-border-light};
+        --border-hover: #{constants.$bm-teal};
+        --border-hover-1: #{constants.$bm-teal-dark};
+        --border-active: #{constants.$bm-teal};
+        --border-disabled: #{constants.$bm-surface-3};
+        --border-divider: #{constants.$bm-border};
+
+        // ── Fill ──────────────────────────────────────────────
+        --fill-normal: #{constants.$bm-black};
+        --fill-normal-1: #{constants.$bm-surface};
+        --fill-hover: #{constants.$bm-surface-3};
+        --fill-active: #{constants.$bm-teal};
+        --fill-disabled: #{constants.$bm-surface-3};
+
+        // ── States ────────────────────────────────────────────
+        --state-normal: #{constants.$bm-black};
+        --state-hover: #{constants.$bm-surface-3};
+        --state-active: #{constants.$bm-surface-2};
+        --state-disabled: #{constants.$bm-surface-3};
+        --checkbox-disabled-grey: #{constants.$bm-text-dim};
+        --sidebar-tab: #{constants.$bm-text-muted};
+
+        // ── Status ────────────────────────────────────────────
+        --status-default: #{constants.$bm-border-light};
+        --status-adjustment: #{constants.$bm-text-muted};
+        --status-danger: #{constants.$bm-orange};
+        --status-success: #{constants.$bm-mint};
+        --status-warning: #{constants.$bm-orange};
+        --status-warning-transparent: #{constants.$bm-orange-glow};
+        --status-transfer: #{constants.$bm-purple};
+        --status-info: #{constants.$bm-teal};
+        --status-colored-background: #{constants.$bm-black};
+        --status-alert-background: #{constants.$bm-orange-glow};
+
+        // ── Shadows / Overlays ────────────────────────────────
+        --shadow-menu: rgb(0 0 0 / 80%);
+        --shadow-menu-2: rgb(0 0 0 / 60%);
+        --shadow-drop: rgb(0 0 0 / 64%);
+        --shadow-box: #{constants.$bm-border};
+        --overlay-outside-dialog: rgb(0 0 0 / 72%);
+        --overlay-inside-dialog: rgb(0 0 0 / 48%);
+
+        // ── Gradients ─────────────────────────────────────────
+        --gradient-success: linear-gradient(to top, #{constants.$bm-black}, rgb(46 204 113 / 16%));
+        --gradient-danger: linear-gradient(to top, #{constants.$bm-black}, rgb(245 141 21 / 16%));
+        --contract-gradient-danger: linear-gradient(to top, #{constants.$bm-black} 85%, rgb(245 141 21 / 16%));
+        --gradient-right-edge: linear-gradient(to right, rgb(0 0 0 / 0%) -5%, #{constants.$bm-black} 71%);
+        --gradient-blue: linear-gradient(90deg, #{constants.$bm-teal-dark} 0%, #{constants.$bm-teal} 104%);
+        --gradient-gold: linear-gradient(90deg, #{constants.$bm-orange} 0%, #ffc71b 104%);
+        --gradient-green: linear-gradient(90deg, #{constants.$bm-mint} 0%, #09da7a 104%);
+
+        // ── Header ────────────────────────────────────────────
+        --header-background-mt5: #{constants.$bm-surface};
+        --header-background-others: #{constants.$bm-surface};
+
+        // ── Badges ────────────────────────────────────────────
+        --badge-white: #{constants.$bm-silver};
+        --badge-blue: #{constants.$bm-teal};
+        --badge-violet: #{constants.$bm-purple};
+        --badge-green: #{constants.$bm-mint};
+
+        // ── Transparent layers ────────────────────────────────
+        --transparent-success: rgb(46 204 113 / 8%);
+        --transparent-info: #{constants.$bm-teal-glow};
+        --transparent-hint: #{constants.$bm-teal-glow};
+        --transparent-danger: #{constants.$bm-orange-glow};
+        --transparent-correct-message: rgb(46 204 113 / 16%);
+        --transparent-fake-message: #{constants.$bm-orange-glow};
+
+        // ── Demo view ─────────────────────────────────────────
+        --demo-text-color-1: #{constants.$bm-surface-2};
+        --demo-text-color-2: #{constants.$bm-surface-2};
+    }
+}

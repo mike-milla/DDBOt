@@ -1,9 +1,9 @@
-import { Loader } from '@deriv-com/ui';
+import GooLoader from './goo-loader';
 
 export default function ChunkLoader({ message }: { message: string }) {
     return (
         <div className='app-root'>
-            <Loader />
+            <GooLoader />
             <div className='load-message'>{message}</div>
         </div>
     );

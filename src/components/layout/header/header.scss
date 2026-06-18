@@ -1,10 +1,23 @@
 @use 'components/shared/styles/constants' as *;
 @use 'components/shared/styles/mixins' as *;
 
+// Brand palette
+$brand-black: #000;
+$brand-teal: #0bc4a6;
+$brand-silver: #e5e7eb;
+$brand-white: #fff;
+$brand-purple: #7625a8;
+$brand-orange: #f58d15;
+$brand-mint: #2ecc71;
+
 .app-header {
+    background: $brand-black;
+    border-bottom: 1px solid rgba($brand-teal, 0.25);
+    box-shadow: 0 0 18px 0 rgba($brand-teal, 0.12);
+
     &__account-settings {
         padding-inline-end: 1.2rem;
-        border-inline-end: 0.1rem solid var(--general-section-1);
+        border-inline-end: 0.1rem solid rgba($brand-teal, 0.3);
     }
 
     &__account-settings,
@@ -12,7 +25,22 @@
     &__menu {
         svg > path,
         svg > g > path {
-            fill: var(--text-prominent);
+            fill: $brand-silver;
+        }
+
+        &:hover {
+            svg > path,
+            svg > g > path {
+                fill: $brand-teal;
+            }
+        }
+    }
+
+    &__profile_icon {
+        color: $brand-silver;
+
+        &:hover {
+            color: $brand-teal;
         }
     }
 }
@@ -41,7 +69,7 @@
     }
 
     &__separator:after {
-        background-color: var(--general-section-2);
+        background-color: rgba($brand-teal, 0.15);
         content: '';
         height: 4px;
         position: absolute;
@@ -50,13 +78,14 @@
     }
 
     &-footer {
-        background: var(--general-main-1);
+        background: #0d0d0d;
+        border-top: 1px solid rgba($brand-teal, 0.15);
 
         &__actions {
             display: flex;
             justify-content: right;
             align-items: center;
-            background-color: var(--du-general-main-2);
+            background-color: #0d0d0d;
             padding: 1.6rem 0.8rem;
 
             &--hide-manage-button {
@@ -65,18 +94,19 @@
 
             .manage-button {
                 background: none;
-                border: 1px solid var(--button-secondary-default);
+                border: 1px solid rgba($brand-mint, 0.5);
                 margin-inline-end: 0.7rem;
                 height: auto;
                 padding: 0.4rem 1.2rem;
                 white-space: break-spaces;
 
                 &:hover {
-                    background-color: unset !important;
+                    background-color: rgba($brand-mint, 0.08) !important;
+                    border-color: $brand-mint;
                 }
 
                 span {
-                    color: var(--text-prominent);
+                    color: $brand-mint;
                     font-size: var(--text-size-xs);
                     cursor: pointer;
                     font-weight: 700;
@@ -110,7 +140,7 @@
                 min-width: 4.8rem;
 
                 span {
-                    color: var(--text-prominent) !important;
+                    color: $brand-white !important;
                 }
             }
         }
@@ -124,15 +154,15 @@
         }
 
         .deriv-context-menu {
-            box-shadow: 0 0 2px 0 var(--du-shadow-box, #00000014);
+            box-shadow: 0 0 12px 0 rgba($brand-teal, 0.2);
         }
 
         .deriv-account-switcher__balance + svg > path {
-            fill: var(--text-general);
+            fill: $brand-silver;
         }
 
         &:hover {
-            background-color: unset;
+            background-color: rgba($brand-teal, 0.06);
         }
     }
 
@@ -207,10 +237,11 @@
     &__container {
         max-height: 80vh;
         overflow: auto;
-        background: var(--general-main-1);
-        background-color: var(--general-main-2);
+        background: #111;
+        background-color: #111;
         border-radius: 4px;
-        box-shadow: 0 8px 16px 0 var(--shadow-menu) !important;
+        border: 1px solid rgba($brand-teal, 0.2);
+        box-shadow: 0 8px 32px 0 rgba($brand-teal, 0.18) !important;
         position: absolute;
         transition:
             transform 0.3s ease,
@@ -242,11 +273,17 @@
     }
 
     &__tradershub-link {
-        background: var(--du-general-main-2);
-        color: var(--text-prominent);
+        background: linear-gradient(90deg, rgba($brand-purple, 0.15) 0%, rgba($brand-teal, 0.1) 100%);
+        color: $brand-teal;
         padding: 1rem;
         display: flex;
         justify-content: center;
+        border-top: 1px solid rgba($brand-purple, 0.3);
+
+        &:hover {
+            color: $brand-white;
+            background: linear-gradient(90deg, rgba($brand-purple, 0.25) 0%, rgba($brand-teal, 0.2) 100%);
+        }
     }
 
     &__footer {
@@ -280,12 +317,44 @@
     button {
         font-weight: 400;
         margin-inline-end: 1.6rem;
+
+        &:first-child {
+            color: $brand-silver;
+            border-color: rgba($brand-teal, 0.5);
+
+            &:hover {
+                border-color: $brand-teal;
+                color: $brand-teal;
+                background: rgba($brand-teal, 0.08) !important;
+            }
+        }
+
+        &:last-child {
+            background: linear-gradient(135deg, $brand-teal 0%, darken($brand-teal, 10%) 100%);
+            border: none;
+            color: $brand-black;
+
+            &:hover {
+                background: linear-gradient(135deg, lighten($brand-teal, 8%) 0%, $brand-teal 100%);
+            }
+        }
     }
 }
 
 .deposit-button,
 .manage-funds-button {
     margin-inline-end: 1.6rem;
+    background: linear-gradient(135deg, $brand-orange 0%, darken($brand-orange, 8%) 100%) !important;
+    border: none !important;
+    color: $brand-white !important;
+
+    span {
+        color: $brand-white !important;
+    }
+
+    &:hover {
+        background: linear-gradient(135deg, lighten($brand-orange, 8%) 0%, $brand-orange 100%) !important;
+    }
 }
 
 .deriv-accordion--underline {

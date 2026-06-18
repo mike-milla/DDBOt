@@ -68,6 +68,9 @@ const AppWrapper = observer(() => {
     const { clear } = summary_card;
     const { DASHBOARD, BOT_BUILDER } = DBOT_TABS;
     const init_render = React.useRef(true);
+
+    const tabIconFill = (tabIdx: number) =>
+        active_tab === tabIdx ? 'var(--brand-teal)' : 'var(--text-less-prominent)';
     const hash = ['dashboard', 'bot_builder', 'chart', 'tutorial', 'free_bots', 'analysis_tool'];
     const { isDesktop } = useDevice();
     const location = useLocation();
@@ -281,9 +284,9 @@ const AppWrapper = observer(() => {
                                 label={
                                     <>
                                         <LabelPairedObjectsColumnCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='var(--text-general)'
+                                            height='20px'
+                                            width='20px'
+                                            fill={tabIconFill(DBOT_TABS.DASHBOARD)}
                                         />
                                         <Localize i18n_default_text='Dashboard' />
                                     </>
@@ -296,9 +299,9 @@ const AppWrapper = observer(() => {
                                 label={
                                     <>
                                         <LabelPairedPuzzlePieceTwoCaptionBoldIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='var(--text-general)'
+                                            height='20px'
+                                            width='20px'
+                                            fill={tabIconFill(DBOT_TABS.BOT_BUILDER)}
                                         />
                                         <Localize i18n_default_text='Bot Builder' />
                                     </>
@@ -309,9 +312,9 @@ const AppWrapper = observer(() => {
                                 label={
                                     <>
                                         <LabelPairedChartLineCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='var(--text-general)'
+                                            height='20px'
+                                            width='20px'
+                                            fill={tabIconFill(DBOT_TABS.CHART)}
                                         />
                                         <Localize i18n_default_text='Charts' />
                                     </>
@@ -332,9 +335,9 @@ const AppWrapper = observer(() => {
                                 label={
                                     <>
                                         <LegacyGuide1pxIcon
-                                            height='16px'
-                                            width='16px'
-                                            fill='var(--text-general)'
+                                            height='18px'
+                                            width='18px'
+                                            fill={tabIconFill(DBOT_TABS.TUTORIAL)}
                                             className='icon-general-fill-g-path'
                                         />
                                         <Localize i18n_default_text='Tutorials' />
@@ -356,9 +359,9 @@ const AppWrapper = observer(() => {
                                 label={
                                     <>
                                         <LabelPairedObjectsColumnCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='var(--text-general)'
+                                            height='20px'
+                                            width='20px'
+                                            fill={tabIconFill(DBOT_TABS.FREE_BOTS)}
                                         />
                                         <Localize i18n_default_text='Free Bots' />
                                     </>
@@ -379,9 +382,9 @@ const AppWrapper = observer(() => {
                                 label={
                                     <>
                                         <LabelPairedChartLineCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='var(--text-general)'
+                                            height='20px'
+                                            width='20px'
+                                            fill={tabIconFill(DBOT_TABS.ANALYSIS_TOOL)}
                                         />
                                         <Localize i18n_default_text='Analysis Tool' />
                                     </>

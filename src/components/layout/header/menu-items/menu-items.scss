@@ -1,4 +1,42 @@
+$brand-teal: #0bc4a6;
+$brand-silver: #e5e7eb;
+$brand-white: #fff;
+$brand-black: #000;
+
 .app-header__menu {
     gap: 0.8rem;
     padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+    color: $brand-silver;
+    transition: color 0.2s ease;
+
+    .deriv-text {
+        color: $brand-silver;
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
+
+    &:hover {
+        background: rgba($brand-teal, 0.08);
+
+        .deriv-text {
+            color: $brand-teal;
+        }
+
+        svg > path,
+        svg > g > path {
+            fill: $brand-teal;
+        }
+    }
+
+    &--active {
+        .deriv-text {
+            color: $brand-teal;
+            font-weight: 700;
+        }
+
+        svg > path,
+        svg > g > path {
+            fill: $brand-teal;
+        }
+    }
 }

@@ -6,6 +6,29 @@
 
 /* stylelint-disable color-no-hex */
 
+/* ====================================
+ * BossMillan Brand Palette
+ * ==================================== */
+$bm-teal: #0bc4a6; // primary accent — arrow, arch, highlights
+$bm-teal-dark: #089c83; // hover / pressed teal
+$bm-teal-glow: rgb(11 196 166 / 15%);
+$bm-purple: #7625a8; // secondary accent — left arch
+$bm-purple-dark: #5a1b80;
+$bm-purple-glow: rgb(118 37 168 / 15%);
+$bm-orange: #f58d15; // candlestick top / right arch
+$bm-orange-glow: rgb(245 141 21 / 15%);
+$bm-mint: #2ecc71; // ascending candlesticks / success
+$bm-silver: #e5e7eb; // metallic "B" — light end
+$bm-black: #000; // background
+$bm-surface: #0d0d0d; // card / panel surface
+$bm-surface-2: #161616; // elevated surface
+$bm-surface-3: #1f1f1f; // hover surface
+$bm-border: #242424; // default border
+$bm-border-light: #2e2e2e; // lighter border / divider
+$bm-text: #e5e7eb; // primary text (silver-white)
+$bm-text-muted: #8a8a8a; // secondary / muted text
+$bm-text-dim: #555; // disabled text
+
 /* COLOR PALETTE */
 
 /* colors */

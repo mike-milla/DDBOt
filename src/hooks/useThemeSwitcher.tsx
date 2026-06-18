@@ -13,15 +13,14 @@ const useThemeSwitcher = () => {
     const toggleTheme = useCallback(() => {
         const body = document.querySelector('body');
         if (!body) return;
-        if (body.classList.contains('theme--dark')) {
-            localStorage.setItem('theme', 'light');
-            body.classList.remove('theme--dark');
+        const isDark = body.classList.contains('theme--bossmillan') || body.classList.contains('theme--dark');
+        if (isDark) {
+            body.classList.remove('theme--bossmillan', 'theme--dark');
             body.classList.add('theme--light');
             setDarkMode(false);
         } else {
-            localStorage.setItem('theme', 'dark');
             body.classList.remove('theme--light');
-            body.classList.add('theme--dark');
+            body.classList.add('theme--bossmillan');
             setDarkMode(true);
         }
     }, [setDarkMode]);

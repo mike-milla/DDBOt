@@ -6,7 +6,13 @@
     height: 100vh;
 
     .deriv-header {
-        background: var(--general-main-1);
+        background: rgb(0 0 0 / 95%) !important;
+        backdrop-filter: blur(24px);
+        backdrop-filter: blur(24px);
+        border-bottom: 1px solid rgb(11 196 166 / 18%);
+        box-shadow:
+            0 1px 0 rgb(11 196 166 / 10%),
+            0 4px 24px rgb(0 0 0 / 60%);
         height: 4.9rem;
 
         @include mobile-or-tablet-screen {

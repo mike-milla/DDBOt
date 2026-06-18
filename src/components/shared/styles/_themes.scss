@@ -1,4 +1,5 @@
 @use './constants';
+@use './bossmillan-theme';
 
 :host,
 :root {
@@ -52,6 +53,13 @@
     --tw-border-opacity: 1;
 
     .theme--light {
+        // Brand teal (tutorials + shared accent)
+        --brand-teal: #0bc4a6;
+        --brand-teal-glow: rgb(11 196 166 / 10%);
+        --brand-purple: #7625a8;
+        --brand-mint: #2ecc71;
+        --brand-orange: #f58d15;
+
         // General
         --general-main-1: #{constants.$color-white};
         --general-main-2: #{constants.$color-white};
@@ -199,6 +207,13 @@
     }
 
     .theme--dark {
+        // Brand teal (tutorials + shared accent)
+        --brand-teal: #0bc4a6;
+        --brand-teal-glow: rgb(11 196 166 / 12%);
+        --brand-purple: #7625a8;
+        --brand-mint: #2ecc71;
+        --brand-orange: #f58d15;
+
         // General
         --general-main-1: #{constants.$color-black};
         --general-main-2: #{constants.$color-black-3};
