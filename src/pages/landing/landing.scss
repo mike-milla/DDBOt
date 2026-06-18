@@ -1,0 +1,351 @@
+@import 'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap';
+
+.landing {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #020408;
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    flex-direction: column;
+
+    // ── Background ──────────────────────────────
+    &__bg {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        opacity: 0.5;
+
+        /* Dark overlay to ensure text readability */
+        &:after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(2 4 8 / 75%) 0%, rgba(2 4 8 / 45%) 50%, rgba(2 4 8 / 70%) 100%);
+        }
+    }
+
+    &__bg-grid {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background-image:
+            linear-gradient(rgba(11 196 166 / 8%) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(11 196 166 / 8%) 1px, transparent 1px);
+        background-size: 60px 60px;
+        mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, #000 30%, transparent 100%);
+    }
+
+    &__bg-glow {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        opacity: 0.22;
+        z-index: 1;
+
+        &--1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #0bc4a6 0%, transparent 70%);
+            top: -200px;
+            left: -100px;
+        }
+
+        &--2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #7625a8 0%, transparent 70%);
+            bottom: -150px;
+            right: -100px;
+        }
+    }
+
+    // ── Nav ─────────────────────────────────────
+    &__nav {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 2rem 3.2rem;
+    }
+
+    &__nav-logo {
+        display: flex;
+        align-items: baseline;
+        gap: 0.2rem;
+        user-select: none;
+    }
+
+    &__nav-logo-img {
+        height: 40px;
+        width: auto;
+        object-fit: contain;
+        border-radius: 6px;
+    }
+
+    &__nav-cta {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: rgba(255 255 255 / 80%);
+        background: rgba(255 255 255 / 6%);
+        border: 1px solid rgba(255 255 255 / 12%);
+        border-radius: 8px;
+        padding: 0.7rem 1.8rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            color: #0bc4a6;
+            border-color: rgba(11 196 166 / 40%);
+            background: rgba(11 196 166 / 8%);
+        }
+    }
+
+    // ── Main ────────────────────────────────────
+    &__main {
+        position: relative;
+        z-index: 10;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 0 2.4rem;
+        gap: 2.8rem;
+    }
+
+    &__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #0bc4a6;
+        background: rgba(11 196 166 / 10%);
+        border: 1px solid rgba(11 196 166 / 25%);
+        border-radius: 100px;
+        padding: 0.5rem 1.4rem;
+
+        &:before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #0bc4a6;
+            box-shadow: 0 0 8px #0bc4a6;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+    }
+
+    &__headline {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        margin: 0;
+    }
+
+    &__headline-line {
+        font-size: clamp(4rem, 8vw, 8rem);
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        color: rgba(255 255 255 / 92%);
+
+        &--accent {
+            color: transparent;
+            background: linear-gradient(135deg, #0bc4a6 0%, #7625a8 100%);
+            background-clip: text;
+            background-clip: text;
+        }
+    }
+
+    &__description {
+        font-size: clamp(1.4rem, 2vw, 1.8rem);
+        font-weight: 400;
+        color: rgba(255 255 255 / 45%);
+        line-height: 1.6;
+        max-width: 54rem;
+        margin: 0;
+    }
+
+    // ── Actions ─────────────────────────────────
+    &__actions {
+        display: flex;
+        gap: 1.2rem;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    &__btn {
+        font-family: 'Outfit', sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 1.2rem 2.8rem;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+
+        &--primary {
+            background: linear-gradient(135deg, #0bc4a6 0%, #09a98d 100%);
+            color: #020408;
+            box-shadow: 0 0 32px rgba(11 196 166 / 35%);
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 0 48px rgba(11 196 166 / 50%);
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
+        }
+
+        &--secondary {
+            background: rgba(255 255 255 / 5%);
+            color: rgba(255 255 255 / 70%);
+            border: 1px solid rgba(255 255 255 / 12%);
+
+            &:hover {
+                background: rgba(255 255 255 / 10%);
+                color: rgba(255 255 255 / 90%);
+                border-color: rgba(255 255 255 / 24%);
+                transform: translateY(-2px);
+            }
+        }
+    }
+
+    // ── Stats ────────────────────────────────────
+    &__stats {
+        display: flex;
+        align-items: center;
+        gap: 3.2rem;
+    }
+
+    &__stat {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        text-align: center;
+    }
+
+    &__stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: rgba(255 255 255 / 85%);
+        letter-spacing: -0.02em;
+    }
+
+    &__stat-label {
+        font-size: 1.1rem;
+        font-weight: 400;
+        color: rgba(255 255 255 / 35%);
+        letter-spacing: 0.02em;
+    }
+
+    &__stat-divider {
+        width: 1px;
+        height: 3.2rem;
+        background: rgba(255 255 255 / 10%);
+    }
+
+    // ── Footer ───────────────────────────────────
+    &__footer {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1.6rem;
+        padding: 1.6rem 3.2rem;
+        font-size: 1.2rem;
+        color: rgba(255 255 255 / 25%);
+
+        a {
+            color: rgba(11 196 166 / 60%);
+            text-decoration: none;
+            transition: color 0.2s ease;
+
+            &:hover {
+                color: #0bc4a6;
+            }
+        }
+    }
+}
+
+// ── Animations ───────────────────────────────────
+@keyframes pulse-dot {
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(0.8);
+    }
+}
+
+// ── Responsive ───────────────────────────────────
+@media (width <= 768px) {
+    .landing {
+        &__nav {
+            padding: 1.6rem 2rem;
+        }
+
+        &__main {
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+
+        &__stats {
+            gap: 2rem;
+        }
+
+        &__stat-value {
+            font-size: 1.6rem;
+        }
+
+        &__btn {
+            font-size: 1.4rem;
+            padding: 1rem 2rem;
+        }
+    }
+}
+
+@media (width <= 480px) {
+    .landing {
+        &__stats {
+            gap: 1.4rem;
+        }
+
+        &__stat-divider {
+            height: 2.4rem;
+        }
+
+        &__actions {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        &__btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+}
