@@ -1,10 +1,18 @@
 import React from 'react';
 import { useFormik } from 'formik';
 import { getAppId, getDefaultAppIdAndUrl, getSocketURL } from '@/components/shared';
+import { isLocal } from '@/components/shared/utils/config/config';
 import { Button, Input, Text } from '@deriv-com/ui';
 import { LocalStorageConstants } from '@deriv-com/utils';
 import './endpoint.scss';
+
+const PASSPHRASE = process.env.ENDPOINT_PASSPHRASE ?? '';
+
 const Endpoint = () => {
+    const [unlocked, setUnlocked] = React.useState(isLocal());
+    const [passphrase, setPassphrase] = React.useState('');
+    const [passError, setPassError] = React.useState('');
+
     const formik = useFormik({
         initialValues: {
             appId: localStorage.getItem(LocalStorageConstants.configAppId) ?? getAppId(),
@@ -22,12 +30,50 @@ const Endpoint = () => {
             }
             if (!values.appId) {
                 errors.appId = 'This field is required';
-            } else if (!/^(0|[1-9]\d*)(\.\d+)?$/.test(values.appId.toString())) {
+            } else if (!/^[a-zA-Z0-9_-]+$/.test(values.appId.toString().trim())) {
                 errors.appId = 'Please enter a valid app ID';
             }
             return errors;
         },
     });
+
+    if (!unlocked) {
+        return (
+            <div className='endpoint'>
+                <Text weight='bold' className='endpoint__title'>
+                    Developer Access Required
+                </Text>
+                <p className='endpoint__description'>
+                    This page allows changing the API server and OAuth App ID. Enter the developer passphrase to
+                    continue.
+                </p>
+                <form
+                    className='endpoint__form'
+                    onSubmit={e => {
+                        e.preventDefault();
+                        if (passphrase === PASSPHRASE) {
+                            setUnlocked(true);
+                            setPassError('');
+                        } else {
+                            setPassError('Incorrect passphrase');
+                        }
+                    }}
+                >
+                    <Input
+                        label='Passphrase'
+                        name='passphrase'
+                        type='password'
+                        value={passphrase}
+                        onChange={e => setPassphrase(e.target.value)}
+                        message={passError}
+                    />
+                    <Button className='endpoint__button' type='submit'>
+                        Unlock
+                    </Button>
+                </form>
+            </div>
+        );
+    }
 
     return (
         <div className='endpoint'>
@@ -64,7 +110,6 @@ const Endpoint = () => {
                             const { server_url, app_id } = getDefaultAppIdAndUrl();
                             localStorage.setItem(LocalStorageConstants.configServerURL, server_url);
                             localStorage.setItem(LocalStorageConstants.configAppId, app_id.toString());
-
                             formik.resetForm({
                                 values: {
                                     appId: app_id,

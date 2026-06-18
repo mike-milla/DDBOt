@@ -18,10 +18,12 @@ const useThemeSwitcher = () => {
             body.classList.remove('theme--bossmillan', 'theme--dark');
             body.classList.add('theme--light');
             setDarkMode(false);
+            (window as any).Blockly?.refreshTheme?.();
         } else {
             body.classList.remove('theme--light');
             body.classList.add('theme--bossmillan');
             setDarkMode(true);
+            (window as any).Blockly?.refreshTheme?.();
         }
     }, [setDarkMode]);
 

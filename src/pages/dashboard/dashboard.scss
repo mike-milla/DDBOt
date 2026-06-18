@@ -78,33 +78,6 @@
             background: var(--general-section-6);
         }
     }
-
-    &-info-panel {
-        &__close-action {
-            position: absolute;
-            right: 1.4rem;
-            top: 1.4rem;
-            height: 2rem;
-            width: 2rem;
-            line-height: 2.3rem;
-            text-align: center;
-            border-radius: 1rem;
-
-            &:hover {
-                cursor: pointer;
-                background: var(--general-section-1);
-            }
-        }
-
-        &__content {
-            cursor: pointer;
-
-            &:hover {
-                text-decoration: underline;
-                color: var(--button-primary-default);
-            }
-        }
-    }
 }
 
 .tab {
@@ -303,9 +276,10 @@
 
         &__info-panel {
             position: relative;
-            background-color: var(--general-main-1);
-            padding: 2.4rem;
+            background: #fff;
+            border-inline-start: 1px solid #e2e8f0;
             margin-inline-start: 1.6rem;
+            padding: 0;
             display: none;
             height: calc(100vh - 16.7rem);
             overflow-y: auto;

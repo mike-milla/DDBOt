@@ -1,42 +1,51 @@
-$brand-teal: #0bc4a6;
-$brand-silver: #e5e7eb;
-$brand-white: #fff;
-$brand-black: #000;
+$accent: #10b981;
+$accent-dim: rgb(16 185 129 / 8%);
+$text: #0f172a;
+$text-muted: #64748b;
 
 .app-header__menu {
     gap: 0.8rem;
     padding: 1.25rem 1.25rem 1.25rem 1.5rem;
-    color: $brand-silver;
-    transition: color 0.2s ease;
+    color: $text-muted;
+    border-radius: 8px;
+    transition:
+        color 0.15s ease,
+        background 0.15s ease;
 
     .deriv-text {
-        color: $brand-silver;
+        color: $text-muted;
         font-weight: 500;
-        transition: color 0.2s ease;
+        transition: color 0.15s ease;
+    }
+
+    svg > path,
+    svg > g > path {
+        fill: $text-muted;
+        transition: fill 0.15s ease;
     }
 
     &:hover {
-        background: rgba($brand-teal, 0.08);
+        background: $accent-dim;
 
         .deriv-text {
-            color: $brand-teal;
+            color: $accent;
         }
 
         svg > path,
         svg > g > path {
-            fill: $brand-teal;
+            fill: $accent;
         }
     }
 
     &--active {
         .deriv-text {
-            color: $brand-teal;
+            color: $accent;
             font-weight: 700;
         }
 
         svg > path,
         svg > g > path {
-            fill: $brand-teal;
+            fill: $accent;
         }
     }
 }

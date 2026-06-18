@@ -10,6 +10,14 @@ $colour_toolbox: $black;
 $colour_toolboxText: $black;
 $colour_toolboxHover: $black;
 $colour_toolboxSelected: $black;
+$bm-black: #000;
+$bm-surface: #0d0d0d;
+$bm-surface-2: #161616;
+$bm-surface-3: #1f1f1f;
+$bm-teal: #0bc4a6;
+$bm-border: #242424;
+$bm-text: #e5e7eb;
+$bm-text-muted: #8a8a8a;
 
 .theme--dark {
     .blocklyDropDownDiv {
@@ -45,6 +53,106 @@ $colour_toolboxSelected: $black;
     .zelos-renderer.classic-theme .blocklyNonEditableText > rect:not(.blocklyDropdownRect),
     .zelos-renderer.classic-theme .blocklyEditableText > rect:not(.blocklyDropdownRect) {
         fill: unset;
+    }
+}
+
+.theme--bossmillan {
+    .blocklyDropDownDiv {
+        background-color: $bm-surface-2 !important;
+        border-color: $bm-border !important;
+    }
+
+    .blocklyDropDownDiv .goog-menuitem {
+        color: $bm-text;
+    }
+
+    .blocklyWidgetDiv .goog-menu {
+        background: $bm-surface-2;
+        border-color: $bm-border;
+    }
+
+    .blocklyWidgetDiv .goog-menuitem {
+        color: $bm-text;
+    }
+
+    .blocklyWidgetDiv .goog-menuitem-content,
+    .blocklyDropDownDiv .goog-menuitem-content {
+        color: $bm-text;
+    }
+
+    .blocklyMenuItemContent.goog-menuitem-content {
+        color: $bm-text;
+    }
+
+    .blocklyWidgetDiv .goog-menuitem-highlight,
+    .blocklyWidgetDiv .goog-menuitem-hover {
+        background-color: $bm-surface-3;
+        border-color: $bm-border;
+    }
+
+    .zelos-renderer.zelos_renderer-theme .blocklyMainBackground,
+    .load-strategy__container .blocklyMainBackground {
+        fill: $bm-black !important;
+    }
+
+    .zelos-renderer.zelos_renderer-theme rect.blocklyFieldRect.blocklyDropdownRect,
+    .zelos-renderer.zelos_renderer-theme .blocklyNonEditableText > rect:not(.blocklyDropdownRect),
+    .zelos-renderer.zelos_renderer-theme .blocklyEditableText > rect:not(.blocklyDropdownRect),
+    .blocklyPath[fill='#fff'],
+    .blocklyVariableGet .blocklyPath,
+    .blocklyOutlinePath {
+        fill: $bm-surface !important;
+    }
+
+    .flyout rect.blocklyFieldRect.blocklyDropdownRect,
+    .flyout .zelos-renderer.classic-theme .blocklyMainBackground {
+        fill: $bm-surface-2 !important;
+    }
+
+    .zelos-renderer.zelos_renderer-theme .blocklyEditableText > image,
+    .zelos-renderer.zelos_renderer-theme .blocklyNonEditableText > image {
+        filter: unset;
+    }
+
+    .flyout .zelos-renderer.classic-theme .blocklyEditableText > image {
+        filter: invert(0);
+    }
+
+    .zelos-renderer.classic-theme .blocklyNonEditableText > rect:not(.blocklyDropdownRect),
+    .zelos-renderer.classic-theme .blocklyEditableText > rect:not(.blocklyDropdownRect) {
+        fill: unset;
+    }
+
+    .blocklyTooltipDiv {
+        background-color: $bm-surface-2;
+        color: $bm-text;
+        border: 1px solid $bm-border;
+    }
+
+    .blocklyTreeRow:not(.blocklyTreeSelected):hover {
+        background-color: $bm-surface-3;
+    }
+
+    .blocklyTreeSelected .blocklyTreeLabel {
+        color: $bm-teal;
+    }
+
+    .blocklyFlyoutLabelText {
+        fill: $bm-text-muted;
+    }
+
+    .blocklyToolboxDiv {
+        background-color: $bm-surface;
+        color: $bm-text;
+    }
+
+    .blocklyFlyoutBackground {
+        fill: $bm-surface;
+        fill-opacity: 1;
+    }
+
+    rect.blocklyFieldRect.blocklyDropdownRect {
+        fill: $bm-surface-3;
     }
 }
 
@@ -662,7 +770,7 @@ drag a block and selected text moves instead.
 
     .blocklyMainBackground {
         stroke-width: 0;
-        fill: #fff;
+        fill: var(--general-main-1, #fff);
     }
 
     .blocklyMutatorBackground {

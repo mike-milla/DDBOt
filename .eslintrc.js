@@ -32,6 +32,7 @@ module.exports = {
         'react/prop-types': 'off',
         '@typescript-eslint/no-explicit-any': 'warn',
         '@typescript-eslint/no-var-requires': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
     },
     overrides: [
         {

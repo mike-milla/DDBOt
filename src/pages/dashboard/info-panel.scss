@@ -1,0 +1,214 @@
+.db-info-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    height: 100%;
+
+    // ── Close ──
+    &__close {
+        position: absolute;
+        top: 1.2rem;
+        inset-inline-end: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.8rem;
+        height: 2.8rem;
+        border-radius: 8px;
+        border: none;
+        background: transparent;
+        color: #94a3b8;
+        cursor: pointer;
+        transition:
+            background 0.15s,
+            color 0.15s;
+        z-index: 1;
+
+        &:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+    }
+
+    // ── Hero ──
+    &__hero {
+        padding: 2.4rem 2rem 2rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    &__hero-icon {
+        width: 4.4rem;
+        height: 4.4rem;
+        border-radius: 12px;
+        background: rgba(16 185 129 / 10%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.4rem;
+
+        svg {
+            width: 2.2rem;
+            height: 2.2rem;
+        }
+    }
+
+    &__title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.4;
+        margin: 0 0 1rem;
+        padding-inline-end: 3rem;
+    }
+
+    &__subtitle {
+        font-size: 1.25rem;
+        color: #64748b;
+        line-height: 1.6;
+        margin: 0 0 0.6rem;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    // ── Section ──
+    &__section {
+        padding: 1.8rem 2rem 0.4rem;
+
+        & + & {
+            padding-top: 0.4rem;
+        }
+    }
+
+    &__section-label {
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #94a3b8;
+        margin-bottom: 0.8rem;
+    }
+
+    // ── Guide card ──
+    &__guide-card {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        width: 100%;
+        padding: 1.2rem 1.4rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        background: #fff;
+        cursor: pointer;
+        transition:
+            border-color 0.15s,
+            box-shadow 0.15s,
+            transform 0.15s;
+        text-align: start;
+
+        &:hover {
+            border-color: rgba(16 185 129 / 50%);
+            box-shadow: 0 4px 16px rgba(16 185 129 / 8%);
+            transform: translateY(-1px);
+        }
+    }
+
+    &__guide-icon {
+        flex-shrink: 0;
+        width: 3.4rem;
+        height: 3.4rem;
+        border-radius: 8px;
+        background: rgba(16 185 129 / 10%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #10b981;
+
+        svg {
+            width: 1.6rem;
+            height: 1.6rem;
+        }
+    }
+
+    &__guide-text {
+        flex: 1;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #0f172a;
+        line-height: 1.4;
+    }
+
+    &__guide-arrow {
+        color: #10b981;
+        flex-shrink: 0;
+    }
+
+    // ── FAQ list ──
+    &__faq-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    &__faq-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+        padding: 1rem 0.8rem;
+        border: none;
+        border-radius: 8px;
+        background: transparent;
+        cursor: pointer;
+        text-align: start;
+        transition: background 0.15s;
+
+        &:hover {
+            background: #f8fafc;
+
+            .db-info-panel__faq-text {
+                color: #10b981;
+            }
+
+            .db-info-panel__faq-arrow {
+                opacity: 1;
+                transform: translateX(2px);
+            }
+        }
+    }
+
+    &__faq-num {
+        flex-shrink: 0;
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 6px;
+        background: rgba(16 185 129 / 8%);
+        color: #10b981;
+        font-size: 1.1rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__faq-text {
+        flex: 1;
+        font-size: 1.25rem;
+        color: #334155;
+        line-height: 1.4;
+        transition: color 0.15s;
+    }
+
+    &__faq-arrow {
+        color: #94a3b8;
+        opacity: 0;
+        transition:
+            opacity 0.15s,
+            transform 0.15s;
+    }
+}

@@ -2,13 +2,13 @@ import React from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import Modal from '@/components/shared_ui/modal';
-import Text from '@/components/shared_ui/text';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import useIsTNCNeeded from '@/hooks/useIsTNCNeeded';
 import { useStore } from '@/hooks/useStore';
 import { LegacyClose1pxIcon } from '@deriv/quill-icons/Legacy';
 import { useDevice } from '@deriv-com/ui';
 import { SIDEBAR_INTRO } from './constants';
+import './info-panel.scss';
 
 const InfoPanel = observer(() => {
     const { isDesktop } = useDevice();
@@ -24,14 +24,12 @@ const InfoPanel = observer(() => {
         setInfoPanelVisibility,
         setFaqTitle,
     } = dashboard;
+
     const switchTab = (link: boolean, label: string, faq_id: string) => {
         const tutorial_link = link ? setActiveTab(DBOT_TABS.TUTORIAL) : null;
         const tutorial_label = label === 'Guide' ? setActiveTabTutorial(0) : setActiveTabTutorial(1);
         setFaqTitle(faq_id);
-        return {
-            tutorial_link,
-            tutorial_label,
-        };
+        return { tutorial_link, tutorial_label };
     };
 
     const handleClose = () => {
@@ -44,47 +42,127 @@ const InfoPanel = observer(() => {
         if (is_tnc_needed) {
             setIsTourOpen(false);
         } else {
-            if (is_info_panel_visible) {
-                setIsTourOpen(true);
-            } else {
-                setIsTourOpen(false);
-            }
+            setIsTourOpen(is_info_panel_visible);
         }
     }, [is_tnc_needed, is_info_panel_visible]);
 
-    const renderInfo = () => (
-        <div className='db-info-panel'>
-            <div data-testid='close-icon' className='db-info-panel__close-action' onClick={handleClose}>
-                <LegacyClose1pxIcon height='18px' width='18px' fill='var(--text-prominent)' />
-            </div>
+    const renderInfo = () => {
+        const [intro, guide, faqs] = SIDEBAR_INTRO();
 
-            {SIDEBAR_INTRO().map(sidebar_item => {
-                const { label, content, link } = sidebar_item;
-                return (
-                    <div key={`${label}-${content}`}>
-                        <Text color='prominent' lineHeight='xxl' size={isDesktop ? 'm' : 's'} weight='bold' as='h1'>
-                            {label}
-                        </Text>
-                        {content.map(text => (
-                            <Text
-                                key={`info-panel-tour${text.data}`}
-                                className={classNames('db-info-panel__card', {
-                                    'db-info-panel__content': link,
-                                })}
-                                color='prominent'
-                                lineHeight='xl'
-                                as='p'
-                                onClick={() => switchTab(link, label, text.faq_id)}
-                                size={isDesktop ? 's' : 'xxs'}
-                            >
-                                {text.data}
-                            </Text>
-                        ))}
+        return (
+            <div className='db-info-panel'>
+                <button
+                    data-testid='close-icon'
+                    className='db-info-panel__close'
+                    onClick={handleClose}
+                    aria-label='Close'
+                >
+                    <LegacyClose1pxIcon height='16px' width='16px' />
+                </button>
+
+                {/* ── Hero ── */}
+                <div className='db-info-panel__hero'>
+                    <div className='db-info-panel__hero-icon'>
+                        <svg
+                            viewBox='0 0 24 24'
+                            fill='none'
+                            stroke='#10B981'
+                            strokeWidth='1.75'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                        >
+                            <rect x='3' y='8' width='18' height='13' rx='2' />
+                            <path d='M8 8V6a4 4 0 0 1 8 0v2' />
+                            <circle cx='9' cy='14' r='1' fill='#10B981' stroke='none' />
+                            <circle cx='15' cy='14' r='1' fill='#10B981' stroke='none' />
+                            <path d='M9 18h6' />
+                        </svg>
                     </div>
-                );
-            })}
-        </div>
-    );
+                    <h2 className='db-info-panel__title'>{intro.label}</h2>
+                    {intro.content.map(item => (
+                        <p key={item.data} className='db-info-panel__subtitle'>
+                            {item.data}
+                        </p>
+                    ))}
+                </div>
+
+                {/* ── Guide ── */}
+                <div className='db-info-panel__section'>
+                    <p className='db-info-panel__section-label'>{guide.label}</p>
+                    {guide.content.map(item => (
+                        <button
+                            key={item.data}
+                            className='db-info-panel__guide-card'
+                            onClick={() => switchTab(guide.link, guide.label, item.faq_id ?? '')}
+                        >
+                            <span className='db-info-panel__guide-icon'>
+                                <svg
+                                    viewBox='0 0 24 24'
+                                    fill='none'
+                                    stroke='currentColor'
+                                    strokeWidth='2'
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                >
+                                    <path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z' />
+                                    <polyline points='14 2 14 8 20 8' />
+                                    <line x1='9' y1='13' x2='15' y2='13' />
+                                    <line x1='9' y1='17' x2='13' y2='17' />
+                                </svg>
+                            </span>
+                            <span className='db-info-panel__guide-text'>{item.data}</span>
+                            <span className='db-info-panel__guide-arrow'>
+                                <svg
+                                    width='16'
+                                    height='16'
+                                    viewBox='0 0 24 24'
+                                    fill='none'
+                                    stroke='currentColor'
+                                    strokeWidth='2'
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                >
+                                    <polyline points='9 18 15 12 9 6' />
+                                </svg>
+                            </span>
+                        </button>
+                    ))}
+                </div>
+
+                {/* ── FAQs ── */}
+                <div className='db-info-panel__section'>
+                    <p className='db-info-panel__section-label'>{faqs.label}</p>
+                    <ul className='db-info-panel__faq-list'>
+                        {faqs.content.map((item, i) => (
+                            <li key={item.faq_id}>
+                                <button
+                                    className='db-info-panel__faq-item'
+                                    onClick={() => switchTab(faqs.link, faqs.label, item.faq_id ?? '')}
+                                >
+                                    <span className='db-info-panel__faq-num'>{i + 1}</span>
+                                    <span className='db-info-panel__faq-text'>{item.data}</span>
+                                    <span className='db-info-panel__faq-arrow'>
+                                        <svg
+                                            width='14'
+                                            height='14'
+                                            viewBox='0 0 24 24'
+                                            fill='none'
+                                            stroke='currentColor'
+                                            strokeWidth='2'
+                                            strokeLinecap='round'
+                                            strokeLinejoin='round'
+                                        >
+                                            <polyline points='9 18 15 12 9 6' />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+        );
+    };
 
     return isDesktop ? (
         !active_tour && (

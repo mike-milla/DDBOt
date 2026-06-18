@@ -17,6 +17,7 @@ import { Localize, useTranslations } from '@deriv-com/translations';
 import { Header, useDevice, Wrapper } from '@deriv-com/ui';
 import { Tooltip } from '@deriv-com/ui';
 import { AppLogo } from '../app-logo';
+import ResourcesDropdown from './resources-dropdown/ResourcesDropdown';
 import AccountsInfoLoader from './account-info-loader';
 import AccountSwitcher from './account-switcher';
 import MenuItems from './menu-items';
@@ -219,6 +220,7 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
             <Wrapper variant='right'>
                 {!isDesktop && <PWAInstallButton variant='primary' size='medium' />}
                 {renderAccountSection()}
+                <ResourcesDropdown />
             </Wrapper>
             {/* <PWAInstallModalTest /> */}
         </Header>
