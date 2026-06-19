@@ -2,10 +2,15 @@
 @use 'components/shared/styles/constants' as *;
 @use 'components/shared/styles/mixins' as *;
 
-// Light theme palette
-$accent: #10b981; // emerald
+// Brand constants (theme-independent)
+$accent: #10b981;
 $accent-dim: rgb(16 185 129 / 10%);
 $accent-hover: rgb(16 185 129 / 6%);
+$brand-orange: #f58d15;
+$brand-purple: #7625a8;
+$brand-white: #fff;
+
+// Light-theme-only surface tokens (used in account switcher panel etc.)
 $surface: #fff;
 $surface-2: #f8fafc;
 $surface-3: #f1f5f9;
@@ -13,21 +18,18 @@ $border: #e2e8f0;
 $text: #0f172a;
 $text-muted: #64748b;
 $text-subtle: #94a3b8;
-$brand-orange: #f58d15;
-$brand-purple: #7625a8;
-$brand-white: #fff;
 
 /* ═══════════════════════════════════════════
    APP HEADER BAR
 ═══════════════════════════════════════════ */
 .app-header {
-    background: $surface;
-    border-bottom: 1px solid $border;
-    box-shadow: 0 1px 4px rgba(0 0 0 / 6%);
+    background: var(--general-main-1);
+    border-bottom: 1px solid var(--border-normal);
+    box-shadow: 0 1px 6px rgb(0 0 0 / 15%);
 
     &__account-settings {
         padding-inline-end: 1.2rem;
-        border-inline-end: 0.1rem solid $border;
+        border-inline-end: 0.1rem solid var(--border-normal);
     }
 
     &__account-settings,
@@ -35,7 +37,7 @@ $brand-white: #fff;
     &__menu {
         svg > path,
         svg > g > path {
-            fill: $text-muted;
+            fill: var(--text-less-prominent);
             transition: fill 0.15s ease;
         }
 
@@ -48,7 +50,7 @@ $brand-white: #fff;
     }
 
     &__profile_icon {
-        color: $text-muted;
+        color: var(--text-less-prominent);
         transition: color 0.15s ease;
 
         &:hover {
@@ -262,7 +264,7 @@ $brand-white: #fff;
         height: 4rem;
         margin: 0 auto;
         padding: 1.2rem 0.6rem;
-        color: $text;
+        color: var(--text-general);
         font-weight: 600;
     }
 
@@ -274,13 +276,13 @@ $brand-white: #fff;
     &__container {
         max-height: 80vh;
         overflow: auto;
-        background: $surface;
-        background-color: $surface;
+        background: var(--general-main-2);
+        background-color: var(--general-main-2);
         border-radius: 12px;
-        border: 1px solid $border;
+        border: 1px solid var(--border-normal);
         box-shadow:
-            0 4px 6px rgba(0 0 0 / 4%),
-            0 12px 32px rgba(0 0 0 / 10%) !important;
+            0 4px 6px rgba(0 0 0 / 8%),
+            0 12px 32px rgba(0 0 0 / 18%) !important;
         position: absolute;
         transition:
             transform 0.25s cubic-bezier(0.25, 0.1, 0.1, 0.25),
@@ -298,11 +300,11 @@ $brand-white: #fff;
         justify-content: flex-end;
         justify-self: end;
         padding: 1.6em 1.3em;
-        color: $text-muted;
+        color: var(--text-less-prominent);
         transition: color 0.15s ease;
 
         &:hover {
-            color: $text;
+            color: var(--text-general);
         }
 
         &-text {
@@ -381,8 +383,8 @@ $brand-white: #fff;
 
         /* Log in — ghost */
         &:first-child {
-            color: $text-muted;
-            border-color: $border;
+            color: var(--text-less-prominent);
+            border-color: var(--border-normal);
             background: transparent;
 
             &:hover {
