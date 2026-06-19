@@ -1,0 +1,529 @@
+@use 'components/shared/styles/constants' as *;
+@use 'components/shared/styles/mixins' as *;
+
+// ── Page layout ───────────────────────────────────────────────────────────────
+.mt-page {
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 15rem);
+    overflow: hidden;
+    background: var(--general-main-1);
+
+    @include mobile-or-tablet-screen {
+        flex-direction: column;
+        height: calc(100vh - 6rem);
+    }
+}
+
+// ── Chart side ────────────────────────────────────────────────────────────────
+.mt-chart {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+
+    @include mobile-or-tablet-screen {
+        flex: 0 0 44vh;
+    }
+
+    &__inner {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+// ── Trade panel ───────────────────────────────────────────────────────────────
+.mt-panel {
+    width: 30rem;
+    min-width: 26rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    padding: 1.6rem 1.4rem;
+    overflow-y: auto;
+    background: var(--general-main-2);
+    border-left: 1px solid var(--border-normal);
+
+    @include mobile-or-tablet-screen {
+        width: 100%;
+        min-width: unset;
+        border-left: none;
+        border-top: 1px solid var(--border-normal);
+        flex: 1 1 0;
+    }
+
+    // ── Category tabs ─────────────────────────────────────────────────────────
+    &__tabs {
+        display: flex;
+        background: var(--general-main-1);
+        border-radius: 1rem;
+        padding: 0.3rem;
+        gap: 0.2rem;
+    }
+
+    &__tab {
+        flex: 1;
+        padding: 0.65rem 0.5rem;
+        border: 1.5px solid transparent;
+        border-radius: 0.7rem;
+        background: transparent;
+        color: var(--text-less-prominent);
+        font-size: 1.25rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+            color 0.18s ease,
+            background 0.18s ease,
+            border-color 0.18s ease;
+
+        &--active {
+            background: linear-gradient(135deg, rgb(11 196 166 / 14%), rgb(118 37 168 / 10%));
+            border-color: rgb(11 196 166 / 35%);
+            color: #{$bm-teal};
+        }
+
+        &:hover:not(&--active) {
+            color: var(--text-general);
+        }
+    }
+
+    // ── Rise / Fall direction ─────────────────────────────────────────────────
+    &__direction {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+    }
+
+    &__dir {
+        padding: 1.1rem 0.5rem;
+        border: 1.5px solid;
+        border-radius: 0.9rem;
+        background: transparent;
+        font-size: 1.35rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition:
+            background 0.18s ease,
+            box-shadow 0.18s ease,
+            border-color 0.18s ease;
+
+        &--rise {
+            color: #{$bm-teal};
+            border-color: rgb(11 196 166 / 35%);
+
+            &:hover {
+                background: rgb(11 196 166 / 8%);
+            }
+
+            &.mt-panel__dir--active {
+                background: rgb(11 196 166 / 14%);
+                border-color: #{$bm-teal};
+                box-shadow: 0 0 20px rgb(11 196 166 / 28%);
+            }
+        }
+
+        &--fall {
+            color: #ef4444;
+            border-color: rgb(239 68 68 / 35%);
+
+            &:hover {
+                background: rgb(239 68 68 / 7%);
+            }
+
+            &.mt-panel__dir--active {
+                background: rgb(239 68 68 / 12%);
+                border-color: #ef4444;
+                box-shadow: 0 0 20px rgb(239 68 68 / 22%);
+            }
+        }
+    }
+
+    // ── Digit type buttons ────────────────────────────────────────────────────
+    &__digit-types {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+    }
+
+    &__digit-type {
+        padding: 0.8rem 0.2rem;
+        border: 1.5px solid rgb(118 37 168 / 25%);
+        border-radius: 0.7rem;
+        background: transparent;
+        color: var(--text-less-prominent);
+        font-size: 1.15rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+            background 0.15s ease,
+            border-color 0.15s ease,
+            color 0.15s ease,
+            box-shadow 0.15s ease;
+
+        &:hover:not(&--active) {
+            border-color: rgb(118 37 168 / 45%);
+            background: rgb(118 37 168 / 7%);
+            color: var(--text-general);
+        }
+
+        &--active {
+            border-color: #{$bm-purple};
+            background: rgb(118 37 168 / 16%);
+            color: rgb(180 100 255);
+            box-shadow: 0 0 12px rgb(118 37 168 / 28%);
+        }
+    }
+
+    // ── Fields (label + control rows) ─────────────────────────────────────────
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+    }
+
+    &__label {
+        font-size: 1.05rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-less-prominent);
+    }
+
+    &__input-row {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+
+    &__num {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-normal);
+        border-radius: 0.7rem;
+        background: var(--general-main-1);
+        color: var(--text-general);
+        font-size: 1.4rem;
+        font-weight: 600;
+
+        &--stake {
+            flex: 2;
+        }
+
+        &:focus {
+            outline: none;
+            border-color: rgb(11 196 166 / 55%);
+            box-shadow: 0 0 0 2px rgb(11 196 166 / 12%);
+        }
+    }
+
+    &__select {
+        padding: 0.75rem 0.8rem;
+        border: 1px solid var(--border-normal);
+        border-radius: 0.7rem;
+        background: var(--general-main-1);
+        color: var(--text-general);
+        font-size: 1.25rem;
+        cursor: pointer;
+
+        &:focus {
+            outline: none;
+            border-color: rgb(11 196 166 / 55%);
+        }
+    }
+
+    &__currency-badge {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-less-prominent);
+        white-space: nowrap;
+    }
+
+    &__unit {
+        font-size: 1.2rem;
+        color: var(--text-less-prominent);
+    }
+
+    // ── Predicted digit picker ────────────────────────────────────────────────
+    &__digit-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+    }
+
+    &__digit-pick {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 0.55rem;
+        border: 1px solid rgb(118 37 168 / 22%);
+        background: transparent;
+        color: var(--text-general);
+        font-size: 1.3rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+            background 0.12s ease,
+            border-color 0.12s ease,
+            box-shadow 0.12s ease;
+
+        &:hover:not(&--active) {
+            background: rgb(118 37 168 / 8%);
+            border-color: rgb(118 37 168 / 4%);
+        }
+
+        &--active {
+            background: #{$bm-purple};
+            border-color: #{$bm-purple};
+            color: #fff;
+            box-shadow: 0 0 10px rgb(118 37 168 / 45%);
+        }
+    }
+
+    // ── Payout quote box ──────────────────────────────────────────────────────
+    &__quote {
+        padding: 1.2rem 1.1rem;
+        border-radius: 0.9rem;
+        border: 1px solid rgb(11 196 166 / 14%);
+        background: rgb(11 196 166 / 5%);
+        min-height: 6rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    &__quote-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.25rem;
+        color: var(--text-less-prominent);
+    }
+
+    &__quote-val {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-general);
+    }
+
+    &__quote-profit {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #{$bm-teal};
+    }
+
+    &__quote-err {
+        color: #ef4444;
+        font-size: 1.2rem;
+        text-align: center;
+        margin: 0;
+    }
+
+    &__quote-loading {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        color: var(--text-less-prominent);
+        font-size: 1.2rem;
+    }
+
+    // ── Buy button ────────────────────────────────────────────────────────────
+    &__buy {
+        width: 100%;
+        padding: 1.35rem 1rem;
+        border: none;
+        border-radius: 1rem;
+        font-size: 1.35rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        cursor: pointer;
+        transition:
+            background 0.2s ease,
+            box-shadow 0.2s ease,
+            transform 0.15s ease,
+            opacity 0.15s ease;
+
+        &--rise {
+            background: linear-gradient(135deg, rgb(11 196 166 / 90%), rgb(11 196 166 / 70%));
+            color: #fff;
+            box-shadow: 0 4px 20px rgb(11 196 166 / 38%);
+
+            &:hover:not(.mt-panel__buy--off) {
+                background: #{$bm-teal};
+                box-shadow: 0 6px 28px rgb(11 196 166 / 50%);
+                transform: translateY(-1px);
+            }
+        }
+
+        &--fall {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: #fff;
+            box-shadow: 0 4px 20px rgb(239 68 68 / 32%);
+
+            &:hover:not(.mt-panel__buy--off) {
+                background: #ef4444;
+                box-shadow: 0 6px 28px rgb(239 68 68 / 42%);
+                transform: translateY(-1px);
+            }
+        }
+
+        &--digit {
+            background: linear-gradient(135deg, rgb(118 37 168 / 90%), rgb(118 37 168 / 70%));
+            color: #fff;
+            box-shadow: 0 4px 20px rgb(118 37 168 / 38%);
+
+            &:hover:not(.mt-panel__buy--off) {
+                background: #{$bm-purple};
+                box-shadow: 0 6px 28px rgb(118 37 168 / 50%);
+                transform: translateY(-1px);
+            }
+        }
+
+        &--off {
+            opacity: 0.42;
+            cursor: not-allowed;
+        }
+    }
+
+    &__buy-msg {
+        text-align: center;
+        font-size: 1.2rem;
+        padding: 0.8rem 1rem;
+        border-radius: 0.7rem;
+        margin: 0;
+
+        &--ok {
+            color: #{$bm-teal};
+            background: rgb(11 196 166 / 8%);
+            border: 1px solid rgb(11 196 166 / 22%);
+        }
+
+        &--err {
+            color: #ef4444;
+            background: rgb(239 68 68 / 8%);
+            border: 1px solid rgb(239 68 68 / 22%);
+        }
+    }
+}
+
+// ── Open contracts list ───────────────────────────────────────────────────────
+.mt-contracts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+
+    &__heading {
+        font-size: 1.05rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-less-prominent);
+        margin: 0 0 0.2rem;
+    }
+
+    &__row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-radius: 0.7rem;
+        border: 1px solid var(--border-normal);
+        transition: border-color 0.18s ease;
+
+        &--live {
+            border-color: rgb(11 196 166 / 28%);
+            background: rgb(11 196 166 / 4%);
+        }
+
+        &--won {
+            border-color: rgb(11 196 166 / 25%);
+            background: rgb(11 196 166 / 5%);
+        }
+
+        &--lost {
+            border-color: rgb(239 68 68 / 22%);
+            background: rgb(239 68 68 / 4%);
+        }
+    }
+
+    &__meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    &__type {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text-general);
+        text-transform: uppercase;
+    }
+
+    &__sym {
+        font-size: 1rem;
+        color: var(--text-less-prominent);
+    }
+
+    &__nums {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.15rem;
+    }
+
+    &__stake {
+        font-size: 1.1rem;
+        color: var(--text-less-prominent);
+    }
+
+    &__profit {
+        font-size: 1.2rem;
+        font-weight: 700;
+
+        &--pos {
+            color: #{$bm-teal};
+        }
+
+        &--neg {
+            color: #ef4444;
+        }
+    }
+}
+
+// ── Animations ────────────────────────────────────────────────────────────────
+@keyframes mt-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes mt-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.25;
+    }
+}
+
+.mt-panel__spinner {
+    display: inline-block;
+    width: 1.4rem;
+    height: 1.4rem;
+    border: 2px solid rgb(11 196 166 / 28%);
+    border-top-color: #{$bm-teal};
+    border-radius: 50%;
+    animation: mt-spin 0.75s linear infinite;
+    flex-shrink: 0;
+}
+
+.mt-contracts__pulse {
+    display: inline-block;
+    width: 0.85rem;
+    height: 0.85rem;
+    border-radius: 50%;
+    background: #{$bm-teal};
+    animation: mt-pulse 1.4s ease-in-out infinite;
+}

@@ -1,0 +1,267 @@
+@use 'components/shared/styles/constants' as *;
+
+// ── Trigger button ────────────────────────────────────────────────────────────
+.bm-ap__trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.5rem 1.1rem 0.5rem 0.6rem;
+    border-radius: 2.4rem;
+    border: 1.5px solid var(--border-normal);
+    background: var(--general-main-2);
+    cursor: pointer;
+    transition:
+        border-color 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease;
+
+    &:hover,
+    &--open {
+        border-color: rgb(11 196 166 / 45%);
+        background: var(--general-main-2);
+        box-shadow: 0 0 12px rgb(11 196 166 / 12%);
+    }
+
+    &--demo {
+        border-color: rgb(118 37 168 / 35%);
+
+        &:hover,
+        &.bm-ap__trigger--open {
+            border-color: rgb(118 37 168 / 60%);
+            box-shadow: 0 0 12px rgb(118 37 168 / 14%);
+        }
+    }
+}
+
+.bm-ap__trigger-type {
+    font-size: 1.05rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 1.6rem;
+    background: rgb(11 196 166 / 16%);
+    color: #{$bm-teal};
+    white-space: nowrap;
+
+    &--demo {
+        background: rgb(118 37 168 / 16%);
+        color: rgb(180 100 255);
+    }
+}
+
+.bm-ap__trigger-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+}
+
+.bm-ap__trigger-currency {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-less-prominent);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.bm-ap__trigger-balance {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-general);
+    letter-spacing: -0.01em;
+}
+
+// ── Panel (portal) ────────────────────────────────────────────────────────────
+.bm-ap__panel {
+    position: fixed;
+    z-index: 9999;
+    min-width: 28rem;
+    background: #09090f;
+    border: 1px solid rgb(11 196 166 / 20%);
+    border-radius: 1.4rem;
+    overflow: hidden;
+    box-shadow:
+        0 20px 56px rgb(0 0 0 / 70%),
+        0 0 40px rgb(11 196 166 / 6%);
+    animation: bm-ap-in 0.15s ease;
+
+    &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #{$bm-teal} 0%, #{$bm-purple} 100%);
+    }
+
+    // Light theme
+    .theme--light & {
+        background: #fff;
+        border-color: rgb(0 0 0 / 8%);
+        box-shadow:
+            0 8px 32px rgb(0 0 0 / 14%),
+            0 2px 8px rgb(0 0 0 / 6%);
+    }
+}
+
+// ── Section ───────────────────────────────────────────────────────────────────
+.bm-ap__section {
+    padding: 0.6rem 0.5rem 0.3rem;
+
+    & + & {
+        border-top: 1px solid rgb(255 255 255 / 5%);
+        padding-top: 0.5rem;
+
+        .theme--light & {
+            border-color: rgb(0 0 0 / 6%);
+        }
+    }
+}
+
+.bm-ap__section-label {
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.2rem 0.8rem 0.5rem;
+    margin: 0;
+
+    &--live {
+        color: #{$bm-teal};
+    }
+
+    &--demo {
+        color: rgb(180 100 255);
+    }
+}
+
+// ── Account row ───────────────────────────────────────────────────────────────
+.bm-ap__account {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    border: none;
+    border-radius: 0.8rem;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.14s ease;
+    text-align: left;
+
+    &:hover {
+        background: rgb(255 255 255 / 5%);
+
+        .theme--light & {
+            background: rgb(0 0 0 / 4%);
+        }
+    }
+
+    &--active {
+        background: rgb(11 196 166 / 7%);
+
+        &:hover {
+            background: rgb(11 196 166 / 10%);
+        }
+
+        .theme--light & {
+            background: rgb(11 196 166 / 8%);
+        }
+    }
+}
+
+.bm-ap__account-badge {
+    flex-shrink: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 0.5rem;
+    background: rgb(11 196 166 / 14%);
+    color: #{$bm-teal};
+    min-width: 4.2rem;
+    text-align: center;
+
+    &--demo {
+        background: rgb(118 37 168 / 14%);
+        color: rgb(180 100 255);
+    }
+}
+
+.bm-ap__account-id {
+    flex: 1;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-general);
+    font-family: monospace;
+
+    .theme--light & {
+        color: rgb(15 23 42 / 85%);
+    }
+}
+
+.bm-ap__account-balance {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-general);
+    white-space: nowrap;
+
+    .theme--light & {
+        color: rgb(15 23 42 / 90%);
+    }
+}
+
+.bm-ap__account-check {
+    flex-shrink: 0;
+    color: #{$bm-teal};
+    display: flex;
+    align-items: center;
+}
+
+// ── Footer ────────────────────────────────────────────────────────────────────
+.bm-ap__footer {
+    border-top: 1px solid rgb(255 255 255 / 5%);
+    padding: 0.5rem;
+    margin-top: 0.2rem;
+
+    .theme--light & {
+        border-color: rgb(0 0 0 / 6%);
+    }
+}
+
+.bm-ap__logout {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    width: 100%;
+    padding: 0.8rem 0.9rem;
+    border: none;
+    border-radius: 0.8rem;
+    background: transparent;
+    color: rgb(239 68 68 / 80%);
+    font-size: 1.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.14s ease;
+    text-align: left;
+
+    &:hover {
+        background: rgb(239 68 68 / 8%);
+        color: #ef4444;
+    }
+}
+
+// ── Animation ─────────────────────────────────────────────────────────────────
+@keyframes bm-ap-in {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

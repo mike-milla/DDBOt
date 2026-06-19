@@ -44,6 +44,7 @@ const CopyTrader = lazy(() => import('../copy-trader'));
 const BulkTrader = lazy(() => import('../bulk-trader'));
 const AnalysisTool = lazy(() => import('../analysis-tool'));
 const DCircles = lazy(() => import('../dcircles'));
+const ManualTrader = lazy(() => import('../manual-trader'));
 
 // Single source of truth for all tab metadata. Array index = Tabs child position.
 const TAB_DEFS = [
@@ -639,15 +640,9 @@ const AppWrapper = observer(() => {
                                 }
                                 id='id-manual-trader'
                             >
-                                <div className='manual-trader-wrapper'>
-                                    <iframe
-                                        src='https://app.deriv.com/dtrader'
-                                        className='manual-trader-wrapper__iframe'
-                                        title='Deriv DTrader'
-                                        allow='fullscreen'
-                                        sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation'
-                                    />
-                                </div>
+                                <Suspense fallback={<ChunkLoader message={localize('Loading Manual Trader…')} />}>
+                                    <ManualTrader />
+                                </Suspense>
                             </div>
                             <div
                                 label={
