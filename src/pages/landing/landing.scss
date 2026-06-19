@@ -48,6 +48,16 @@ $orange: #f58d15;
     }
 }
 
+@keyframes ticker-scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
 // ── Root ──────────────────────────────────────────────────────────────────────
 .lp {
     position: relative;
@@ -154,14 +164,12 @@ $orange: #f58d15;
 
         &--boss {
             background: linear-gradient(135deg, #e0e0e0, #fff);
-            background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         &--millan {
             background: linear-gradient(135deg, $teal, $teal-bright);
-            background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
@@ -183,6 +191,89 @@ $orange: #f58d15;
             color: $teal;
             border-color: rgb(11 196 166 / 45%);
             background: rgb(11 196 166 / 8%);
+        }
+    }
+
+    // ── Market ticker ─────────────────────────────────────────────────────────
+    &__ticker {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        overflow: hidden;
+        background: rgb(0 0 0 / 55%);
+        backdrop-filter: blur(12px);
+        border-top: 1px solid rgb(11 196 166 / 15%);
+        border-bottom: 1px solid rgb(11 196 166 / 15%);
+        padding: 0.55rem 0;
+
+        // fade edges
+        &:before,
+        &:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 6rem;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        &:before {
+            left: 0;
+            background: linear-gradient(90deg, #000, transparent);
+        }
+
+        &:after {
+            right: 0;
+            background: linear-gradient(-90deg, #000, transparent);
+        }
+    }
+
+    &__ticker-track {
+        display: flex;
+        gap: 0;
+        width: max-content;
+        animation: ticker-scroll 40s linear infinite;
+
+        &:hover {
+            animation-play-state: paused;
+        }
+    }
+
+    &__ticker-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0 2.4rem;
+        border-right: 1px solid rgb(255 255 255 / 8%);
+        white-space: nowrap;
+    }
+
+    &__ticker-symbol {
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        color: rgb(255 255 255 / 60%);
+    }
+
+    &__ticker-price {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: rgb(255 255 255 / 90%);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__ticker-change {
+        font-size: 1rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+
+        &--up {
+            color: $teal;
+        }
+
+        &--down {
+            color: #ef4444;
         }
     }
 
@@ -219,7 +310,6 @@ $orange: #f58d15;
         font-size: clamp(2.8rem, 5.5vw, 5rem);
         font-weight: 900;
         background: linear-gradient(160deg, #d8d8d8 0%, #fff 40%, #c0c0c0 100%);
-        background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
         filter: drop-shadow(0 0 12px rgb(255 255 255 / 20%));
@@ -229,7 +319,6 @@ $orange: #f58d15;
         font-size: clamp(2.8rem, 5.5vw, 5rem);
         font-weight: 900;
         background: linear-gradient(135deg, $teal 0%, $teal-bright 50%, $teal 100%);
-        background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
         filter: drop-shadow(0 0 16px rgb(11 196 166 / 60%));
@@ -240,7 +329,6 @@ $orange: #f58d15;
         font-weight: 900;
         letter-spacing: -0.04em;
         background: linear-gradient(135deg, $purple-lite 0%, $purple 100%);
-        background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
         filter: drop-shadow(0 0 10px rgb(118 37 168 / 50%));

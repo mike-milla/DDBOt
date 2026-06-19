@@ -1,5 +1,61 @@
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './landing.scss';
+
+// ── Market ticker ─────────────────────────────────────────────────────────────
+type TickerItem = { symbol: string; price: string; change: number; decimals: number };
+
+const INITIAL_MARKETS: TickerItem[] = [
+    { symbol: 'Vol 100 (1s)', price: '4218.34', change: +1.24, decimals: 2 },
+    { symbol: 'Vol 75 (1s)', price: '892.51', change: -0.67, decimals: 2 },
+    { symbol: 'Vol 50 (1s)', price: '513.88', change: +0.43, decimals: 2 },
+    { symbol: 'Vol 25 (1s)', price: '211.72', change: +0.19, decimals: 2 },
+    { symbol: 'Vol 10 (1s)', price: '94.36', change: -0.11, decimals: 2 },
+    { symbol: 'EUR / USD', price: '1.08742', change: +0.03, decimals: 5 },
+    { symbol: 'GBP / USD', price: '1.27180', change: -0.08, decimals: 5 },
+    { symbol: 'USD / JPY', price: '157.423', change: +0.14, decimals: 3 },
+    { symbol: 'AUD / USD', price: '0.65318', change: -0.05, decimals: 5 },
+    { symbol: 'XAU / USD', price: '2331.60', change: +0.55, decimals: 2 },
+    { symbol: 'WTI Oil', price: '78.24', change: -0.32, decimals: 2 },
+    { symbol: 'Vol 100', price: '6741.29', change: +0.88, decimals: 2 },
+];
+
+const MarketTicker = () => {
+    const [markets, setMarkets] = useState<TickerItem[]>(INITIAL_MARKETS);
+    const intervalRef = useRef<ReturnType<typeof setInterval>>();
+
+    useEffect(() => {
+        intervalRef.current = setInterval(() => {
+            setMarkets(prev =>
+                prev.map(m => {
+                    const delta = (Math.random() - 0.49) * parseFloat(m.price) * 0.0004;
+                    const newPrice = Math.max(0.01, parseFloat(m.price) + delta);
+                    const newChange = m.change + (Math.random() - 0.5) * 0.05;
+                    return { ...m, price: newPrice.toFixed(m.decimals), change: parseFloat(newChange.toFixed(2)) };
+                })
+            );
+        }, 1200);
+        return () => clearInterval(intervalRef.current);
+    }, []);
+
+    const items = [...markets, ...markets]; // duplicate for seamless loop
+
+    return (
+        <div className='lp__ticker'>
+            <div className='lp__ticker-track'>
+                {items.map((m, i) => (
+                    <div key={i} className='lp__ticker-item'>
+                        <span className='lp__ticker-symbol'>{m.symbol}</span>
+                        <span className='lp__ticker-price'>{m.price}</span>
+                        <span className={`lp__ticker-change lp__ticker-change--${m.change >= 0 ? 'up' : 'down'}`}>
+                            {m.change >= 0 ? '▲' : '▼'} {Math.abs(m.change).toFixed(2)}%
+                        </span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
 
 // ── Feature card ──────────────────────────────────────────────────────────────
 const Feature = ({
@@ -353,6 +409,7 @@ const LandingPage = () => {
                     Launch App
                 </button>
             </nav>
+            <MarketTicker />
 
             {/* Hero */}
             <section className='lp__hero'>
