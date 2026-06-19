@@ -48,8 +48,7 @@ export const useDerivAuth = () => {
             if (!account) throw new Error(`Account ${id} not found`);
 
             const otp = await fetchAccountOtp(auth.access_token, id);
-            const type = account.is_virtual ? 'demo' : 'real';
-            return new WebSocket(`${WS_BASE}/trading/v1/options/ws/${type}?otp=${otp}`);
+            return new WebSocket(`${WS_BASE}/trading/v1/options/ws/${account.account_type}?otp=${otp}`);
         },
         [auth]
     );
@@ -57,8 +56,8 @@ export const useDerivAuth = () => {
     const isLoggedIn = !!auth?.access_token;
     const accounts = auth?.accounts ?? [];
     const activeAccount = accounts.find(a => a.account_id === auth?.active_account_id) ?? null;
-    const liveAccounts = accounts.filter(a => !a.is_virtual);
-    const demoAccounts = accounts.filter(a => a.is_virtual);
+    const liveAccounts = accounts.filter(a => a.account_type === 'real');
+    const demoAccounts = accounts.filter(a => a.account_type === 'demo');
 
     return {
         isLoggedIn,

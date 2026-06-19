@@ -1,51 +1,48 @@
 @use 'components/shared/styles/constants' as *;
 
-// ── Trigger button ────────────────────────────────────────────────────────────
+// ── Trigger ───────────────────────────────────────────────────────────────────
 .bm-ap__trigger {
     display: flex;
     align-items: center;
     gap: 0.7rem;
-    padding: 0.5rem 1.1rem 0.5rem 0.6rem;
+    padding: 0.5rem 1rem 0.5rem 0.5rem;
     border-radius: 2.4rem;
     border: 1.5px solid var(--border-normal);
     background: var(--general-main-2);
     cursor: pointer;
     transition:
         border-color 0.18s ease,
-        background 0.18s ease,
         box-shadow 0.18s ease;
 
     &:hover,
     &--open {
-        border-color: rgb(11 196 166 / 45%);
-        background: var(--general-main-2);
-        box-shadow: 0 0 12px rgb(11 196 166 / 12%);
+        border-color: rgb(11 196 166 / 50%);
+        box-shadow: 0 0 14px rgb(11 196 166 / 12%);
     }
 
     &--demo {
-        border-color: rgb(118 37 168 / 35%);
+        border-color: rgb(118 37 168 / 30%);
 
         &:hover,
         &.bm-ap__trigger--open {
             border-color: rgb(118 37 168 / 60%);
-            box-shadow: 0 0 12px rgb(118 37 168 / 14%);
+            box-shadow: 0 0 14px rgb(118 37 168 / 14%);
         }
     }
 }
 
-.bm-ap__trigger-type {
+.bm-ap__trigger-badge {
     font-size: 1.05rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    padding: 0.25rem 0.65rem;
+    padding: 0.25rem 0.7rem;
     border-radius: 1.6rem;
-    background: rgb(11 196 166 / 16%);
+    background: rgb(11 196 166 / 14%);
     color: #{$bm-teal};
-    white-space: nowrap;
 
     &--demo {
-        background: rgb(118 37 168 / 16%);
+        background: rgb(118 37 168 / 14%);
         color: rgb(180 100 255);
     }
 }
@@ -66,86 +63,141 @@
 }
 
 .bm-ap__trigger-balance {
-    font-size: 1.3rem;
+    font-size: 1.35rem;
     font-weight: 700;
     color: var(--text-general);
-    letter-spacing: -0.01em;
 }
 
 // ── Panel (portal) ────────────────────────────────────────────────────────────
 .bm-ap__panel {
     position: fixed;
     z-index: 9999;
-    min-width: 28rem;
+    width: 30rem;
     background: #09090f;
-    border: 1px solid rgb(11 196 166 / 20%);
-    border-radius: 1.4rem;
+    border: 1px solid rgb(11 196 166 / 18%);
+    border-radius: 1.6rem;
     overflow: hidden;
     box-shadow:
-        0 20px 56px rgb(0 0 0 / 70%),
-        0 0 40px rgb(11 196 166 / 6%);
+        0 24px 64px rgb(0 0 0 / 70%),
+        0 0 40px rgb(11 196 166 / 5%);
     animation: bm-ap-in 0.15s ease;
 
     &:before {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
+        inset: 0 0 auto;
         height: 2px;
-        background: linear-gradient(90deg, #{$bm-teal} 0%, #{$bm-purple} 100%);
-    }
-
-    // Light theme
-    .theme--light & {
-        background: #fff;
-        border-color: rgb(0 0 0 / 8%);
-        box-shadow:
-            0 8px 32px rgb(0 0 0 / 14%),
-            0 2px 8px rgb(0 0 0 / 6%);
+        background: linear-gradient(90deg, #{$bm-teal}, #{$bm-purple});
     }
 }
 
-// ── Section ───────────────────────────────────────────────────────────────────
-.bm-ap__section {
-    padding: 0.6rem 0.5rem 0.3rem;
+// ── Panel header ──────────────────────────────────────────────────────────────
+.bm-ap__header {
+    padding: 1.6rem 1.6rem 1rem;
+}
 
-    & + & {
-        border-top: 1px solid rgb(255 255 255 / 5%);
-        padding-top: 0.5rem;
+.bm-ap__header-account {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        .theme--light & {
-            border-color: rgb(0 0 0 / 6%);
+.bm-ap__header-id {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-less-prominent);
+    font-family: monospace;
+    letter-spacing: 0.04em;
+}
+
+.bm-ap__header-balance {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-general);
+    letter-spacing: -0.01em;
+}
+
+// ── Tab bar ───────────────────────────────────────────────────────────────────
+.bm-ap__tabs {
+    display: flex;
+    gap: 0.3rem;
+    padding: 0 1rem;
+    border-bottom: 1px solid rgb(255 255 255 / 6%);
+    margin-bottom: 0.4rem;
+}
+
+.bm-ap__tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1rem 0.9rem;
+    border: none;
+    background: transparent;
+    color: var(--text-less-prominent);
+    font-size: 1.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition:
+        color 0.15s ease,
+        border-color 0.15s ease;
+
+    &--active {
+        color: #{$bm-teal};
+        border-bottom-color: #{$bm-teal};
+
+        &.bm-ap__tab--demo {
+            color: rgb(180 100 255);
+            border-bottom-color: rgb(180 100 255);
         }
     }
+
+    &:hover:not(&--active) {
+        color: var(--text-general);
+    }
 }
 
-.bm-ap__section-label {
+.bm-ap__tab-count {
     font-size: 1rem;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    padding: 0.2rem 0.8rem 0.5rem;
-    margin: 0;
-
-    &--live {
-        color: #{$bm-teal};
-    }
+    padding: 0.1rem 0.45rem;
+    border-radius: 1rem;
+    background: rgb(11 196 166 / 14%);
+    color: #{$bm-teal};
+    line-height: 1.5;
 
     &--demo {
+        background: rgb(118 37 168 / 14%);
         color: rgb(180 100 255);
     }
+}
+
+// ── Account list ──────────────────────────────────────────────────────────────
+.bm-ap__list {
+    padding: 0.4rem 0.6rem;
+    min-height: 6rem;
+    max-height: 24rem;
+    overflow-y: auto;
+}
+
+.bm-ap__empty {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-less-prominent);
+    padding: 2rem 0;
+    margin: 0;
 }
 
 // ── Account row ───────────────────────────────────────────────────────────────
 .bm-ap__account {
     display: flex;
     align-items: center;
-    gap: 0.85rem;
+    justify-content: space-between;
     width: 100%;
-    padding: 0.75rem 0.9rem;
+    padding: 0.85rem 0.9rem;
     border: none;
-    border-radius: 0.8rem;
+    border-radius: 0.9rem;
     background: transparent;
     cursor: pointer;
     transition: background 0.14s ease;
@@ -153,10 +205,6 @@
 
     &:hover {
         background: rgb(255 255 255 / 5%);
-
-        .theme--light & {
-            background: rgb(0 0 0 / 4%);
-        }
     }
 
     &--active {
@@ -165,70 +213,75 @@
         &:hover {
             background: rgb(11 196 166 / 10%);
         }
-
-        .theme--light & {
-            background: rgb(11 196 166 / 8%);
-        }
     }
 }
 
-.bm-ap__account-badge {
-    flex-shrink: 0;
-    font-size: 1.05rem;
-    font-weight: 800;
-    letter-spacing: 0.03em;
-    padding: 0.2rem 0.55rem;
-    border-radius: 0.5rem;
-    background: rgb(11 196 166 / 14%);
-    color: #{$bm-teal};
-    min-width: 4.2rem;
-    text-align: center;
+.bm-ap__account-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
 
-    &--demo {
-        background: rgb(118 37 168 / 14%);
-        color: rgb(180 100 255);
+.bm-ap__account-dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 18%);
+    flex-shrink: 0;
+
+    &--active {
+        background: #{$bm-teal};
+        box-shadow: 0 0 6px rgb(11 196 166 / 60%);
     }
+}
+
+.bm-ap__account-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
 }
 
 .bm-ap__account-id {
-    flex: 1;
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-size: 1.25rem;
+    font-weight: 700;
     color: var(--text-general);
     font-family: monospace;
+    letter-spacing: 0.02em;
+}
 
-    .theme--light & {
-        color: rgb(15 23 42 / 85%);
-    }
+.bm-ap__account-group {
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-less-prominent);
+}
+
+.bm-ap__account-right {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
 }
 
 .bm-ap__account-balance {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--text-general);
     white-space: nowrap;
-
-    .theme--light & {
-        color: rgb(15 23 42 / 90%);
-    }
 }
 
 .bm-ap__account-check {
-    flex-shrink: 0;
     color: #{$bm-teal};
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
 
 // ── Footer ────────────────────────────────────────────────────────────────────
 .bm-ap__footer {
-    border-top: 1px solid rgb(255 255 255 / 5%);
-    padding: 0.5rem;
+    border-top: 1px solid rgb(255 255 255 / 6%);
+    padding: 0.5rem 0.6rem 0.6rem;
     margin-top: 0.2rem;
-
-    .theme--light & {
-        border-color: rgb(0 0 0 / 6%);
-    }
 }
 
 .bm-ap__logout {
@@ -240,7 +293,7 @@
     border: none;
     border-radius: 0.8rem;
     background: transparent;
-    color: rgb(239 68 68 / 80%);
+    color: rgb(239 68 68 / 75%);
     font-size: 1.25rem;
     font-weight: 600;
     cursor: pointer;
