@@ -125,7 +125,7 @@ const MoreToolsMenu = ({ activeTab, onSelect }: { activeTab: number; onSelect: (
                         <circle cx='12' cy='12' r='2' />
                         <circle cx='19' cy='12' r='2' />
                     </svg>
-                    <span>More</span>
+                    <span>More Tools</span>
                     <svg
                         width='11'
                         height='11'

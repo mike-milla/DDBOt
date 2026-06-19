@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { generateDerivApiInstance } from '@/external/bot-skeleton/services/api/appId';
 import './bulk-trader.scss';
 
@@ -161,6 +162,175 @@ const DigitArc = ({
     );
 };
 
+// ── Auto trader condition options per trade type ──────────────────────────────
+const AUTO_CONDITIONS: Record<TradeType, { are: string[]; trade: string[] }> = {
+    evenodd: { are: ['All even', 'All odd', 'Alternating'], trade: ['Even', 'Odd'] },
+    risefall: { are: ['All rise', 'All fall', 'Alternating'], trade: ['Rise', 'Fall'] },
+    overunder: { are: ['All over', 'All under'], trade: ['Over', 'Under'] },
+    matchdiff: { are: ['All match', 'All differ'], trade: ['Match', 'Differ'] },
+};
+
+// ── Auto trade settings dialog ────────────────────────────────────────────────
+const AutoTraderDialog = ({
+    tradeType,
+    onStart,
+    onClose,
+}: {
+    tradeType: TradeType;
+    onStart: (cfg: { lastDigits: number; condition: string; tradeSide: string }) => void;
+    onClose: () => void;
+}) => {
+    const opts = AUTO_CONDITIONS[tradeType];
+    const [lastDigits, setLastDigits] = useState(3);
+    const [condition, setCondition] = useState(opts.are[0]);
+    const [tradeSide, setTradeSide] = useState(opts.trade[0]);
+
+    const summary = `If last ${lastDigits} digit${lastDigits !== 1 ? 's' : ''} are ${condition.toLowerCase()}, trade ${tradeSide}`;
+
+    return createPortal(
+        <div className='at-overlay' onClick={onClose}>
+            <div className='at-dialog' onClick={e => e.stopPropagation()}>
+                {/* Header */}
+                <div className='at-dialog__head'>
+                    <div>
+                        <p className='at-dialog__eyebrow'>Auto Trades</p>
+                        <h2 className='at-dialog__title'>Auto trade settings</h2>
+                    </div>
+                    <button className='at-dialog__close' onClick={onClose} aria-label='Close'>
+                        <svg
+                            width='14'
+                            height='14'
+                            viewBox='0 0 24 24'
+                            fill='none'
+                            stroke='currentColor'
+                            strokeWidth='2.5'
+                            strokeLinecap='round'
+                        >
+                            <path d='M18 6L6 18M6 6l12 12' />
+                        </svg>
+                    </button>
+                </div>
+
+                {/* Row 1: IF LAST DIGITS + ARE */}
+                <div className='at-dialog__row'>
+                    <label className='at-dialog__field'>
+                        <span className='at-dialog__label'>If last digits</span>
+                        <input
+                            className='at-dialog__input'
+                            type='number'
+                            min={1}
+                            max={10}
+                            value={lastDigits}
+                            onChange={e => setLastDigits(Number(e.target.value))}
+                        />
+                    </label>
+                    <label className='at-dialog__field'>
+                        <span className='at-dialog__label'>Are</span>
+                        <select
+                            className='at-dialog__input'
+                            value={condition}
+                            onChange={e => setCondition(e.target.value)}
+                        >
+                            {opts.are.map(o => (
+                                <option key={o} value={o}>
+                                    {o}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                </div>
+
+                {/* Row 2: THEN TRADE */}
+                <label className='at-dialog__field at-dialog__field--full'>
+                    <span className='at-dialog__label'>Then trade</span>
+                    <select
+                        className='at-dialog__input at-dialog__input--half'
+                        value={tradeSide}
+                        onChange={e => setTradeSide(e.target.value)}
+                    >
+                        {opts.trade.map(o => (
+                            <option key={o} value={o}>
+                                {o}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+
+                {/* Summary */}
+                <div className='at-dialog__summary'>
+                    <span className='at-dialog__summary-label'>Waiting for condition</span>
+                    <strong className='at-dialog__summary-text'>{summary}</strong>
+                </div>
+
+                {/* Footer */}
+                <div className='at-dialog__footer'>
+                    <button
+                        className='at-dialog__start'
+                        onClick={() => {
+                            onStart({ lastDigits, condition, tradeSide });
+                            onClose();
+                        }}
+                    >
+                        Start auto trading
+                    </button>
+                </div>
+            </div>
+        </div>,
+        document.body
+    );
+};
+
+// ── Skeleton loader ───────────────────────────────────────────────────────────
+const BulkTraderSkeleton = () => (
+    <div className='bt-page bt-page--skeleton'>
+        {/* controls row */}
+        <div className='bt-page__top'>
+            <div className='bt-sk bt-sk--field' />
+            <div className='bt-sk bt-sk--field' />
+            <div className='bt-sk bt-sk--field-sm' />
+        </div>
+
+        {/* price row */}
+        <div className='bt-page__price-row'>
+            <div className='bt-page__price-wrap'>
+                <div className='bt-sk bt-sk--label' />
+                <div className='bt-sk bt-sk--price' />
+            </div>
+            <div className='bt-sk bt-sk--badge' />
+        </div>
+
+        {/* digit circles */}
+        <div className='bt-page__circles'>
+            {Array.from({ length: 10 }, (_, i) => (
+                <div key={i} className='bt-circle'>
+                    <div className='bt-sk bt-sk--circle' />
+                </div>
+            ))}
+        </div>
+
+        {/* recent strip */}
+        <div className='bt-page__strip'>
+            {Array.from({ length: 8 }, (_, i) => (
+                <div key={i} className='bt-sk bt-sk--pip' />
+            ))}
+        </div>
+
+        {/* trade params */}
+        <div className='bt-page__trade-row'>
+            <div className='bt-sk bt-sk--input' />
+            <div className='bt-sk bt-sk--input' />
+            <div className='bt-sk bt-sk--input' />
+            <div className='bt-sk bt-sk--input-wide' />
+        </div>
+
+        {/* split bar */}
+        <div className='bt-page__split'>
+            <div className='bt-sk bt-sk--split-a' />
+            <div className='bt-sk bt-sk--split-b' />
+        </div>
+    </div>
+);
+
 // ── Main component ────────────────────────────────────────────────────────────
 const BulkTrader = () => {
     const [symbol, setSymbol] = useState('1HZ100V');
@@ -171,6 +341,7 @@ const BulkTrader = () => {
     const [numTrades, setNumTrades] = useState(1);
     const [selectedDigit, setSelectedDigit] = useState(5);
     const [autoMode, setAutoMode] = useState(false);
+    const [autoDialogOpen, setAutoDialogOpen] = useState(false);
 
     const { ticks, isConnected } = useDigitStream(symbol);
 
@@ -222,224 +393,238 @@ const BulkTrader = () => {
     // Recent 8 ticks for strip
     const recent = ticks.slice(-8);
 
+    if (ticks.length === 0) return <BulkTraderSkeleton />;
+
     return (
-        <div className='bt-page'>
-            {/* ── Top controls ── */}
-            <div className='bt-page__top'>
-                <label className='bt-page__field'>
-                    <span>Market</span>
-                    <select value={symbol} onChange={e => setSymbol(e.target.value)}>
-                        {SYMBOLS.map(s => (
-                            <option key={s.value} value={s.value}>
-                                {s.label}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-                <label className='bt-page__field'>
-                    <span>Trade Type</span>
-                    <select value={tradeType} onChange={e => setTradeType(e.target.value as TradeType)}>
-                        {TRADE_TYPES.map(t => (
-                            <option key={t.value} value={t.value}>
-                                {t.label}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-                <label className='bt-page__field'>
-                    <span>Number of Ticks (sample)</span>
-                    <input
-                        type='number'
-                        min={50}
-                        max={5000}
-                        value={sampleSize}
-                        onChange={e => setSampleSize(Number(e.target.value))}
-                    />
-                </label>
-            </div>
-
-            {/* ── Live price ── */}
-            <div className='bt-page__price-row'>
-                <div className='bt-page__price-wrap'>
-                    <span className='bt-page__price-label'>Current Tick</span>
-                    <span
-                        className={`bt-page__price${lastTick?.direction === 'rise' ? ' bt-page__price--rise' : lastTick?.direction === 'fall' ? ' bt-page__price--fall' : ''}`}
-                    >
-                        {lastTick?.price ?? '—'}
-                    </span>
+        <>
+            <div className='bt-page'>
+                {/* ── Top controls ── */}
+                <div className='bt-page__top'>
+                    <label className='bt-page__field'>
+                        <span>Market</span>
+                        <select value={symbol} onChange={e => setSymbol(e.target.value)}>
+                            {SYMBOLS.map(s => (
+                                <option key={s.value} value={s.value}>
+                                    {s.label}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                    <label className='bt-page__field'>
+                        <span>Trade Type</span>
+                        <select value={tradeType} onChange={e => setTradeType(e.target.value as TradeType)}>
+                            {TRADE_TYPES.map(t => (
+                                <option key={t.value} value={t.value}>
+                                    {t.label}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                    <label className='bt-page__field'>
+                        <span>Number of Ticks (sample)</span>
+                        <input
+                            type='number'
+                            min={50}
+                            max={5000}
+                            value={sampleSize}
+                            onChange={e => setSampleSize(Number(e.target.value))}
+                        />
+                    </label>
                 </div>
-                <div className={`bt-page__conn${isConnected ? ' bt-page__conn--live' : ''}`}>
-                    <span className='bt-page__conn-dot' />
-                    {isConnected ? 'Live' : 'Connecting…'}
-                </div>
-            </div>
 
-            {/* ── Digit circles ── */}
-            <div className='bt-page__circles'>
-                {Array.from({ length: 10 }, (_, d) => (
-                    <DigitArc
-                        key={d}
-                        digit={d}
-                        pct={pcts[d]}
-                        isHot={d === maxIdx}
-                        isCold={d === minIdx}
-                        isLast={lastTick?.digit === d}
-                    />
-                ))}
-            </div>
-
-            {/* ── Recent digit strip ── */}
-            <div className='bt-page__strip'>
-                {recent.map((t, i) => {
-                    const isEven = t.digit % 2 === 0;
-                    const isLast = i === recent.length - 1;
-                    return (
+                {/* ── Live price ── */}
+                <div className='bt-page__price-row'>
+                    <div className='bt-page__price-wrap'>
+                        <span className='bt-page__price-label'>Current Tick</span>
                         <span
-                            key={t.epoch}
-                            className={`bt-page__badge${isLast ? ' bt-page__badge--last' : ''}`}
-                            style={{ background: isEven ? '#0bc4a6' : '#ef4444' }}
+                            className={`bt-page__price${lastTick?.direction === 'rise' ? ' bt-page__price--rise' : lastTick?.direction === 'fall' ? ' bt-page__price--fall' : ''}`}
                         >
-                            {tradeType === 'evenodd'
-                                ? isEven
-                                    ? 'E'
-                                    : 'O'
-                                : tradeType === 'risefall'
-                                  ? t.direction === 'rise'
-                                      ? '▲'
-                                      : '▼'
-                                  : t.digit}
+                            {lastTick?.price ?? '—'}
                         </span>
-                    );
-                })}
-            </div>
+                    </div>
+                    <div className={`bt-page__conn${isConnected ? ' bt-page__conn--live' : ''}`}>
+                        <span className='bt-page__conn-dot' />
+                        {isConnected ? 'Live' : 'Connecting…'}
+                    </div>
+                </div>
 
-            {/* ── Trade parameters ── */}
-            {(tradeType === 'overunder' || tradeType === 'matchdiff') && (
-                <div className='bt-page__digit-row'>
-                    <span className='bt-page__digit-label'>Digit</span>
+                {/* ── Digit circles ── */}
+                <div className='bt-page__circles'>
                     {Array.from({ length: 10 }, (_, d) => (
-                        <button
+                        <DigitArc
                             key={d}
-                            className={`bt-page__digit-btn${selectedDigit === d ? ' bt-page__digit-btn--active' : ''}`}
-                            onClick={() => setSelectedDigit(d)}
-                        >
-                            {d}
-                        </button>
+                            digit={d}
+                            pct={pcts[d]}
+                            isHot={d === maxIdx}
+                            isCold={d === minIdx}
+                            isLast={lastTick?.digit === d}
+                        />
                     ))}
                 </div>
-            )}
 
-            <div className='bt-page__trade-row'>
-                <label className='bt-page__trade-field'>
-                    <span>Ticks</span>
-                    <input
-                        type='number'
-                        min={1}
-                        max={10}
-                        value={ticks_per_trade}
-                        onChange={e => setTicksPerTrade(Number(e.target.value))}
-                    />
-                </label>
-                <label className='bt-page__trade-field'>
-                    <span>Stake (USD)</span>
-                    <input
-                        type='number'
-                        min={0.35}
-                        step={0.01}
-                        value={stake}
-                        onChange={e => setStake(e.target.value)}
-                    />
-                </label>
-                <label className='bt-page__trade-field'>
-                    <span>No. of Trades</span>
-                    <input
-                        type='number'
-                        min={1}
-                        max={100}
-                        value={numTrades}
-                        onChange={e => setNumTrades(Number(e.target.value))}
-                    />
-                </label>
-                <button
-                    className={`bt-page__auto-btn${autoMode ? ' bt-page__auto-btn--on' : ''}`}
-                    onClick={() => setAutoMode(a => !a)}
-                >
-                    <svg
-                        width='13'
-                        height='13'
-                        viewBox='0 0 24 24'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeWidth='2'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
+                {/* ── Recent digit strip ── */}
+                <div className='bt-page__strip'>
+                    {recent.map((t, i) => {
+                        const isEven = t.digit % 2 === 0;
+                        const isLast = i === recent.length - 1;
+                        return (
+                            <span
+                                key={t.epoch}
+                                className={`bt-page__badge${isLast ? ' bt-page__badge--last' : ''}`}
+                                style={{ background: isEven ? '#0bc4a6' : '#ef4444' }}
+                            >
+                                {tradeType === 'evenodd'
+                                    ? isEven
+                                        ? 'E'
+                                        : 'O'
+                                    : tradeType === 'risefall'
+                                      ? t.direction === 'rise'
+                                          ? '▲'
+                                          : '▼'
+                                      : t.digit}
+                            </span>
+                        );
+                    })}
+                </div>
+
+                {/* ── Trade parameters ── */}
+                {(tradeType === 'overunder' || tradeType === 'matchdiff') && (
+                    <div className='bt-page__digit-row'>
+                        <span className='bt-page__digit-label'>Digit</span>
+                        {Array.from({ length: 10 }, (_, d) => (
+                            <button
+                                key={d}
+                                className={`bt-page__digit-btn${selectedDigit === d ? ' bt-page__digit-btn--active' : ''}`}
+                                onClick={() => setSelectedDigit(d)}
+                            >
+                                {d}
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                <div className='bt-page__trade-row'>
+                    <label className='bt-page__trade-field'>
+                        <span>Ticks</span>
+                        <input
+                            type='number'
+                            min={1}
+                            max={10}
+                            value={ticks_per_trade}
+                            onChange={e => setTicksPerTrade(Number(e.target.value))}
+                        />
+                    </label>
+                    <label className='bt-page__trade-field'>
+                        <span>Stake (USD)</span>
+                        <input
+                            type='number'
+                            min={0.35}
+                            step={0.01}
+                            value={stake}
+                            onChange={e => setStake(e.target.value)}
+                        />
+                    </label>
+                    <label className='bt-page__trade-field'>
+                        <span>No. of Trades</span>
+                        <input
+                            type='number'
+                            min={1}
+                            max={100}
+                            value={numTrades}
+                            onChange={e => setNumTrades(Number(e.target.value))}
+                        />
+                    </label>
+                    <button
+                        className={`bt-page__auto-btn${autoMode ? ' bt-page__auto-btn--on' : ''}`}
+                        onClick={() => (autoMode ? setAutoMode(false) : setAutoDialogOpen(true))}
                     >
-                        <circle cx='12' cy='12' r='3' />
-                        <path d='M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14' />
-                    </svg>
-                    Auto Trader {autoMode ? 'ON' : 'OFF'}
-                </button>
+                        <svg
+                            width='13'
+                            height='13'
+                            viewBox='0 0 24 24'
+                            fill='none'
+                            stroke='currentColor'
+                            strokeWidth='2'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                        >
+                            <circle cx='12' cy='12' r='3' />
+                            <path d='M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14' />
+                        </svg>
+                        Auto Trader {autoMode ? 'ON' : 'OFF'}
+                    </button>
+                </div>
+
+                {/* ── Prediction split bar ── */}
+                {tradeType === 'evenodd' && (
+                    <div className='bt-page__split'>
+                        <button className='bt-page__split-btn bt-page__split-btn--a' style={{ flex: evenPct }}>
+                            <span className='bt-page__split-label'>Even</span>
+                            <span className='bt-page__split-pct'>{evenPct.toFixed(2)}%</span>
+                        </button>
+                        <button className='bt-page__split-btn bt-page__split-btn--b' style={{ flex: oddPct }}>
+                            <span className='bt-page__split-label'>Odd</span>
+                            <span className='bt-page__split-pct'>{oddPct.toFixed(2)}%</span>
+                        </button>
+                    </div>
+                )}
+
+                {tradeType === 'risefall' && (
+                    <div className='bt-page__split'>
+                        <button className='bt-page__split-btn bt-page__split-btn--a' style={{ flex: risePct }}>
+                            <span className='bt-page__split-label'>Rise ▲</span>
+                            <span className='bt-page__split-pct'>{risePct.toFixed(2)}%</span>
+                        </button>
+                        <button className='bt-page__split-btn bt-page__split-btn--b' style={{ flex: fallPct }}>
+                            <span className='bt-page__split-label'>Fall ▼</span>
+                            <span className='bt-page__split-pct'>{fallPct.toFixed(2)}%</span>
+                        </button>
+                    </div>
+                )}
+
+                {tradeType === 'overunder' && (
+                    <div className='bt-page__split'>
+                        <button className='bt-page__split-btn bt-page__split-btn--a' style={{ flex: overPct }}>
+                            <span className='bt-page__split-label'>Over {selectedDigit}</span>
+                            <span className='bt-page__split-pct'>{overPct.toFixed(2)}%</span>
+                        </button>
+                        <button className='bt-page__split-btn bt-page__split-btn--b' style={{ flex: underPct }}>
+                            <span className='bt-page__split-label'>Under {selectedDigit}</span>
+                            <span className='bt-page__split-pct'>{underPct.toFixed(2)}%</span>
+                        </button>
+                    </div>
+                )}
+
+                {tradeType === 'matchdiff' && (
+                    <div className='bt-page__split'>
+                        <button
+                            className='bt-page__split-btn bt-page__split-btn--a'
+                            style={{ flex: Math.max(matchPct, 1) }}
+                        >
+                            <span className='bt-page__split-label'>Matches {selectedDigit}</span>
+                            <span className='bt-page__split-pct'>{matchPct.toFixed(2)}%</span>
+                        </button>
+                        <button
+                            className='bt-page__split-btn bt-page__split-btn--b'
+                            style={{ flex: Math.max(differPct, 1) }}
+                        >
+                            <span className='bt-page__split-label'>Differs {selectedDigit}</span>
+                            <span className='bt-page__split-pct'>{differPct.toFixed(2)}%</span>
+                        </button>
+                    </div>
+                )}
             </div>
 
-            {/* ── Prediction split bar ── */}
-            {tradeType === 'evenodd' && (
-                <div className='bt-page__split'>
-                    <button className='bt-page__split-btn bt-page__split-btn--a' style={{ flex: evenPct }}>
-                        <span className='bt-page__split-label'>Even</span>
-                        <span className='bt-page__split-pct'>{evenPct.toFixed(2)}%</span>
-                    </button>
-                    <button className='bt-page__split-btn bt-page__split-btn--b' style={{ flex: oddPct }}>
-                        <span className='bt-page__split-label'>Odd</span>
-                        <span className='bt-page__split-pct'>{oddPct.toFixed(2)}%</span>
-                    </button>
-                </div>
+            {autoDialogOpen && (
+                <AutoTraderDialog
+                    tradeType={tradeType}
+                    onClose={() => setAutoDialogOpen(false)}
+                    onStart={() => {
+                        setAutoMode(true);
+                    }}
+                />
             )}
-
-            {tradeType === 'risefall' && (
-                <div className='bt-page__split'>
-                    <button className='bt-page__split-btn bt-page__split-btn--a' style={{ flex: risePct }}>
-                        <span className='bt-page__split-label'>Rise ▲</span>
-                        <span className='bt-page__split-pct'>{risePct.toFixed(2)}%</span>
-                    </button>
-                    <button className='bt-page__split-btn bt-page__split-btn--b' style={{ flex: fallPct }}>
-                        <span className='bt-page__split-label'>Fall ▼</span>
-                        <span className='bt-page__split-pct'>{fallPct.toFixed(2)}%</span>
-                    </button>
-                </div>
-            )}
-
-            {tradeType === 'overunder' && (
-                <div className='bt-page__split'>
-                    <button className='bt-page__split-btn bt-page__split-btn--a' style={{ flex: overPct }}>
-                        <span className='bt-page__split-label'>Over {selectedDigit}</span>
-                        <span className='bt-page__split-pct'>{overPct.toFixed(2)}%</span>
-                    </button>
-                    <button className='bt-page__split-btn bt-page__split-btn--b' style={{ flex: underPct }}>
-                        <span className='bt-page__split-label'>Under {selectedDigit}</span>
-                        <span className='bt-page__split-pct'>{underPct.toFixed(2)}%</span>
-                    </button>
-                </div>
-            )}
-
-            {tradeType === 'matchdiff' && (
-                <div className='bt-page__split'>
-                    <button
-                        className='bt-page__split-btn bt-page__split-btn--a'
-                        style={{ flex: Math.max(matchPct, 1) }}
-                    >
-                        <span className='bt-page__split-label'>Matches {selectedDigit}</span>
-                        <span className='bt-page__split-pct'>{matchPct.toFixed(2)}%</span>
-                    </button>
-                    <button
-                        className='bt-page__split-btn bt-page__split-btn--b'
-                        style={{ flex: Math.max(differPct, 1) }}
-                    >
-                        <span className='bt-page__split-label'>Differs {selectedDigit}</span>
-                        <span className='bt-page__split-pct'>{differPct.toFixed(2)}%</span>
-                    </button>
-                </div>
-            )}
-        </div>
+        </>
     );
 };
 

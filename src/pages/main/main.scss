@@ -933,6 +933,40 @@
     justify-content: flex-start !important;
 }
 
+// ── Main tab bar — theme-responsive ──────────────────────────────────────────
+.dc-tabs__list--main__tabs {
+    background: var(--general-main-1) !important;
+    border-bottom: 2px solid var(--border-normal) !important;
+}
+
+// Inactive tabs
+.dc-tabs__item--main__tabs {
+    color: var(--text-less-prominent) !important;
+    font-weight: 500;
+    transition:
+        color 0.2s ease,
+        background 0.2s ease !important;
+
+    &:not(.dc-tabs__active--main__tabs):hover {
+        color: var(--brand-teal) !important;
+        background: var(--brand-teal-glow) !important;
+    }
+}
+
+// Active tab
+.dc-tabs__active--main__tabs {
+    color: var(--brand-teal) !important;
+    font-weight: 700 !important;
+    background: var(--brand-teal-glow) !important;
+}
+
+// Active underline
+.dc-tabs--main__tabs .dc-tabs__active-line {
+    height: 2px !important;
+    background: var(--brand-teal) !important;
+    border-radius: 2px;
+}
+
 // ── More tab item: strip all tab chrome so it looks like a plain button ───────
 #id-more-tools {
     padding: 0 !important;
@@ -959,40 +993,45 @@
     align-items: center;
     gap: 0.4rem;
     padding: 0 1.4rem;
-    background: transparent;
     border: none;
     border-bottom: 2px solid transparent;
-    color: var(--text-less-prominent);
+    color: #6b7280;
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     white-space: nowrap;
     height: 100%;
+    background: var(--general-main-1);
+    border-left: 1px solid var(--border-normal);
     transition:
-        color 0.15s ease,
-        border-color 0.15s ease;
+        color 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
 
     &:hover {
-        color: var(--text-general);
+        color: var(--brand-teal);
+        background: var(--brand-teal-glow);
     }
 
     &--active {
         color: var(--brand-teal);
         border-bottom-color: var(--brand-teal);
+        font-weight: 700;
     }
 
     &--open {
-        color: var(--text-general);
+        color: var(--brand-teal);
+        background: var(--brand-teal-glow);
     }
 }
 
 .main__more-dropdown {
-    // position: fixed is applied inline via JS (createPortal)
-    min-width: 19rem;
+    // position: fixed applied inline via JS (createPortal)
+    min-width: 20rem;
     background: var(--general-main-2);
     border: 1px solid var(--border-normal);
     border-radius: 1rem;
-    box-shadow: 0 8px 32px rgb(0 0 0 / 18%);
+    box-shadow: 0 8px 32px var(--shadow-drop);
     overflow: hidden;
     z-index: 200;
     animation: more-drop-in 0.15s ease;
@@ -1004,32 +1043,34 @@
     justify-content: space-between;
     gap: 0.8rem;
     width: 100%;
-    padding: 1rem 1.4rem;
+    padding: 1rem 1.5rem;
     background: none;
     border: none;
     border-bottom: 1px solid var(--border-normal);
-    color: var(--text-less-prominent);
+    color: var(--text-general);
     font-size: 1.3rem;
     font-weight: 500;
     text-align: left;
     cursor: pointer;
     transition:
-        background 0.1s ease,
-        color 0.1s ease;
+        background 0.15s ease,
+        color 0.15s ease;
 
     &:last-child {
         border-bottom: none;
     }
 
     &:hover {
-        background: var(--general-section-1);
-        color: var(--text-general);
+        background: var(--brand-teal-glow);
+        color: var(--brand-teal);
     }
 
     &--active {
         color: var(--brand-teal);
         font-weight: 700;
-        background: rgb(11 196 166 / 6%);
+        background: var(--brand-teal-glow);
+        border-left: 2px solid var(--brand-teal);
+        padding-left: calc(1.5rem - 2px);
 
         svg {
             color: var(--brand-teal);

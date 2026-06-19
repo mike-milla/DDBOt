@@ -404,3 +404,278 @@
         transform: scale(0.8);
     }
 }
+
+// ── Auto trader dialog ────────────────────────────────────────────────────────
+.at-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgb(0 0 0 / 55%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: at-fade-in 0.15s ease;
+}
+
+.at-dialog {
+    background: var(--general-main-1);
+    border: 1px solid var(--border-normal);
+    border-radius: 1.4rem;
+    width: 100%;
+    max-width: 46rem;
+    box-shadow: 0 24px 64px rgb(0 0 0 / 50%);
+    animation: at-slide-up 0.18s ease;
+    overflow: hidden;
+
+    &__head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 2rem 2rem 1.2rem;
+    }
+
+    &__eyebrow {
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-less-prominent);
+        margin: 0 0 0.4rem;
+    }
+
+    &__title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-prominent);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    &__close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 3.2rem;
+        height: 3.2rem;
+        border: 1px solid var(--border-normal);
+        border-radius: 0.7rem;
+        background: transparent;
+        color: var(--text-less-prominent);
+        cursor: pointer;
+        flex-shrink: 0;
+        transition:
+            color 0.15s ease,
+            border-color 0.15s ease;
+
+        &:hover {
+            color: var(--text-general);
+            border-color: var(--text-less-prominent);
+        }
+    }
+
+    &__row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        padding: 0 2rem 1.2rem;
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        &--full {
+            padding: 0 2rem 1.2rem;
+        }
+    }
+
+    &__label {
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-less-prominent);
+    }
+
+    &__input {
+        padding: 0.9rem 1.1rem;
+        border: 1px solid var(--border-normal);
+        border-radius: 0.8rem;
+        background: var(--general-main-2);
+        color: var(--text-general);
+        font-size: 1.4rem;
+        outline: none;
+        width: 100%;
+        transition: border-color 0.15s ease;
+
+        &:focus {
+            border-color: #{$bm-teal};
+            box-shadow: 0 0 0 3px #{$bm-teal-glow};
+        }
+
+        &--half {
+            max-width: 50%;
+        }
+    }
+
+    &__summary {
+        margin: 0.4rem 2rem 1.6rem;
+        padding: 1.2rem 1.4rem;
+        background: var(--general-section-1);
+        border-radius: 0.9rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    &__summary-label {
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-less-prominent);
+    }
+
+    &__summary-text {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text-prominent);
+        line-height: 1.4;
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: flex-end;
+        padding: 1.4rem 2rem;
+        border-top: 1px solid var(--border-normal);
+    }
+
+    &__start {
+        padding: 0.95rem 2.4rem;
+        border: none;
+        border-radius: 0.9rem;
+        background: #{$bm-teal};
+        color: #000;
+        font-size: 1.4rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition:
+            opacity 0.15s ease,
+            box-shadow 0.15s ease;
+        box-shadow: 0 4px 16px #{$bm-teal-glow};
+
+        &:hover {
+            opacity: 0.9;
+            box-shadow: 0 6px 24px #{$bm-teal-glow};
+        }
+    }
+}
+
+@keyframes at-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes at-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// ── Skeleton loader ───────────────────────────────────────────────────────────
+@keyframes bt-shimmer {
+    0% {
+        background-position: -600px 0;
+    }
+
+    100% {
+        background-position: 600px 0;
+    }
+}
+
+.bt-sk {
+    border-radius: 0.6rem;
+    background: linear-gradient(
+        90deg,
+        var(--general-section-1) 25%,
+        var(--general-section-2) 50%,
+        var(--general-section-1) 75%
+    );
+    background-size: 600px 100%;
+    animation: bt-shimmer 1.4s ease infinite;
+
+    &--field {
+        height: 6rem;
+        flex: 1;
+    }
+
+    &--field-sm {
+        height: 6rem;
+        width: 12rem;
+    }
+
+    &--label {
+        height: 1.2rem;
+        width: 8rem;
+        margin-bottom: 0.6rem;
+    }
+
+    &--price {
+        height: 5rem;
+        width: 14rem;
+        border-radius: 0.8rem;
+    }
+
+    &--badge {
+        height: 3rem;
+        width: 8rem;
+        border-radius: 2rem;
+    }
+
+    &--circle {
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+    }
+
+    &--pip {
+        width: 3rem;
+        height: 3rem;
+        flex-shrink: 0;
+    }
+
+    &--input {
+        height: 7rem;
+        flex: 1;
+        min-width: 8rem;
+    }
+
+    &--input-wide {
+        height: 4.2rem;
+        width: 13rem;
+        align-self: flex-end;
+        border-radius: 0.9rem;
+    }
+
+    &--split-a {
+        flex: 55;
+        height: 100%;
+    }
+
+    &--split-b {
+        flex: 45;
+        height: 100%;
+    }
+}
