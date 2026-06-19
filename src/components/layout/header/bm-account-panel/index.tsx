@@ -198,7 +198,8 @@ const BmAccountPanel = () => {
                             </button>
                             <button
                                 className={classNames('bm-ap__tab', {
-                                    'bm-ap__tab--active bm-ap__tab--demo': tab === 'demo',
+                                    'bm-ap__tab--active': tab === 'demo',
+                                    'bm-ap__tab--demo': tab === 'demo',
                                 })}
                                 onClick={() => setTab('demo')}
                             >
