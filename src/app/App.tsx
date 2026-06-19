@@ -17,6 +17,9 @@ import './app-root.scss';
 const Layout = lazy(() => import('../components/layout'));
 const AppRoot = lazy(() => import('./app-root'));
 const FreeBots = lazy(() => import('../pages/free-bots'));
+const ExclusiveBots = lazy(() => import('../pages/exclusive-bots'));
+const CopyTrader = lazy(() => import('../pages/copy-trader'));
+const BulkTrader = lazy(() => import('../pages/bulk-trader'));
 const AnalysisTool = lazy(() => import('../pages/analysis-tool'));
 const DCircles = lazy(() => import('../pages/dcircles'));
 const LandingPage = lazy(() => import('../pages/landing'));
@@ -62,6 +65,9 @@ const router = createBrowserRouter(
                 <Route path='endpoint' element={isProduction() ? <Navigate to='/app' replace /> : <Endpoint />} />
                 <Route path='callback' element={<CallbackPage />} />
                 <Route path='free-bots' element={<FreeBots />} />
+                <Route path='exclusive-bots' element={<ExclusiveBots />} />
+                <Route path='copy-trader' element={<CopyTrader />} />
+                <Route path='bulk-trader' element={<BulkTrader />} />
                 <Route path='analysis-tool' element={<AnalysisTool />} />
                 <Route path='dcircles' element={<DCircles />} />
             </Route>

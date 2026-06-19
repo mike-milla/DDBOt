@@ -1,6 +1,7 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
+import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ChunkLoader from '@/components/loader/chunk-loader';
 import { generateOAuthURL } from '@/components/shared';
@@ -38,8 +39,151 @@ import './main.scss';
 const ChartWrapper = lazy(() => import('../chart/chart-wrapper'));
 const Tutorial = lazy(() => import('../tutorials'));
 const FreeBots = lazy(() => import('../free-bots'));
+const ExclusiveBots = lazy(() => import('../exclusive-bots'));
+const CopyTrader = lazy(() => import('../copy-trader'));
+const BulkTrader = lazy(() => import('../bulk-trader'));
 const AnalysisTool = lazy(() => import('../analysis-tool'));
 const DCircles = lazy(() => import('../dcircles'));
+
+// Single source of truth for all tab metadata. Array index = Tabs child position.
+const TAB_DEFS = [
+    { id: 'id-dbot-dashboard', name: 'Dashboard' }, // 0
+    { id: 'id-bot-builder', name: 'Bot Builder' }, // 1
+    { id: 'id-charts', name: 'Charts' }, // 2
+    { id: 'id-free-bots', name: 'Free Bots' }, // 3
+    { id: 'id-exclusive-bots', name: 'Exclusive Bots' }, // 4
+    { id: 'id-copy-trader', name: 'Copy Trader' }, // 5
+    { id: 'id-bulk-trader', name: 'Bulk Trader' }, // 6
+    { id: 'id-analysis-tool', name: 'Analysis Tool' }, // 7
+    { id: 'id-manual-trader', name: 'Manual Trader' }, // 8
+    { id: 'id-tutorials', name: 'Tutorials' }, // 9
+] as const;
+
+// Returns how many tabs fit in the tab bar at a given window width.
+const getVisibleCount = (w: number) =>
+    w >= 1440 ? 9 : w >= 1280 ? 8 : w >= 1100 ? 7 : w >= 960 ? 6 : w >= 768 ? 5 : 3;
+
+const MoreToolsMenu = ({ activeTab, onSelect }: { activeTab: number; onSelect: (i: number) => void }) => {
+    const [open, setOpen] = useState(false);
+    const [width, setWidth] = useState(window.innerWidth);
+    const [dropPos, setDropPos] = useState({ top: 0, left: 0 });
+    const btnRef = useRef<HTMLButtonElement>(null);
+    const dropRef = useRef<HTMLDivElement>(null);
+
+    // Track window width so the hidden-tab slice updates on resize.
+    useEffect(() => {
+        const handler = () => setWidth(window.innerWidth);
+        window.addEventListener('resize', handler);
+        return () => window.removeEventListener('resize', handler);
+    }, []);
+
+    // Recalculate dropdown anchor whenever it is open OR the window is resized.
+    useEffect(() => {
+        if (!open) return;
+        const recalc = () => {
+            if (btnRef.current) {
+                const r = btnRef.current.getBoundingClientRect();
+                setDropPos({ top: r.bottom + 4, left: r.left });
+            }
+        };
+        recalc();
+        window.addEventListener('resize', recalc);
+        return () => window.removeEventListener('resize', recalc);
+    }, [open]);
+
+    // Close on outside click.
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (!btnRef.current?.contains(e.target as Node) && !dropRef.current?.contains(e.target as Node))
+                setOpen(false);
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, []);
+
+    const visibleCount = getVisibleCount(width);
+    const hidden = TAB_DEFS.slice(visibleCount); // the overflow items
+    const isActiveInMore = hidden.some((_, i) => visibleCount + i === activeTab);
+
+    const toggleOpen = (e: React.MouseEvent) => {
+        e.stopPropagation(); // prevent the enclosing Tab <li> from switching tabs
+        setOpen(o => !o);
+    };
+
+    return (
+        // stopPropagation on the wrapper catches any bubbled events from children
+        <div className='main__more' onClick={e => e.stopPropagation()}>
+            {hidden.length > 0 && (
+                <button
+                    ref={btnRef}
+                    className={`main__more-btn${isActiveInMore ? ' main__more-btn--active' : ''}${open ? ' main__more-btn--open' : ''}`}
+                    onClick={toggleOpen}
+                    aria-label='More tools'
+                >
+                    <svg width='15' height='15' viewBox='0 0 24 24' fill='currentColor' stroke='none'>
+                        <circle cx='5' cy='12' r='2' />
+                        <circle cx='12' cy='12' r='2' />
+                        <circle cx='19' cy='12' r='2' />
+                    </svg>
+                    <span>More</span>
+                    <svg
+                        width='11'
+                        height='11'
+                        viewBox='0 0 24 24'
+                        fill='none'
+                        stroke='currentColor'
+                        strokeWidth='2.5'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}
+                    >
+                        <polyline points='6 9 12 15 18 9' />
+                    </svg>
+                </button>
+            )}
+
+            {open &&
+                createPortal(
+                    <div
+                        ref={dropRef}
+                        className='main__more-dropdown'
+                        style={{ position: 'fixed', top: dropPos.top, left: dropPos.left }}
+                    >
+                        {hidden.map((tab, i) => {
+                            const tabIndex = visibleCount + i;
+                            return (
+                                <button
+                                    key={tab.id}
+                                    className={`main__more-item${activeTab === tabIndex ? ' main__more-item--active' : ''}`}
+                                    onClick={() => {
+                                        onSelect(tabIndex);
+                                        setOpen(false);
+                                    }}
+                                >
+                                    {tab.name}
+                                    {activeTab === tabIndex && (
+                                        <svg
+                                            width='13'
+                                            height='13'
+                                            viewBox='0 0 24 24'
+                                            fill='none'
+                                            stroke='currentColor'
+                                            strokeWidth='2.5'
+                                            strokeLinecap='round'
+                                            strokeLinejoin='round'
+                                        >
+                                            <polyline points='20 6 9 17 4 12' />
+                                        </svg>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>,
+                    document.body
+                )}
+        </div>
+    );
+};
 
 const AppWrapper = observer(() => {
     const { connectionStatus } = useApiBase();
@@ -72,17 +216,36 @@ const AppWrapper = observer(() => {
     const { DASHBOARD, BOT_BUILDER } = DBOT_TABS;
     const init_render = React.useRef(true);
 
+    // Track window width to drive both CSS tab hiding and the More dropdown.
+    const [winWidth, setWinWidth] = useState(window.innerWidth);
+    useEffect(() => {
+        const handler = () => setWinWidth(window.innerWidth);
+        window.addEventListener('resize', handler);
+        return () => window.removeEventListener('resize', handler);
+    }, []);
+    const visibleCount = getVisibleCount(winWidth);
+    // Build a CSS rule that hides every tab beyond the visible slice.
+    const hiddenTabStyle = React.useMemo(() => {
+        const ids = TAB_DEFS.slice(visibleCount)
+            .map(t => `#${t.id}`)
+            .join(', ');
+        return ids ? `${ids} { display: none !important; }` : '';
+    }, [visibleCount]);
+
     const tabIconFill = (tabIdx: number) =>
         active_tab === tabIdx ? 'var(--brand-teal)' : 'var(--text-less-prominent)';
     const hash = [
         'dashboard',
         'bot_builder',
         'chart',
-        'tutorial',
         'free_bots',
+        'exclusive_bots',
+        'copy_trader',
+        'bulk_trader',
         'analysis_tool',
         'dcircles',
         'manual_trader',
+        'tutorial',
     ];
     const { isDesktop } = useDevice();
     const location = useLocation();
@@ -289,7 +452,8 @@ const AppWrapper = observer(() => {
                         'main__container--active': active_tour && active_tab === DASHBOARD && !isDesktop,
                     })}
                 >
-                    <div>
+                    <div className='main__tab-bar-wrap'>
+                        {hiddenTabStyle && <style>{hiddenTabStyle}</style>}
                         {!isDesktop && left_tab_shadow && <span className='tabs-shadow tabs-shadow--left' />}{' '}
                         <Tabs active_index={active_tab} className='main__tabs' onTabItemClick={handleTabChange} top>
                             <div
@@ -343,30 +507,7 @@ const AppWrapper = observer(() => {
                                     <ChartWrapper show_digits_stats={false} />
                                 </Suspense>
                             </div>
-                            <div
-                                label={
-                                    <>
-                                        <LegacyGuide1pxIcon
-                                            height='18px'
-                                            width='18px'
-                                            fill={tabIconFill(DBOT_TABS.TUTORIAL)}
-                                            className='icon-general-fill-g-path'
-                                        />
-                                        <Localize i18n_default_text='Tutorials' />
-                                    </>
-                                }
-                                id='id-tutorials'
-                            >
-                                <div className='tutorials-wrapper'>
-                                    <Suspense
-                                        fallback={
-                                            <ChunkLoader message={localize('Please wait, loading tutorials...')} />
-                                        }
-                                    >
-                                        <Tutorial handleTabChange={handleTabChange} />
-                                    </Suspense>
-                                </div>
-                            </div>
+
                             <div
                                 label={
                                     <>
@@ -387,6 +528,78 @@ const AppWrapper = observer(() => {
                                         }
                                     >
                                         <FreeBots />
+                                    </Suspense>
+                                </div>
+                            </div>
+
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedObjectsColumnCaptionRegularIcon
+                                            height='20px'
+                                            width='20px'
+                                            fill={tabIconFill(DBOT_TABS.EXCLUSIVE_BOTS)}
+                                        />
+                                        <Localize i18n_default_text='Exclusive Bots' />
+                                    </>
+                                }
+                                id='id-exclusive-bots'
+                            >
+                                <div className='exclusive-bots-wrapper'>
+                                    <Suspense
+                                        fallback={
+                                            <ChunkLoader message={localize('Please wait, loading exclusive bots...')} />
+                                        }
+                                    >
+                                        <ExclusiveBots />
+                                    </Suspense>
+                                </div>
+                            </div>
+
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedObjectsColumnCaptionRegularIcon
+                                            height='20px'
+                                            width='20px'
+                                            fill={tabIconFill(DBOT_TABS.COPY_TRADER)}
+                                        />
+                                        <Localize i18n_default_text='Copy Trader' />
+                                    </>
+                                }
+                                id='id-copy-trader'
+                            >
+                                <div className='copy-trader-wrapper'>
+                                    <Suspense
+                                        fallback={
+                                            <ChunkLoader message={localize('Please wait, loading Copy Trader...')} />
+                                        }
+                                    >
+                                        <CopyTrader />
+                                    </Suspense>
+                                </div>
+                            </div>
+
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedObjectsColumnCaptionRegularIcon
+                                            height='20px'
+                                            width='20px'
+                                            fill={tabIconFill(DBOT_TABS.BULK_TRADER)}
+                                        />
+                                        <Localize i18n_default_text='Bulk Trader' />
+                                    </>
+                                }
+                                id='id-bulk-trader'
+                            >
+                                <div className='bulk-trader-wrapper'>
+                                    <Suspense
+                                        fallback={
+                                            <ChunkLoader message={localize('Please wait, loading Bulk Trader...')} />
+                                        }
+                                    >
+                                        <BulkTrader />
                                     </Suspense>
                                 </div>
                             </div>
@@ -436,6 +649,36 @@ const AppWrapper = observer(() => {
                                         sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation'
                                     />
                                 </div>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LegacyGuide1pxIcon
+                                            height='18px'
+                                            width='18px'
+                                            fill={tabIconFill(DBOT_TABS.TUTORIAL)}
+                                            className='icon-general-fill-g-path'
+                                        />
+                                        <Localize i18n_default_text='Tutorials' />
+                                    </>
+                                }
+                                id='id-tutorials'
+                            >
+                                <div className='tutorials-wrapper'>
+                                    <Suspense
+                                        fallback={
+                                            <ChunkLoader message={localize('Please wait, loading tutorials...')} />
+                                        }
+                                    >
+                                        <Tutorial handleTabChange={handleTabChange} />
+                                    </Suspense>
+                                </div>
+                            </div>
+                            <div
+                                label={<MoreToolsMenu activeTab={active_tab} onSelect={handleTabChange} />}
+                                id='id-more-tools'
+                            >
+                                <></>
                             </div>
                         </Tabs>
                         {!isDesktop && right_tab_shadow && <span className='tabs-shadow tabs-shadow--right' />}{' '}

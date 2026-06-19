@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import BotCard from '@/components/bot-card';
 import { load, save_types } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
 import './free-bots.scss';
@@ -132,7 +133,7 @@ const CATEGORY_CONFIG: Record<string, { color: string; glow: string; icon: JSX.E
     },
 };
 
-const DEFAULT_CONFIG = CATEGORY_CONFIG['AI Trading'];
+const DEFAULT_CFG = CATEGORY_CONFIG['AI Trading'];
 
 const BOTS: Bot[] = [
     {
@@ -223,22 +224,23 @@ const BOTS: Bot[] = [
 
 const FreeBots = observer(() => {
     const { dashboard } = useStore();
-    const [loadingBotId, setLoadingBotId] = useState<string | null>(null);
-    const [selectedCategory, setSelectedCategory] = useState<string>('All');
+    const [loadingId, setLoadingId] = useState<string | null>(null);
+    const [query, setQuery] = useState('');
 
-    const categories = ['All', ...Array.from(new Set(BOTS.map(bot => bot.category)))];
-
-    const filteredBots = selectedCategory === 'All' ? BOTS : BOTS.filter(bot => bot.category === selectedCategory);
+    const filtered = BOTS.filter(b => {
+        const q = query.toLowerCase();
+        return !q || b.name.toLowerCase().includes(q) || b.category.toLowerCase().includes(q);
+    });
 
     const loadBot = async (bot: Bot) => {
         try {
-            setLoadingBotId(bot.id);
-            const response = await fetch(`/bots/${bot.fileName}`);
-            if (!response.ok) throw new Error('Failed to fetch bot file');
-            const xmlContent = await response.text();
+            setLoadingId(bot.id);
+            const res = await fetch(`/bots/${bot.fileName}`);
+            if (!res.ok) throw new Error('Failed to fetch bot file');
             await load({
-                block_string: xmlContent,
+                block_string: await res.text(),
                 file_name: bot.name,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 workspace: (window as any).Blockly?.derivWorkspace,
                 from: save_types.LOCAL,
                 drop_event: null,
@@ -247,16 +249,16 @@ const FreeBots = observer(() => {
             });
             dashboard.setActiveTab(1);
             window.location.hash = 'bot_builder';
-        } catch (error) {
-            console.error('Error loading bot:', error);
+        } catch (e) {
+            // eslint-disable-next-line no-console
+            console.error('Error loading bot:', e);
         } finally {
-            setLoadingBotId(null);
+            setLoadingId(null);
         }
     };
 
     return (
         <div className='free-bots'>
-            {/* Header */}
             <div className='free-bots__header'>
                 <div className='free-bots__header-badge'>
                     <svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2.5'>
@@ -265,84 +267,71 @@ const FreeBots = observer(() => {
                     <span>Free Templates</span>
                 </div>
                 <h1 className='free-bots__title'>
-                    Ready-to-Deploy
-                    <span className='free-bots__title-accent'> Trading Bots</span>
+                    Ready-to-Deploy<span className='free-bots__title-accent'> Trading Bots</span>
                 </h1>
                 <p className='free-bots__subtitle'>
                     Load any pre-built strategy into Bot Builder instantly. Test on a demo account first.
                 </p>
             </div>
 
-            {/* Category filter */}
-            <div className='free-bots__categories'>
-                {categories.map(category => {
-                    const cfg = CATEGORY_CONFIG[category];
-                    return (
-                        <button
-                            key={category}
-                            className={`free-bots__category-btn${selectedCategory === category ? ' free-bots__category-btn--active' : ''}`}
-                            onClick={() => setSelectedCategory(category)}
-                            style={
-                                selectedCategory === category && cfg
-                                    ? ({ '--cat-color': cfg.color, '--cat-glow': cfg.glow } as React.CSSProperties)
-                                    : undefined
-                            }
+            <div className='free-bots__search-wrap'>
+                <svg
+                    className='free-bots__search-icon'
+                    width='15'
+                    height='15'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeWidth='2.2'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                >
+                    <circle cx='11' cy='11' r='8' />
+                    <path d='M21 21l-4.35-4.35' />
+                </svg>
+                <input
+                    className='free-bots__search'
+                    type='text'
+                    placeholder='Search bots…'
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                />
+                {query && (
+                    <button className='free-bots__search-clear' onClick={() => setQuery('')} aria-label='Clear search'>
+                        <svg
+                            width='13'
+                            height='13'
+                            viewBox='0 0 24 24'
+                            fill='none'
+                            stroke='currentColor'
+                            strokeWidth='2.5'
+                            strokeLinecap='round'
                         >
-                            {category}
-                        </button>
-                    );
-                })}
+                            <path d='M18 6L6 18M6 6l12 12' />
+                        </svg>
+                    </button>
+                )}
             </div>
 
-            {/* Bot grid */}
             <div className='free-bots__grid'>
-                {filteredBots.map(bot => {
-                    const cfg = CATEGORY_CONFIG[bot.category] ?? DEFAULT_CONFIG;
-                    const isLoading = loadingBotId === bot.id;
+                {filtered.map(bot => {
+                    const cfg = CATEGORY_CONFIG[bot.category] ?? DEFAULT_CFG;
                     return (
-                        <div
+                        <BotCard
                             key={bot.id}
-                            className='free-bots__card'
-                            style={{ '--cat-color': cfg.color, '--cat-glow': cfg.glow } as React.CSSProperties}
-                        >
-                            <div className='free-bots__card-top'>
-                                <div className='free-bots__card-icon'>{cfg.icon}</div>
-                                <span className='free-bots__card-category'>{bot.category}</span>
-                            </div>
-                            <h3 className='free-bots__card-title'>{bot.name}</h3>
-                            <p className='free-bots__card-description'>{bot.description}</p>
-                            <button
-                                className='free-bots__card-btn'
-                                onClick={() => loadBot(bot)}
-                                disabled={isLoading}
-                                aria-label={`Load ${bot.name}`}
-                            >
-                                {isLoading ? (
-                                    <span className='free-bots__spinner' aria-hidden='true' />
-                                ) : (
-                                    <>
-                                        <span>Load Bot</span>
-                                        <svg
-                                            width='14'
-                                            height='14'
-                                            viewBox='0 0 24 24'
-                                            fill='none'
-                                            stroke='currentColor'
-                                            strokeWidth='2.5'
-                                            strokeLinecap='round'
-                                            strokeLinejoin='round'
-                                        >
-                                            <path d='M5 12h14M12 5l7 7-7 7' />
-                                        </svg>
-                                    </>
-                                )}
-                            </button>
-                        </div>
+                            name={bot.name}
+                            description={bot.description}
+                            category={bot.category}
+                            icon={cfg.icon}
+                            color={cfg.color}
+                            glow={cfg.glow}
+                            onLoad={() => loadBot(bot)}
+                            isLoading={loadingId === bot.id}
+                        />
                     );
                 })}
             </div>
 
-            {/* Footer note */}
             <div className='free-bots__footer'>
                 <svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2'>
                     <circle cx='12' cy='12' r='10' />

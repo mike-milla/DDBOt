@@ -1,0 +1,406 @@
+@use 'components/shared/styles/constants' as *;
+
+.bt-page {
+    padding: 2.4rem 2.4rem 5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    min-height: calc(100vh - 14rem);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+
+    @media (width <= 768px) {
+        padding: 1.6rem 1.2rem 5rem;
+    }
+
+    // ── Top selectors ─────────────────────────────────────────────────────────
+    &__top {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 1.2rem;
+        align-items: end;
+
+        @media (width <= 768px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        span {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-less-prominent);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        select,
+        input {
+            padding: 0.9rem 1.2rem;
+            border: 1px solid var(--border-normal);
+            border-radius: 0.9rem;
+            background: var(--general-main-2);
+            color: var(--text-general);
+            font-size: 1.35rem;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.15s ease;
+
+            &:focus {
+                border-color: #{$bm-teal};
+            }
+        }
+    }
+
+    // ── Live price ────────────────────────────────────────────────────────────
+    &__price-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.2rem;
+    }
+
+    &__price-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        text-align: center;
+    }
+
+    &__price-label {
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-less-prominent);
+    }
+
+    &__price {
+        font-size: 4.8rem;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        color: #{$bm-teal};
+        transition: color 0.2s ease;
+        font-variant-numeric: tabular-nums;
+
+        &--rise {
+            color: #10b981;
+        }
+
+        &--fall {
+            color: #ef4444;
+        }
+
+        @media (width <= 768px) {
+            font-size: 3.2rem;
+        }
+    }
+
+    &__conn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1.1rem;
+        border-radius: 2rem;
+        border: 1px solid var(--border-normal);
+        background: var(--general-main-2);
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-less-prominent);
+
+        &--live {
+            border-color: rgb(16 185 129 / 40%);
+            color: #10b981;
+        }
+    }
+
+    &__conn-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--border-normal);
+        flex-shrink: 0;
+
+        .bt-page__conn--live & {
+            background: #10b981;
+            animation: bt-pulse 1.4s ease infinite;
+        }
+    }
+
+    // ── Digit circles ─────────────────────────────────────────────────────────
+    &__circles {
+        display: flex;
+        gap: 0.6rem;
+        justify-content: space-between;
+
+        @media (width <= 600px) {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+        }
+    }
+
+    // ── Recent strip ──────────────────────────────────────────────────────────
+    &__strip {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    &__badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 0.6rem;
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #fff;
+        opacity: 0.75;
+        transition: opacity 0.2s ease;
+
+        &--last {
+            opacity: 1;
+            box-shadow: 0 0 8px rgb(124 58 237 / 60%);
+            outline: 2px solid #7c3aed;
+        }
+    }
+
+    // ── Digit selector row (over/under, match/differ) ─────────────────────────
+    &__digit-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    &__digit-label {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--text-less-prominent);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-right: 0.3rem;
+    }
+
+    &__digit-btn {
+        width: 3.6rem;
+        height: 3.6rem;
+        border: 1px solid var(--border-normal);
+        border-radius: 0.8rem;
+        background: var(--general-main-2);
+        color: var(--text-less-prominent);
+        font-size: 1.4rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s ease;
+
+        &:hover {
+            border-color: #{$bm-purple};
+            color: #{$bm-purple};
+        }
+
+        &--active {
+            background: #{$bm-purple};
+            border-color: #{$bm-purple};
+            color: #fff;
+            box-shadow: 0 2px 10px rgb(124 58 237 / 40%);
+        }
+    }
+
+    // ── Trade parameters row ──────────────────────────────────────────────────
+    &__trade-row {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+
+    &__trade-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex: 1;
+        min-width: 10rem;
+
+        span {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-less-prominent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input {
+            padding: 0.85rem 1rem;
+            border: 1px solid var(--border-normal);
+            border-radius: 0.9rem;
+            background: var(--general-main-2);
+            color: var(--text-general);
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.15s ease;
+
+            &:focus {
+                border-color: #{$bm-purple};
+            }
+        }
+    }
+
+    &__auto-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.85rem 1.6rem;
+        border: 1px solid var(--border-normal);
+        border-radius: 0.9rem;
+        background: transparent;
+        color: var(--text-less-prominent);
+        font-size: 1.3rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+
+        &:hover {
+            border-color: #{$bm-purple};
+            color: #{$bm-purple};
+        }
+
+        &--on {
+            background: rgb(124 58 237 / 12%);
+            border-color: #{$bm-purple};
+            color: #{$bm-purple};
+            box-shadow: 0 0 0 3px rgb(124 58 237 / 12%);
+        }
+    }
+
+    // ── Prediction split bar ──────────────────────────────────────────────────
+    &__split {
+        display: flex;
+        border-radius: 1.2rem;
+        overflow: hidden;
+        height: 7.2rem;
+        gap: 3px;
+    }
+
+    &__split-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        border: none;
+        cursor: pointer;
+        transition:
+            flex 0.5s ease,
+            filter 0.15s ease;
+        min-width: 8rem;
+
+        &:hover {
+            filter: brightness(1.08);
+        }
+
+        &--a {
+            background: #{$bm-teal};
+            color: #fff;
+        }
+
+        &--b {
+            background: #ef4444;
+            color: #fff;
+        }
+    }
+
+    &__split-label {
+        font-size: 1.6rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
+    &__split-pct {
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+// ── Single digit circle ───────────────────────────────────────────────────────
+.bt-circle {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    max-width: 80px;
+    position: relative;
+
+    &--last {
+        filter: drop-shadow(0 0 6px rgb(124 58 237 / 60%));
+    }
+
+    &__svg {
+        width: 100%;
+        aspect-ratio: 1;
+        overflow: visible;
+    }
+
+    &__track {
+        fill: none;
+        stroke: var(--border-normal);
+        stroke-width: 4;
+    }
+
+    &__arc {
+        fill: none;
+        stroke-width: 4;
+        stroke-linecap: round;
+    }
+
+    &__label {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        pointer-events: none;
+    }
+
+    &__digit {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--text-prominent);
+        line-height: 1;
+    }
+
+    &__pct {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-less-prominent);
+        line-height: 1;
+    }
+}
+
+@keyframes bt-pulse {
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.4;
+        transform: scale(0.8);
+    }
+}

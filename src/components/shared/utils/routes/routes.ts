@@ -94,6 +94,9 @@ export const standalone_routes = {
     help_center: `${getDerivDomain('derivCom')}/help-centre/`,
     responsible: `${getDerivDomain('derivCom')}/responsible/`,
     free_bots: `${window.location.origin}/free-bots`,
+    exclusive_bots: `${window.location.origin}/exclusive-bots`,
+    copy_trader: `${window.location.origin}/copy-trader`,
+    bulk_trader: `${window.location.origin}/bulk-trader`,
     analysis_tool: `${window.location.origin}/analysis-tool`,
     dcircles: `${window.location.origin}/dcircles`,
 };

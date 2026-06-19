@@ -894,6 +894,9 @@
 }
 
 .free-bots-wrapper,
+.exclusive-bots-wrapper,
+.copy-trader-wrapper,
+.bulk-trader-wrapper,
 .analysis-tool-wrapper,
 .dcircles-wrapper {
     width: 100%;
@@ -928,6 +931,122 @@
 
 .main .dc-tabs__list {
     justify-content: flex-start !important;
+}
+
+// ── More tab item: strip all tab chrome so it looks like a plain button ───────
+#id-more-tools {
+    padding: 0 !important;
+    min-width: unset !important;
+    background: transparent !important;
+    cursor: default !important;
+
+    // Never show an active underline for the More tab
+    &.dc-tabs__active--main__tabs:after,
+    &.dc-tabs__active--main__tabs:before {
+        display: none !important;
+    }
+}
+
+// ── More button ───────────────────────────────────────────────────────────────
+.main__more {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+}
+
+.main__more-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0 1.4rem;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-less-prominent);
+    font-size: 1.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    height: 100%;
+    transition:
+        color 0.15s ease,
+        border-color 0.15s ease;
+
+    &:hover {
+        color: var(--text-general);
+    }
+
+    &--active {
+        color: var(--brand-teal);
+        border-bottom-color: var(--brand-teal);
+    }
+
+    &--open {
+        color: var(--text-general);
+    }
+}
+
+.main__more-dropdown {
+    // position: fixed is applied inline via JS (createPortal)
+    min-width: 19rem;
+    background: var(--general-main-2);
+    border: 1px solid var(--border-normal);
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px rgb(0 0 0 / 18%);
+    overflow: hidden;
+    z-index: 200;
+    animation: more-drop-in 0.15s ease;
+}
+
+.main__more-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    width: 100%;
+    padding: 1rem 1.4rem;
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--border-normal);
+    color: var(--text-less-prominent);
+    font-size: 1.3rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        background 0.1s ease,
+        color 0.1s ease;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:hover {
+        background: var(--general-section-1);
+        color: var(--text-general);
+    }
+
+    &--active {
+        color: var(--brand-teal);
+        font-weight: 700;
+        background: rgb(11 196 166 / 6%);
+
+        svg {
+            color: var(--brand-teal);
+        }
+    }
+}
+
+@keyframes more-drop-in {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes rsw-shimmer {
