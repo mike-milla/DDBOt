@@ -1,135 +1,170 @@
 @use 'components/shared/styles/constants' as *;
 
-// Light theme tokens
-$accent: #10b981;
-$accent-dim: rgb(16 185 129 / 8%);
-$surface: #fff;
-$surface-hover: #f1f5f9;
-$border: #e2e8f0;
-$text: #0f172a;
-$text-muted: #64748b;
-$text-subtle: #94a3b8;
+@keyframes rd-wobble {
+    0%,
+    75%,
+    100% {
+        transform: rotate(0deg) scale(1);
+    }
 
-.resources-dropdown {
-    position: relative;
+    78% {
+        transform: rotate(-18deg) scale(1.15);
+    }
+
+    82% {
+        transform: rotate(14deg) scale(1.12);
+    }
+
+    86% {
+        transform: rotate(-10deg) scale(1.08);
+    }
+
+    90% {
+        transform: rotate(7deg) scale(1.05);
+    }
+
+    94% {
+        transform: rotate(-4deg);
+    }
+
+    97% {
+        transform: rotate(2deg);
+    }
+}
+
+@keyframes rd-drop-in {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.rd {
     display: flex;
     align-items: center;
 
-    // ── Three-dots trigger button ──
-    &__trigger {
+    // ── Trigger button ──────────────────────────────────────────────────────────
+    &__btn {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 3.4rem;
-        height: 3.4rem;
-        border-radius: 8px;
+        width: 3.6rem;
+        height: 3.6rem;
+        border-radius: 0.9rem;
         border: 1px solid transparent;
         background: transparent;
-        color: $text-muted;
+        color: var(--text-less-prominent);
         cursor: pointer;
         transition:
-            color 0.15s ease,
-            background 0.15s ease,
-            border-color 0.15s ease;
-
-        svg {
-            pointer-events: none;
-        }
+            color 0.18s ease,
+            background 0.18s ease,
+            border-color 0.18s ease;
 
         &:hover,
-        &--active {
-            color: $accent;
-            background: $accent-dim;
-            border-color: rgba(16 185 129 / 25%);
+        &--open {
+            color: #{$bm-teal};
+            background: rgb(11 196 166 / 10%);
+            border-color: rgb(11 196 166 / 30%);
         }
     }
 
-    &__backdrop {
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
+    // wobble runs on the SVG only so the button box stays still
+    &__icon {
+        animation: rd-wobble 4s ease-in-out infinite;
+        transform-origin: center;
     }
 
-    // ── ContextMenu panel (deriv-com/ui renders .deriv-context-menu) ──
-    .deriv-context-menu {
-        top: calc(100% + 0.6rem);
-        inset-inline-end: 0;
-        inset-inline-start: auto;
-        min-width: 20rem;
-        background: $surface !important;
-        border: 1px solid $border !important;
-        border-radius: 12px !important;
+    // ── Dropdown panel ─────────────────────────────────────────────────────────
+    &__drop {
+        min-width: 19rem;
+        background: #09090f;
+        border: 1px solid rgb(11 196 166 / 22%);
+        border-radius: 1.2rem;
         box-shadow:
-            0 4px 6px rgba(0 0 0 / 4%),
-            0 12px 32px rgba(0 0 0 / 10%) !important;
-        padding: 0.4rem;
+            0 20px 56px rgb(0 0 0 / 70%),
+            0 0 36px rgb(11 196 166 / 8%);
         overflow: hidden;
+        z-index: 9999;
+        animation: rd-drop-in 0.16s ease;
+        position: relative;
+        padding: 0.5rem;
+
+        // teal→purple top accent line
+        &:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #{$bm-teal} 0%, #{$bm-purple} 100%);
+        }
     }
 
-    // ── Shared item style (mirrors reference MenuItem padding) ──
+    &__label {
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgb(255 255 255 / 30%);
+        padding: 0.8rem 1.1rem 0.5rem;
+        margin: 0;
+    }
+
+    // ── Social link items ──────────────────────────────────────────────────────
     &__item {
         display: flex;
         align-items: center;
         gap: 1rem;
         width: 100%;
-        padding: 0.9rem 1.2rem;
-        border: none;
-        border-radius: 8px;
+        padding: 0.85rem 1.1rem;
+        border-radius: 0.8rem;
         background: transparent;
-        color: $text;
-        font-size: 1.3rem;
-        font-weight: 500;
         text-decoration: none;
         cursor: pointer;
         transition:
             background 0.15s ease,
-            color 0.15s ease;
+            transform 0.15s ease;
 
         &:hover {
-            background: $surface-hover;
-            color: $text;
+            transform: translateX(3px);
+        }
+
+        &--whatsapp:hover {
+            background: rgb(37 211 102 / 10%);
+        }
+
+        &--telegram:hover {
+            background: rgb(42 171 238 / 10%);
+        }
+
+        &--tiktok:hover {
+            background: rgb(255 255 255 / 6%);
         }
     }
 
-    // ── Left icon slot ──
     &__item-icon {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 2rem;
+        width: 2.4rem;
+        height: 2.4rem;
         flex-shrink: 0;
-        color: $text-muted;
-
-        svg > g > path,
-        svg > path {
-            fill: $text-muted;
-            transition: fill 0.15s ease;
-        }
     }
 
-    &__item:hover &__item-icon {
-        color: $accent;
-
-        svg > g > path,
-        svg > path {
-            fill: $accent;
-        }
-    }
-
-    // ── Item label ──
     &__item-label {
-        flex: 1;
-        text-align: start;
+        font-size: 1.35rem;
+        font-weight: 600;
+        color: rgb(220 230 250 / 85%);
     }
 
-    // ── Language badge (e.g. "EN") ──
-    &__item-value {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: $accent;
-        background: $accent-dim;
-        padding: 0.2rem 0.7rem;
-        border-radius: 5px;
-        letter-spacing: 0.03em;
+    // TikTok icon uses currentColor — set it to a light grey
+    &__item--tiktok &__item-icon svg {
+        color: rgb(220 230 250 / 80%);
     }
 }

@@ -1,39 +1,89 @@
-import { useMemo, useRef, useState } from 'react';
-import { standalone_routes } from '@/components/shared';
-import { getActiveTabUrl } from '@/utils/getActiveTabUrl';
-import { LANGUAGES } from '@/utils/languages';
-import { LegacyDerivIcon, LegacyHelpCentreIcon, LegacyWhatsappIcon } from '@deriv/quill-icons/Legacy';
-import { useTranslations } from '@deriv-com/translations';
-import { ContextMenu, DesktopLanguagesModal } from '@deriv-com/ui';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { URLConstants } from '@deriv-com/utils';
 import './resources-dropdown.scss';
 
+const SOCIAL_LINKS = [
+    {
+        key: 'whatsapp',
+        label: 'WhatsApp',
+        href: URLConstants.whatsApp,
+        color: '#25D366',
+        icon: (
+            <svg viewBox='0 0 24 24' fill='#25D366' width='22' height='22'>
+                <path d='M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z' />
+            </svg>
+        ),
+    },
+    {
+        key: 'telegram',
+        label: 'Telegram',
+        href: 'https://t.me/bossmillanprime',
+        color: '#2AABEE',
+        icon: (
+            <svg viewBox='0 0 24 24' fill='#2AABEE' width='22' height='22'>
+                <path d='M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z' />
+            </svg>
+        ),
+    },
+    {
+        key: 'tiktok',
+        label: 'TikTok',
+        href: 'https://www.tiktok.com/@bossmillanprime',
+        color: '#010101',
+        icon: (
+            <svg viewBox='0 0 24 24' width='22' height='22'>
+                <path
+                    d='M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z'
+                    fill='currentColor'
+                />
+            </svg>
+        ),
+    },
+];
+
 const ResourcesDropdown = () => {
-    const { currentLang = 'EN', localize, switchLanguage } = useTranslations();
-    const [is_open, setIsOpen] = useState(false);
-    const [is_lang_modal_open, setIsLangModalOpen] = useState(false);
-    const wrapper_ref = useRef<HTMLDivElement>(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [dropPos, setDropPos] = useState({ top: 0, left: 0 });
+    const btnRef = useRef<HTMLButtonElement>(null);
+    const dropRef = useRef<HTMLDivElement>(null);
 
-    const countryIcon = useMemo(
-        () => LANGUAGES.find(({ code }: { code: string }) => code === currentLang)?.placeholderIcon,
-        [currentLang]
-    );
+    useEffect(() => {
+        if (!isOpen) return;
+        const recalc = () => {
+            if (btnRef.current) {
+                const r = btnRef.current.getBoundingClientRect();
+                setDropPos({ top: r.bottom + 6, left: r.left });
+            }
+        };
+        recalc();
+        window.addEventListener('resize', recalc);
+        return () => window.removeEventListener('resize', recalc);
+    }, [isOpen]);
 
-    const toggleDropdown = () => setIsOpen(prev => !prev);
-    const closeDropdown = () => setIsOpen(false);
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (!btnRef.current?.contains(e.target as Node) && !dropRef.current?.contains(e.target as Node))
+                setIsOpen(false);
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, []);
 
     return (
-        <div className='resources-dropdown' ref={wrapper_ref}>
+        <div className='rd'>
             <button
-                className={`resources-dropdown__trigger${is_open ? ' resources-dropdown__trigger--active' : ''}`}
-                onClick={toggleDropdown}
-                aria-haspopup='true'
-                aria-expanded={is_open}
-                title={localize('Resources')}
+                ref={btnRef}
+                className={`rd__btn${isOpen ? ' rd__btn--open' : ''}`}
+                onClick={() => setIsOpen(o => !o)}
+                aria-label='Contact us'
+                title='Contact us'
             >
+                {/* Message / chat bubble icon */}
                 <svg
-                    width='18'
-                    height='18'
+                    className='rd__icon'
+                    width='20'
+                    height='20'
                     viewBox='0 0 24 24'
                     fill='none'
                     stroke='currentColor'
@@ -41,82 +91,36 @@ const ResourcesDropdown = () => {
                     strokeLinecap='round'
                     strokeLinejoin='round'
                 >
-                    <circle cx='12' cy='12' r='1' />
-                    <circle cx='12' cy='5' r='1' />
-                    <circle cx='12' cy='19' r='1' />
+                    <path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' />
+                    <line x1='9' y1='10' x2='15' y2='10' />
+                    <line x1='9' y1='14' x2='13' y2='14' />
                 </svg>
             </button>
 
-            {is_open && <div className='resources-dropdown__backdrop' onClick={closeDropdown} />}
-
-            <ContextMenu isOpen={is_open}>
-                <button
-                    className='resources-dropdown__item'
-                    onClick={() => {
-                        closeDropdown();
-                        setIsLangModalOpen(true);
-                    }}
-                >
-                    <span className='resources-dropdown__item-icon'>{countryIcon}</span>
-                    <span className='resources-dropdown__item-label'>{localize('Language')}</span>
-                    <span className='resources-dropdown__item-value'>{currentLang}</span>
-                </button>
-
-                <a
-                    className='resources-dropdown__item'
-                    href={standalone_routes.help_center}
-                    target='_blank'
-                    rel='noreferrer'
-                    onClick={closeDropdown}
-                >
-                    <span className='resources-dropdown__item-icon'>
-                        <LegacyHelpCentreIcon iconSize='xs' />
-                    </span>
-                    <span className='resources-dropdown__item-label'>{localize('Help centre')}</span>
-                </a>
-
-                <a
-                    className='resources-dropdown__item'
-                    href={URLConstants.whatsApp}
-                    target='_blank'
-                    rel='noreferrer'
-                    onClick={closeDropdown}
-                >
-                    <span className='resources-dropdown__item-icon'>
-                        <LegacyWhatsappIcon iconSize='xs' />
-                    </span>
-                    <span className='resources-dropdown__item-label'>{localize('WhatsApp')}</span>
-                </a>
-
-                <a
-                    className='resources-dropdown__item'
-                    href={standalone_routes.deriv_com}
-                    target='_blank'
-                    rel='noreferrer'
-                    onClick={closeDropdown}
-                >
-                    <span className='resources-dropdown__item-icon'>
-                        <LegacyDerivIcon iconSize='xs' />
-                    </span>
-                    <span className='resources-dropdown__item-label'>{localize('deriv.com')}</span>
-                </a>
-            </ContextMenu>
-
-            {is_lang_modal_open && (
-                <DesktopLanguagesModal
-                    headerTitle={localize('Select Language')}
-                    isModalOpen
-                    languages={LANGUAGES}
-                    onClose={() => setIsLangModalOpen(false)}
-                    onLanguageSwitch={code => {
-                        switchLanguage(code);
-                        setIsLangModalOpen(false);
-                        window.location.replace(getActiveTabUrl());
-                        window.location.reload();
-                    }}
-                    selectedLanguage={currentLang}
-                />
-            )}
+            {isOpen &&
+                createPortal(
+                    <div
+                        ref={dropRef}
+                        className='rd__drop'
+                        style={{ position: 'fixed', top: dropPos.top, left: dropPos.left }}
+                    >
+                        <p className='rd__label'>Contact us on</p>
+                        {SOCIAL_LINKS.map(s => (
+                            <a
+                                key={s.key}
+                                className={`rd__item rd__item--${s.key}`}
+                                href={s.href}
+                                target='_blank'
+                                rel='noreferrer'
+                                onClick={() => setIsOpen(false)}
+                            >
+                                <span className='rd__item-icon'>{s.icon}</span>
+                                <span className='rd__item-label'>{s.label}</span>
+                            </a>
+                        ))}
+                    </div>,
+                    document.body
+                )}
         </div>
     );
 };

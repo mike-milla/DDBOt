@@ -232,8 +232,7 @@ const AppWrapper = observer(() => {
         return ids ? `${ids} { display: none !important; }` : '';
     }, [visibleCount]);
 
-    const tabIconFill = (tabIdx: number) =>
-        active_tab === tabIdx ? 'var(--brand-teal)' : 'var(--text-less-prominent)';
+    const tabIconFill = (tabIdx: number) => (active_tab === tabIdx ? '#0bc4a6' : 'currentColor');
     const hash = [
         'dashboard',
         'bot_builder',

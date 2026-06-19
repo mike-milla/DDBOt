@@ -198,12 +198,12 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
                 <AppLogo />
                 <MobileMenu />
                 {isDesktop && <MenuItems />}
+                <ResourcesDropdown />
             </Wrapper>
             <Wrapper variant='right'>
                 {!isDesktop && <PWAInstallButton variant='primary' size='medium' />}
                 {renderAccountSection()}
                 <BossMillanLoginButton />
-                <ResourcesDropdown />
             </Wrapper>
             {/* <PWAInstallModalTest /> */}
         </Header>

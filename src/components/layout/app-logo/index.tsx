@@ -8,7 +8,11 @@ export const AppLogo = () => {
     if (!isDesktop) return null;
     return (
         <a className='app-header__logo' href={standalone_routes.deriv_com} target='_blank' rel='noreferrer'>
-            <img src='/assets/images/bossmillan-logo.jpeg' alt='BossMillan' height='48' />
+            <img src='/assets/images/bossmillan-logo.jpeg' alt='BossMillan' height='36' />
+            <span className='app-header__logo-text'>
+                <span className='app-header__logo-text--boss'>Boss</span>
+                <span className='app-header__logo-text--millan'>Millan</span>
+            </span>
         </a>
     );
 };

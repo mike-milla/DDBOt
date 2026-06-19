@@ -933,108 +933,188 @@
     justify-content: flex-start !important;
 }
 
-// ── Main tab bar — theme-responsive ──────────────────────────────────────────
+// ── Main tab bar — modern AI/trading style ────────────────────────────────────
 .dc-tabs__list--main__tabs {
+    position: relative;
     background: var(--general-main-1) !important;
-    border-bottom: 2px solid var(--border-normal) !important;
-}
+    border-bottom: none !important;
+    align-items: center !important;
+    padding: 0 0.5rem !important;
+    gap: 0.2rem;
+    height: 4.8rem !important;
 
-// Inactive tabs
-.dc-tabs__item--main__tabs {
-    color: var(--text-less-prominent) !important;
-    font-weight: 500;
-    transition:
-        color 0.2s ease,
-        background 0.2s ease !important;
-
-    &:not(.dc-tabs__active--main__tabs):hover {
-        color: var(--brand-teal) !important;
-        background: var(--brand-teal-glow) !important;
+    // teal→purple gradient accent line at bottom
+    &:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent 0%, #{$bm-teal} 25%, #{$bm-purple} 75%, transparent 100%);
+        opacity: 0.5;
+        pointer-events: none;
     }
 }
 
-// Active tab
-.dc-tabs__active--main__tabs {
-    color: var(--brand-teal) !important;
-    font-weight: 700 !important;
-    background: var(--brand-teal-glow) !important;
-}
-
-// Active underline
+// Hide the sliding underline — pill bg is the active indicator now
 .dc-tabs--main__tabs .dc-tabs__active-line {
-    height: 2px !important;
-    background: var(--brand-teal) !important;
-    border-radius: 2px;
+    display: none !important;
 }
 
-// ── More tab item: strip all tab chrome so it looks like a plain button ───────
+// Inactive tabs — pill-shaped, dim in dark, legible in light
+.dc-tabs__item--main__tabs {
+    display: flex !important;
+    align-items: center !important;
+    height: 3.2rem !important;
+    line-height: normal !important;
+    border-radius: 0.7rem !important;
+    margin: 0 0.1rem !important;
+    padding: 0 1rem !important;
+    color: rgb(160 170 190 / 60%) !important;
+    font-weight: 600;
+    transition:
+        color 0.18s ease,
+        background 0.18s ease,
+        outline 0.18s ease !important;
+
+    &:not(.dc-tabs__active--main__tabs):hover {
+        color: #{$bm-teal} !important;
+        background: rgb(11 196 166 / 8%) !important;
+    }
+}
+
+// Light theme overrides — darken inactive tabs so they read on white
+.theme--light {
+    .dc-tabs__item--main__tabs {
+        color: rgb(10 15 35 / 85%) !important;
+
+        &:not(.dc-tabs__active--main__tabs):hover {
+            color: #{$bm-teal} !important;
+            background: rgb(11 196 166 / 10%) !important;
+        }
+    }
+
+    .dc-tabs__list--main__tabs:after {
+        opacity: 0.35;
+    }
+
+    .main__more-btn {
+        color: rgb(10 15 35 / 85%);
+
+        &:hover,
+        &--open {
+            color: #{$bm-teal};
+        }
+    }
+
+    .main__more-dropdown {
+        background: #fff;
+        border-color: rgb(11 196 166 / 20%);
+        box-shadow:
+            0 12px 40px rgb(0 0 0 / 15%),
+            0 0 24px rgb(11 196 166 / 5%);
+    }
+
+    .main__more-item {
+        color: rgb(10 15 35 / 85%);
+        border-bottom-color: rgb(0 0 0 / 6%);
+
+        &:hover {
+            background: rgb(11 196 166 / 8%);
+            color: #{$bm-teal};
+        }
+    }
+}
+
+// Active pill — gradient glass + teal glow
+.dc-tabs__active--main__tabs {
+    color: #{$bm-teal} !important;
+    font-weight: 700 !important;
+    background: linear-gradient(135deg, rgb(11 196 166 / 14%) 0%, rgb(118 37 168 / 10%) 100%) !important;
+    outline: 1px solid rgb(11 196 166 / 35%) !important;
+    box-shadow:
+        0 0 20px rgb(11 196 166 / 14%),
+        inset 0 0 28px rgb(118 37 168 / 5%) !important;
+}
+
+// ── More tab item: strip all tab chrome ───────────────────────────────────────
 #id-more-tools {
     padding: 0 !important;
     min-width: unset !important;
     background: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
     cursor: default !important;
-
-    // Never show an active underline for the More tab
-    &.dc-tabs__active--main__tabs:after,
-    &.dc-tabs__active--main__tabs:before {
-        display: none !important;
-    }
 }
 
 // ── More button ───────────────────────────────────────────────────────────────
 .main__more {
     display: flex;
-    align-items: stretch;
+    align-items: center;
     height: 100%;
 }
 
 .main__more-btn {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0 1.4rem;
+    gap: 0.5rem;
+    padding: 0 1.1rem;
+    height: 3.2rem;
     border: none;
-    border-bottom: 2px solid transparent;
-    color: #6b7280;
-    font-size: 1.25rem;
+    border-radius: 0.7rem;
+    background: transparent;
+    color: rgb(160 170 190 / 60%);
+    font-size: 1.2rem;
     font-weight: 500;
     cursor: pointer;
     white-space: nowrap;
-    height: 100%;
-    background: var(--general-main-1);
-    border-left: 1px solid var(--border-normal);
-    transition:
-        color 0.2s ease,
-        border-color 0.2s ease,
-        background 0.2s ease;
+    transition: all 0.18s ease;
 
     &:hover {
-        color: var(--brand-teal);
-        background: var(--brand-teal-glow);
+        color: #{$bm-teal};
+        background: rgb(11 196 166 / 8%);
     }
 
     &--active {
-        color: var(--brand-teal);
-        border-bottom-color: var(--brand-teal);
+        color: #{$bm-teal} !important;
         font-weight: 700;
+        background: linear-gradient(135deg, rgb(11 196 166 / 14%), rgb(118 37 168 / 10%)) !important;
+        outline: 1px solid rgb(11 196 166 / 35%);
+        box-shadow: 0 0 20px rgb(11 196 166 / 12%);
     }
 
     &--open {
-        color: var(--brand-teal);
-        background: var(--brand-teal-glow);
+        color: #{$bm-teal};
+        background: rgb(11 196 166 / 8%);
     }
 }
 
+// ── More dropdown — dark glass ────────────────────────────────────────────────
 .main__more-dropdown {
     // position: fixed applied inline via JS (createPortal)
     min-width: 20rem;
-    background: var(--general-main-2);
-    border: 1px solid var(--border-normal);
+    background: #090910;
+    border: 1px solid rgb(11 196 166 / 22%);
     border-radius: 1rem;
-    box-shadow: 0 8px 32px var(--shadow-drop);
+    box-shadow:
+        0 20px 56px rgb(0 0 0 / 65%),
+        0 0 40px rgb(11 196 166 / 7%);
     overflow: hidden;
     z-index: 200;
     animation: more-drop-in 0.15s ease;
+    position: relative;
+
+    // gradient top accent line
+    &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, #{$bm-teal} 0%, #{$bm-purple} 100%);
+    }
 }
 
 .main__more-item {
@@ -1043,37 +1123,36 @@
     justify-content: space-between;
     gap: 0.8rem;
     width: 100%;
-    padding: 1rem 1.5rem;
+    padding: 0.95rem 1.4rem;
     background: none;
     border: none;
-    border-bottom: 1px solid var(--border-normal);
-    color: var(--text-general);
+    border-bottom: 1px solid rgb(255 255 255 / 5%);
+    color: rgb(200 210 230 / 75%);
     font-size: 1.3rem;
     font-weight: 500;
     text-align: left;
     cursor: pointer;
-    transition:
-        background 0.15s ease,
-        color 0.15s ease;
+    transition: all 0.15s ease;
 
     &:last-child {
         border-bottom: none;
     }
 
     &:hover {
-        background: var(--brand-teal-glow);
-        color: var(--brand-teal);
+        background: rgb(11 196 166 / 9%);
+        color: #{$bm-teal};
+        padding-left: 1.8rem;
     }
 
     &--active {
-        color: var(--brand-teal);
+        color: #{$bm-teal};
         font-weight: 700;
-        background: var(--brand-teal-glow);
-        border-left: 2px solid var(--brand-teal);
-        padding-left: calc(1.5rem - 2px);
+        background: linear-gradient(90deg, rgb(11 196 166 / 12%), transparent);
+        border-left: 2px solid #{$bm-teal};
+        padding-left: calc(1.4rem - 2px);
 
         svg {
-            color: var(--brand-teal);
+            color: #{$bm-teal};
         }
     }
 }

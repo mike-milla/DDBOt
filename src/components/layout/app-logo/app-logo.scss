@@ -1,17 +1,49 @@
+@use 'components/shared/styles/constants' as *;
+
 .app-header {
     &__logo {
         padding-inline-start: 1.2rem;
-        padding-inline-end: 2rem;
+        padding-inline-end: 1.6rem;
         border-inline-end: 1px solid var(--general-section-1);
         height: 48px;
         display: flex;
         align-items: center;
+        gap: 0.8rem;
         text-decoration: none;
 
         img {
-            height: 48px;
+            height: 36px;
             width: auto;
             object-fit: contain;
+            flex-shrink: 0;
         }
+    }
+
+    &__logo-text {
+        display: flex;
+        align-items: baseline;
+        gap: 0;
+        line-height: 1;
+        letter-spacing: -0.04em;
+    }
+
+    &__logo-text--boss {
+        font-size: 2.2rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #{$bm-teal} 0%, #{$bm-purple} 100%);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 0 8px #{$bm-teal}) drop-shadow(0 0 20px rgb(11 196 166 / 40%));
+    }
+
+    &__logo-text--millan {
+        font-size: 2.2rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #{$bm-purple} 0%, rgb(180 100 255 / 90%) 100%);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 0 8px #{$bm-purple}) drop-shadow(0 0 20px rgb(118 37 168 / 50%));
     }
 }
