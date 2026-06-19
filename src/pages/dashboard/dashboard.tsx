@@ -1,11 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import Text from '@/components/shared_ui/text';
 import { useStore } from '@/hooks/useStore';
-import { localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
 import OnboardTourHandler from '../tutorials/dbot-tours/onboarding-tour';
+import DashboardBotList from './bot-list/dashboard-bot-list';
 import Announcements from './announcements';
 import Cards from './cards';
 import InfoPanel from './info-panel';
@@ -24,49 +23,48 @@ const DashboardComponent = observer(({ handleTabChange }: TMobileIconGuide) => {
     return (
         <React.Fragment>
             <div
-                className={classNames('tab__dashboard', {
-                    'tab__dashboard--tour-active': active_tour,
+                className={classNames('db-dashboard', {
+                    'db-dashboard--tour-active': active_tour,
                 })}
             >
-                <div className='tab__dashboard__content'>
+                <div className='db-dashboard__scroll'>
                     {client.is_logged_in && (
                         <Announcements is_mobile={!isDesktop} is_tablet={isTablet} handleTabChange={handleTabChange} />
                     )}
-                    <div className='quick-panel'>
-                        <div
-                            className={classNames('tab__dashboard__header', {
-                                'tab__dashboard__header--listed': isDesktop && has_dashboard_strategies,
-                            })}
-                        >
-                            {!has_dashboard_strategies && (
-                                <Text
-                                    className='title'
-                                    as='h2'
-                                    color='prominent'
-                                    size={isDesktop ? 'sm' : 's'}
-                                    lineHeight='xxl'
-                                    weight='bold'
-                                >
-                                    {localize('Load or build your bot')}
-                                </Text>
-                            )}
-                            <Text
-                                as='p'
-                                color='prominent'
-                                lineHeight='s'
-                                size={isDesktop ? 's' : 'xxs'}
-                                className={classNames('subtitle', { 'subtitle__has-list': has_dashboard_strategies })}
-                            >
-                                {localize(
-                                    'Import a bot from your computer or Google Drive, build it from scratch, or start with a quick strategy.'
-                                )}
-                            </Text>
+
+                    {/* ── Hero ── */}
+                    <section className='db-hero'>
+                        <div className='db-hero__brand'>
+                            <img src='/assets/images/bossmillan-logo.jpeg' alt='BossMillan' className='db-hero__logo' />
+                            <h1 className='db-hero__title'>Automate Your Trading</h1>
+                            <p className='db-hero__sub'>
+                                Build, import, or deploy a bot — no code required. Trade smarter with BossMillan.
+                            </p>
+                            <div className='db-hero__pills'>
+                                <span className='db-hero__pill'>AI-Powered</span>
+                                <span className='db-hero__pill'>No Code</span>
+                                <span className='db-hero__pill'>10+ Strategies</span>
+                            </div>
                         </div>
+
                         <Cards has_dashboard_strategies={has_dashboard_strategies} is_mobile={!isDesktop} />
-                    </div>
+                    </section>
+
+                    {/* ── Bot list ── */}
+                    {has_dashboard_strategies && (
+                        <section className='db-bots'>
+                            <div className='db-bots__head'>
+                                <span className='db-bots__title'>Your bots</span>
+                                <span className='db-bots__count'>{dashboard_strategies.length}</span>
+                            </div>
+                            <DashboardBotList />
+                        </section>
+                    )}
                 </div>
+
+                <InfoPanel />
             </div>
-            <InfoPanel />
+
             {active_tab === 0 && <OnboardTourHandler is_mobile={!isDesktop} />}
         </React.Fragment>
     );

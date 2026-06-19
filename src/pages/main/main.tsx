@@ -20,6 +20,7 @@ import useTMB from '@/hooks/useTMB';
 import { handleOidcAuthFailure } from '@/utils/auth-utils';
 import {
     LabelPairedChartLineCaptionRegularIcon,
+    LabelPairedLaptopMobileCaptionRegularIcon,
     LabelPairedObjectsColumnCaptionRegularIcon,
     LabelPairedPuzzlePieceTwoCaptionBoldIcon,
 } from '@deriv/quill-icons/LabelPaired';
@@ -73,7 +74,16 @@ const AppWrapper = observer(() => {
 
     const tabIconFill = (tabIdx: number) =>
         active_tab === tabIdx ? 'var(--brand-teal)' : 'var(--text-less-prominent)';
-    const hash = ['dashboard', 'bot_builder', 'chart', 'tutorial', 'free_bots', 'analysis_tool', 'dcircles'];
+    const hash = [
+        'dashboard',
+        'bot_builder',
+        'chart',
+        'tutorial',
+        'free_bots',
+        'analysis_tool',
+        'dcircles',
+        'manual_trader',
+    ];
     const { isDesktop } = useDevice();
     const location = useLocation();
     const navigate = useNavigate();
@@ -380,6 +390,7 @@ const AppWrapper = observer(() => {
                                     </Suspense>
                                 </div>
                             </div>
+
                             <div
                                 label={
                                     <>
@@ -393,30 +404,6 @@ const AppWrapper = observer(() => {
                                 }
                                 id='id-analysis-tool'
                             >
-                                <div className='analysis-tool-wrapper'>
-                                    <Suspense
-                                        fallback={
-                                            <ChunkLoader message={localize('Please wait, loading analysis tool...')} />
-                                        }
-                                    >
-                                        <AnalysisTool />
-                                    </Suspense>
-                                </div>
-                            </div>
-                            <div
-                                label={
-                                    <>
-                                        <LegacyCircleTrendUpIcon
-                                            height='18px'
-                                            width='18px'
-                                            fill={tabIconFill(DBOT_TABS.DCIRCLES)}
-                                            className='icon-general-fill-g-path'
-                                        />
-                                        <Localize i18n_default_text='DCircles' />
-                                    </>
-                                }
-                                id='id-dcircles'
-                            >
                                 <div className='dcircles-wrapper'>
                                     <Suspense
                                         fallback={
@@ -425,6 +412,29 @@ const AppWrapper = observer(() => {
                                     >
                                         <DCircles />
                                     </Suspense>
+                                </div>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedLaptopMobileCaptionRegularIcon
+                                            height='20px'
+                                            width='20px'
+                                            fill={tabIconFill(DBOT_TABS.MANUAL_TRADER)}
+                                        />
+                                        <Localize i18n_default_text='Manual Trader' />
+                                    </>
+                                }
+                                id='id-manual-trader'
+                            >
+                                <div className='manual-trader-wrapper'>
+                                    <iframe
+                                        src='https://app.deriv.com/dtrader'
+                                        className='manual-trader-wrapper__iframe'
+                                        title='Deriv DTrader'
+                                        allow='fullscreen'
+                                        sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation'
+                                    />
                                 </div>
                             </div>
                         </Tabs>

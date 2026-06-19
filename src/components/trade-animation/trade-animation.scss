@@ -60,94 +60,162 @@
 }
 
 .animation {
-    $static-circle-diameter: 2px;
-    $dynamic-circle-diameter: 10px;
+    $static-circle-diameter: 3px;
+    $dynamic-circle-diameter: 12px;
     $animation: &;
 
+    // ── Wrapper: sits inside the glass pill — transparent, just flex layout ──
     &__wrapper {
         display: flex;
         align-items: center;
+        gap: 1.4rem;
         height: 40px;
+        width: 100%;
     }
 
     &__overlay {
-        border-top-left-radius: 0;
-        border-bottom-right-radius: $BORDER_RADIUS;
+        border-radius: $BORDER_RADIUS;
     }
 
+    // ── Run button — full pill, purple→teal gradient ─────────────────────────
     &__run-button {
+        flex-shrink: 0;
         width: fit-content;
-        height: 100% !important;
-        border-start-end-radius: 0 !important;
-        border-end-end-radius: 0 !important;
-        background-color: var(--purchase-main-1);
+        height: 36px !important;
+        padding: 0 1.8rem !important;
+        border-radius: 10rem !important; // full pill — no flat edges
+        border: none !important;
+        background: linear-gradient(135deg, #7c3aed 0%, #0bc4a6 100%) !important;
+        box-shadow:
+            0 3px 14px rgb(124 58 237 / 45%),
+            0 0 0 1px rgb(11 196 166 / 18%) !important;
+        transition:
+            box-shadow 0.2s ease,
+            transform 0.15s ease !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.02em !important;
 
-        &:hover {
-            background-color: var(--purchase-main-1) !important;
+        &:hover:not(:disabled) {
+            background: linear-gradient(135deg, #6d28d9 0%, #0a9e87 100%) !important;
+            box-shadow:
+                0 5px 20px rgb(124 58 237 / 65%),
+                0 0 0 1px rgb(11 196 166 / 28%) !important;
+            transform: translateY(-1px) !important;
+        }
+
+        &:active:not(:disabled) {
+            transform: translateY(0) !important;
         }
     }
 
+    // ── Stop button — full pill, amber→red gradient ──────────────────────────
     &__stop-button {
+        flex-shrink: 0;
         width: fit-content;
-        height: 100% !important;
-        border-start-end-radius: 0 !important;
-        border-end-end-radius: 0 !important;
-        background-color: var(--button-primary-default);
+        height: 36px !important;
+        padding: 0 1.8rem !important;
+        border-radius: 10rem !important;
+        border: none !important;
+        background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%) !important;
+        box-shadow:
+            0 3px 14px rgb(245 158 11 / 45%),
+            0 0 0 1px rgb(239 68 68 / 18%) !important;
+        transition:
+            box-shadow 0.2s ease,
+            transform 0.15s ease !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.02em !important;
 
-        &:hover {
-            background-color: var(--button-primary-default) !important;
+        &:hover:not(:disabled) {
+            background: linear-gradient(135deg, #d97706 0%, #dc2626 100%) !important;
+            box-shadow:
+                0 5px 20px rgb(245 158 11 / 65%),
+                0 0 0 1px rgb(239 68 68 / 28%) !important;
+            transform: translateY(-1px) !important;
+        }
+
+        &:active:not(:disabled) {
+            transform: translateY(0) !important;
         }
     }
 
+    // ── Info section: text + progress — no border, no bg, flows in the pill ──
     &__container {
+        flex: 1;
+        min-width: 120px;
         height: 100%;
-        padding: 5px 12px;
+        padding: 4px 0;
         display: flex;
         flex-direction: column;
-        justify-content: space-evenly;
-        border-start-end-radius: $BORDER_RADIUS;
-        border-end-end-radius: $BORDER_RADIUS;
-        border: solid 1px var(--border-normal);
+        justify-content: center;
+        gap: 5px;
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0;
         position: relative;
+
+        // Vertical left divider between button and info
+        &:before {
+            content: '';
+            position: absolute;
+            left: -0.7rem;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background: linear-gradient(
+                180deg,
+                transparent,
+                rgb(124 58 237 / 40%) 30%,
+                rgb(11 196 166 / 40%) 70%,
+                transparent
+            );
+        }
     }
 
     &__text {
         color: var(--text-general);
-        font-size: 12px;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 5px;
-        line-height: 18px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-align: left;
+        margin: 0;
+        line-height: 1.3;
+        letter-spacing: 0.01em;
+        white-space: nowrap;
+        opacity: 0.85;
     }
 
+    // ── Progress track + circles ─────────────────────────────────────────────
     &__progress {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         position: relative;
-        height: 6px;
+        height: 5px;
 
         .circular-wrapper {
             width: $static-circle-diameter;
             height: $static-circle-diameter;
             align-self: center;
             display: flex;
+            z-index: 2;
 
             .static-circle {
                 width: $static-circle-diameter;
                 height: $static-circle-diameter;
-                background-color: $color-black-7;
+                background: rgb(124 58 237 / 50%);
                 border-radius: 100%;
                 align-self: center;
                 z-index: 1;
+                transition: background 0.3s ease;
             }
 
             .dynamic-circle {
                 border-radius: 100%;
                 height: $dynamic-circle-diameter;
                 width: $dynamic-circle-diameter;
-                margin-left: -4px;
-                margin-top: -4px;
-                opacity: 0.32;
+                margin-left: -4.5px;
+                margin-top: -4.5px;
+                opacity: 0.28;
                 position: absolute;
             }
 
@@ -161,18 +229,19 @@
         }
 
         &-line {
-            background-color: var(--border-normal);
+            background: rgb(124 58 237 / 15%);
             height: 100%;
             width: 100%;
-            border-radius: $BORDER_RADIUS;
+            border-radius: 10rem;
             position: absolute;
         }
 
         &-bar {
-            background-color: var(--status-success);
-            border-radius: $BORDER_RADIUS;
+            background: linear-gradient(90deg, #7c3aed, #0bc4a6);
+            border-radius: 10rem;
             width: 0;
             height: 100%;
+            box-shadow: 0 0 6px rgb(11 196 166 / 50%);
         }
 
         &-4 {
@@ -191,38 +260,38 @@
         }
     }
 
+    // ── Running state: BossMillan-tinted circles ─────────────────────────────
     &--running {
         #{$animation}__progress {
             .circular-wrapper {
-                &.completed,
-                &.active {
-                    .static-circle {
-                        background-color: $color-green-2;
-                    }
+                &.completed .static-circle,
+                &.active .static-circle {
+                    background: #0bc4a6;
                 }
 
-                &.active {
-                    .dynamic-circle {
-                        animation: animate-circle 0.8s infinite;
-                        animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
-                        background-color: var(--status-success);
-
-                        // transform: translate(-50%, -50%);
-                        // z-index: 1;
-                    }
+                &.active .dynamic-circle {
+                    animation: animate-circle 0.8s infinite cubic-bezier(0.25, 0.1, 0.25, 1);
+                    background: #0bc4a6;
                 }
 
                 .static-circle {
                     animation: animate-circle-appear 1s;
-                    background-color: $COLOR_CORAL_RED;
+                    background: #7c3aed;
                 }
 
                 .dynamic-circle {
                     animation: animate-circle 1s;
-                    background-color: $COLOR_CORAL_RED;
+                    background: #7c3aed;
                     transform: scale(0);
                 }
             }
+        }
+    }
+
+    // ── Disabled state ───────────────────────────────────────────────────────
+    &--disabled {
+        #{$animation}__progress-bar {
+            background: rgb(124 58 237 / 30%);
         }
     }
 }

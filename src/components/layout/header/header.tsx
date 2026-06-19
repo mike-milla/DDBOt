@@ -13,13 +13,15 @@ import useTMB from '@/hooks/useTMB';
 import { clearAuthData, handleOidcAuthFailure } from '@/utils/auth-utils';
 import { StandaloneCircleUserRegularIcon } from '@deriv/quill-icons/Standalone';
 import { requestOidcAuthentication } from '@deriv-com/auth-client';
-import { Localize, useTranslations } from '@deriv-com/translations';
+import { useTranslations } from '@deriv-com/translations';
 import { Header, useDevice, Wrapper } from '@deriv-com/ui';
 import { Tooltip } from '@deriv-com/ui';
 import { AppLogo } from '../app-logo';
 import ResourcesDropdown from './resources-dropdown/ResourcesDropdown';
 import AccountsInfoLoader from './account-info-loader';
 import AccountSwitcher from './account-switcher';
+import BossMillanLoginButton from './bossmillan-login';
+import ConnectDerivDropdown from './connect-deriv';
 import MenuItems from './menu-items';
 import MobileMenu from './mobile-menu';
 import './header.scss';
@@ -134,57 +136,37 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
             );
         } else {
             return (
-                <div className='auth-actions'>
-                    <Button
-                        tertiary
-                        onClick={async () => {
-                            clearAuthData(false);
-                            const getQueryParams = new URLSearchParams(window.location.search);
-                            const currency = getQueryParams.get('account') ?? '';
-                            const query_param_currency =
-                                currency || sessionStorage.getItem('query_param_currency') || 'USD';
-
-                            try {
-                                // First, explicitly wait for TMB status to be determined
-                                const tmbEnabled = await isTmbEnabled();
-                                // Now use the result of the explicit check
-                                if (tmbEnabled) {
-                                    await onRenderTMBCheck(true); // Pass true to indicate it's from login button
-                                } else {
-                                    // Always use OIDC if TMB is not enabled
-                                    try {
-                                        await requestOidcAuthentication({
-                                            redirectCallbackUri: `${window.location.origin}/callback`,
-                                            ...(query_param_currency
-                                                ? {
-                                                      state: {
-                                                          account: query_param_currency,
-                                                      },
-                                                  }
-                                                : {}),
-                                        });
-                                    } catch (err) {
-                                        handleOidcAuthFailure(err);
-                                        window.location.replace(generateOAuthURL());
-                                    }
+                <ConnectDerivDropdown
+                    onLogin={async () => {
+                        clearAuthData(false);
+                        const getQueryParams = new URLSearchParams(window.location.search);
+                        const currency = getQueryParams.get('account') ?? '';
+                        const query_param_currency =
+                            currency || sessionStorage.getItem('query_param_currency') || 'USD';
+                        try {
+                            const tmbEnabled = await isTmbEnabled();
+                            if (tmbEnabled) {
+                                await onRenderTMBCheck(true);
+                            } else {
+                                try {
+                                    await requestOidcAuthentication({
+                                        redirectCallbackUri: `${window.location.origin}/callback`,
+                                        ...(query_param_currency ? { state: { account: query_param_currency } } : {}),
+                                    });
+                                } catch (err) {
+                                    handleOidcAuthFailure(err);
+                                    window.location.replace(generateOAuthURL());
                                 }
-                            } catch (error) {
-                                // eslint-disable-next-line no-console
-                                console.error(error);
                             }
-                        }}
-                    >
-                        <Localize i18n_default_text='Log in' />
-                    </Button>
-                    <Button
-                        primary
-                        onClick={() => {
-                            window.open(standalone_routes.signup);
-                        }}
-                    >
-                        <Localize i18n_default_text='Sign up' />
-                    </Button>
-                </div>
+                        } catch (error) {
+                            // eslint-disable-next-line no-console
+                            console.error(error);
+                        }
+                    }}
+                    onSignup={() => {
+                        window.open(standalone_routes.signup);
+                    }}
+                />
             );
         }
     }, [
@@ -220,6 +202,7 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
             <Wrapper variant='right'>
                 {!isDesktop && <PWAInstallButton variant='primary' size='medium' />}
                 {renderAccountSection()}
+                <BossMillanLoginButton />
                 <ResourcesDropdown />
             </Wrapper>
             {/* <PWAInstallModalTest /> */}

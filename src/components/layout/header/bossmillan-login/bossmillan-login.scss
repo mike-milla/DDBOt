@@ -1,0 +1,398 @@
+// ── Theme tokens ──────────────────────────────────────────────────────────────
+// Light defaults
+:root,
+body {
+    --bm-backdrop-bg: rgb(0 0 0 / 45%);
+    --bm-dialog-bg: #fff;
+    --bm-dialog-border: rgb(118 37 168 / 20%);
+    --bm-dialog-shadow:
+        0 0 0 1px rgb(168 85 247 / 10%), 0 24px 60px rgb(0 0 0 / 18%), 0 0 80px rgb(118 37 168 / 6%);
+    --bm-close-bg: rgb(0 0 0 / 6%);
+    --bm-close-color: #6b7280;
+    --bm-close-hover: rgb(0 0 0 / 10%);
+    --bm-close-color-h: #111827;
+    --bm-tagline: #6b7280;
+    --bm-chip-bg: rgb(118 37 168 / 7%);
+    --bm-chip-border: rgb(168 85 247 / 20%);
+    --bm-chip-color: #7625a8;
+    --bm-desc-color: #4b5563;
+    --bm-field-bg: rgb(0 0 0 / 4%);
+    --bm-field-border: rgb(0 0 0 / 10%);
+    --bm-field-focus: rgb(168 85 247 / 50%);
+    --bm-field-ring: rgb(118 37 168 / 10%);
+    --bm-icon-color: #9ca3af;
+    --bm-input-color: #111827;
+    --bm-input-ph: #9ca3af;
+    --bm-eye-color: #9ca3af;
+    --bm-eye-hover: #4b5563;
+    --bm-forgot-color: #6b7280;
+    --bm-forgot-hover: #7625a8;
+    --bm-footer-color: #6b7280;
+    --bm-footer-link: #7625a8;
+    --bm-footer-link-h: #a855f7;
+}
+
+// BossMillan dark
+.theme--bossmillan {
+    --bm-backdrop-bg: rgb(0 0 0 / 65%);
+    --bm-dialog-bg: #0a0a0f;
+    --bm-dialog-border: rgb(118 37 168 / 30%);
+    --bm-dialog-shadow:
+        0 0 0 1px rgb(168 85 247 / 15%), 0 24px 60px rgb(0 0 0 / 70%), 0 0 80px rgb(118 37 168 / 15%);
+    --bm-close-bg: rgb(255 255 255 / 6%);
+    --bm-close-color: #6b7280;
+    --bm-close-hover: rgb(255 255 255 / 12%);
+    --bm-close-color-h: #e5e7eb;
+    --bm-tagline: #6b7280;
+    --bm-chip-bg: rgb(118 37 168 / 10%);
+    --bm-chip-border: rgb(168 85 247 / 20%);
+    --bm-chip-color: #a855f7;
+    --bm-desc-color: #6b7280;
+    --bm-field-bg: rgb(255 255 255 / 4%);
+    --bm-field-border: rgb(255 255 255 / 9%);
+    --bm-field-focus: rgb(168 85 247 / 50%);
+    --bm-field-ring: rgb(118 37 168 / 10%);
+    --bm-icon-color: #4b5563;
+    --bm-input-color: #e5e7eb;
+    --bm-input-ph: #4b5563;
+    --bm-eye-color: #4b5563;
+    --bm-eye-hover: #9ca3af;
+    --bm-forgot-color: #6b7280;
+    --bm-forgot-hover: #a855f7;
+    --bm-footer-color: #4b5563;
+    --bm-footer-link: #a855f7;
+    --bm-footer-link-h: #c084fc;
+}
+
+// ── Animations ────────────────────────────────────────────────────────────────
+@keyframes bm-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes bm-dialog-in {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+// ── Trigger button ────────────────────────────────────────────────────────────
+.bm-login-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: 2rem;
+    border: 1px solid rgb(118 37 168 / 50%);
+    background: rgb(118 37 168 / 8%);
+    color: #a855f7;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.18s ease;
+    letter-spacing: 0.02em;
+
+    &:hover {
+        background: rgb(118 37 168 / 18%);
+        border-color: #a855f7;
+        box-shadow: 0 0 14px rgb(168 85 247 / 35%);
+        color: #c084fc;
+    }
+
+    &__crown {
+        font-size: 1.3rem;
+        line-height: 1;
+    }
+
+    &__label {
+        font-size: 1.2rem;
+    }
+
+    &__badge {
+        font-size: 0.9rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        background: linear-gradient(135deg, #7625a8, #a855f7);
+        color: #fff;
+        padding: 0.1rem 0.45rem;
+        border-radius: 4px;
+    }
+}
+
+// ── Backdrop ──────────────────────────────────────────────────────────────────
+.bm-login-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bm-backdrop-bg);
+    backdrop-filter: blur(6px);
+}
+
+// ── Dialog card ───────────────────────────────────────────────────────────────
+.bm-login-dialog {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    background: var(--bm-dialog-bg);
+    border: 1px solid var(--bm-dialog-border);
+    border-radius: 20px;
+    padding: 2.8rem 2.4rem 2rem;
+    box-shadow: var(--bm-dialog-shadow);
+    animation: bm-dialog-in 0.2s ease;
+
+    @media (width <= 440px) {
+        margin: 1.6rem;
+        padding: 2.4rem 1.8rem 1.8rem;
+    }
+
+    // ── Close ─────────────────────────────────────────────────────────────────
+    &__close {
+        position: absolute;
+        top: 1.4rem;
+        right: 1.4rem;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: none;
+        background: var(--bm-close-bg);
+        color: var(--bm-close-color);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+            background 0.15s ease,
+            color 0.15s ease;
+
+        &:hover {
+            background: var(--bm-close-hover);
+            color: var(--bm-close-color-h);
+        }
+    }
+
+    // ── Hero ──────────────────────────────────────────────────────────────────
+    &__hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+        margin-bottom: 1.4rem;
+    }
+
+    &__logo {
+        width: 96px;
+        height: 96px;
+        border-radius: 20px;
+        object-fit: cover;
+        margin-bottom: 0.6rem;
+        box-shadow: 0 0 28px rgb(118 37 168 / 35%);
+        border: 2px solid rgb(168 85 247 / 25%);
+    }
+
+    &__tagline {
+        font-size: 1.2rem;
+        color: var(--bm-tagline);
+        margin: 0;
+        letter-spacing: 0.04em;
+    }
+
+    // ── Feature chips ─────────────────────────────────────────────────────────
+    &__features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-bottom: 1.2rem;
+    }
+
+    &__feature-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.7rem;
+        background: var(--bm-chip-bg);
+        border: 1px solid var(--bm-chip-border);
+        border-radius: 20px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--bm-chip-color);
+
+        svg {
+            flex-shrink: 0;
+        }
+    }
+
+    // ── Description ───────────────────────────────────────────────────────────
+    &__desc {
+        font-size: 1.2rem;
+        color: var(--bm-desc-color);
+        text-align: center;
+        line-height: 1.6;
+        margin: 0 0 1.8rem;
+    }
+
+    // ── Form ──────────────────────────────────────────────────────────────────
+    &__form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    &__field {
+        display: flex;
+        align-items: center;
+        background: var(--bm-field-bg);
+        border: 1px solid var(--bm-field-border);
+        border-radius: 10px;
+        padding: 0 1rem;
+        transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease;
+
+        &:focus-within {
+            border-color: var(--bm-field-focus);
+            box-shadow: 0 0 0 3px var(--bm-field-ring);
+        }
+    }
+
+    &__field-icon {
+        color: var(--bm-icon-color);
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        margin-right: 0.7rem;
+    }
+
+    &__input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        padding: 1.1rem 0;
+        font-size: 1.3rem;
+        color: var(--bm-input-color);
+
+        &::placeholder {
+            color: var(--bm-input-ph);
+        }
+    }
+
+    &__eye {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: var(--bm-eye-color);
+        display: flex;
+        align-items: center;
+        padding: 0 0 0 0.5rem;
+        transition: color 0.15s ease;
+
+        &:hover {
+            color: var(--bm-eye-hover);
+        }
+    }
+
+    &__error {
+        font-size: 1.2rem;
+        color: #ef4444;
+        margin: 0;
+        padding: 0.6rem 0.8rem;
+        background: rgb(239 68 68 / 8%);
+        border: 1px solid rgb(239 68 68 / 25%);
+        border-radius: 8px;
+    }
+
+    &__forgot {
+        font-size: 1.15rem;
+        color: var(--bm-forgot-color);
+        text-align: right;
+        text-decoration: none;
+        display: block;
+        margin-top: -0.2rem;
+        transition: color 0.15s ease;
+
+        &:hover {
+            color: var(--bm-forgot-hover);
+        }
+    }
+
+    &__submit {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.7rem;
+        padding: 1.2rem;
+        border-radius: 10px;
+        border: none;
+        background: linear-gradient(135deg, #7625a8, #a855f7);
+        color: #fff;
+        font-size: 1.4rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition:
+            opacity 0.18s ease,
+            box-shadow 0.18s ease,
+            transform 0.15s ease;
+        box-shadow: 0 4px 16px rgb(118 37 168 / 40%);
+        margin-top: 0.4rem;
+
+        &:hover:not(:disabled) {
+            box-shadow: 0 6px 24px rgb(118 37 168 / 55%);
+            transform: translateY(-1px);
+        }
+
+        &:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        &--loading,
+        &:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+    }
+
+    &__spinner {
+        width: 15px;
+        height: 15px;
+        border: 2px solid rgb(255 255 255 / 30%);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: bm-spin 0.7s linear infinite;
+        flex-shrink: 0;
+    }
+
+    // ── Footer ────────────────────────────────────────────────────────────────
+    &__footer {
+        margin: 1.4rem 0 0;
+        text-align: center;
+        font-size: 1.2rem;
+        color: var(--bm-footer-color);
+    }
+
+    &__footer-link {
+        color: var(--bm-footer-link);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.15s ease;
+
+        &:hover {
+            color: var(--bm-footer-link-h);
+        }
+    }
+}

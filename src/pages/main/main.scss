@@ -32,7 +32,6 @@
     overflow: hidden;
     width: 100%;
     height: calc(100vh - 9rem);
-    padding: 1.6rem;
 
     @include mobile-or-tablet-screen {
         height: calc(100vh - 6rem);
@@ -222,27 +221,121 @@
     }
 
     &__run-strategy-wrapper {
-        inset-inline-end: 1.6rem;
-        top: 1.6rem;
-        z-index: 2;
+        // ── Center at bottom ─────────────────────────────────────────────────
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 2rem;
+        z-index: 70;
 
         @include desktop-screen {
             position: absolute;
         }
 
+        // ── BossMillan glass bar ─────────────────────────────────────────────
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        padding: 0.2rem 0.4rem;
+        border-radius: 10rem;
+
+        // theme tokens — light default, dark override below
+        --rsw-bg: rgb(255 255 255 / 100%);
+        --rsw-border: rgb(124 58 237 / 35%);
+        --rsw-glow: rgb(124 58 237 / 18%);
+        --rsw-teal-glow: rgb(11 196 166 / 12%);
+        --rsw-shadow: rgb(0 0 0 / 12%);
+
+        background: var(--rsw-bg);
+        border: 1px solid var(--rsw-border);
+        backdrop-filter: blur(24px) saturate(180%);
+        backdrop-filter: blur(24px) saturate(180%);
+        box-shadow:
+            0 8px 32px var(--rsw-shadow),
+            0 0 0 1px rgb(11 196 166 / 8%),
+            0 0 48px var(--rsw-glow),
+            inset 0 1px 0 rgb(255 255 255 / 20%);
+
+        // Animated gradient top-border shimmer
+        &:before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgb(124 58 237 / 70%) 25%,
+                rgb(11 196 166 / 70%) 50%,
+                rgb(245 158 11 / 50%) 75%,
+                transparent 100%
+            );
+            background-size: 200% 100%;
+            mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: rsw-shimmer 4s linear infinite;
+        }
+
+        // Dark / BossMillan theme
+        .theme--bossmillan &,
+        [data-theme='dark'] & {
+            --rsw-bg: rgb(10 8 18 / 82%);
+            --rsw-border: rgb(124 58 237 / 40%);
+            --rsw-glow: rgb(124 58 237 / 25%);
+            --rsw-teal-glow: rgb(11 196 166 / 15%);
+            --rsw-shadow: rgb(0 0 0 / 55%);
+        }
+
+        // ── Run button — purple → teal gradient ──────────────────────────────
         .animation {
             &__button#db-animation {
                 &__run-button {
-                    background-color: var(--purchase-main-1);
+                    background: linear-gradient(135deg, #7c3aed 0%, #0bc4a6 100%) !important;
+                    border: none !important;
+                    box-shadow:
+                        0 4px 16px rgb(124 58 237 / 45%),
+                        0 0 0 1px rgb(11 196 166 / 20%) !important;
+                    transition:
+                        box-shadow 0.2s ease,
+                        transform 0.15s ease !important;
+
+                    &:hover:not(:disabled) {
+                        box-shadow:
+                            0 6px 24px rgb(124 58 237 / 65%),
+                            0 0 0 1px rgb(11 196 166 / 30%) !important;
+                        transform: translateY(-1px) !important;
+                    }
                 }
 
+                // ── Stop button — amber → red gradient ──────────────────────
                 &__stop-button {
-                    background-color: var(--button-primary-hover);
+                    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%) !important;
+                    border: none !important;
+                    box-shadow:
+                        0 4px 16px rgb(245 158 11 / 45%),
+                        0 0 0 1px rgb(239 68 68 / 20%) !important;
+                    transition:
+                        box-shadow 0.2s ease,
+                        transform 0.15s ease !important;
+
+                    &:hover:not(:disabled) {
+                        box-shadow:
+                            0 6px 24px rgb(245 158 11 / 65%),
+                            0 0 0 1px rgb(239 68 68 / 30%) !important;
+                        transform: translateY(-1px) !important;
+                    }
                 }
             }
 
             &__container {
-                background-color: var(--general-main-1);
+                background: transparent !important;
             }
         }
     }
@@ -813,6 +906,36 @@
     }
 }
 
+.manual-trader-wrapper {
+    width: 100%;
+    height: calc(100vh - 15rem);
+    background: var(--general-main-1);
+    display: flex;
+    flex-direction: column;
+
+    @include mobile-or-tablet-screen {
+        height: calc(100vh - 6rem);
+    }
+
+    &__iframe {
+        flex: 1;
+        width: 100%;
+        height: 100%;
+        border: none;
+        display: block;
+    }
+}
+
 .main .dc-tabs__list {
     justify-content: flex-start !important;
+}
+
+@keyframes rsw-shimmer {
+    0% {
+        background-position: 200% center;
+    }
+
+    100% {
+        background-position: -200% center;
+    }
 }

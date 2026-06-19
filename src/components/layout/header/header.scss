@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use 'components/shared/styles/constants' as *;
 @use 'components/shared/styles/mixins' as *;
 
@@ -331,7 +332,7 @@ $brand-white: #fff;
 
         &:hover {
             background: rgba($brand-purple, 0.12);
-            color: darken($brand-purple, 8%);
+            color: color.adjust($brand-purple, $lightness: -8%);
         }
     }
 
@@ -398,7 +399,7 @@ $brand-white: #fff;
             color: $brand-white;
 
             &:hover {
-                background: darken($accent, 6%);
+                background: color.adjust($accent, $lightness: -6%);
             }
         }
     }
@@ -421,7 +422,7 @@ $brand-white: #fff;
     }
 
     &:hover {
-        background: darken($brand-orange, 6%) !important;
+        background: color.adjust($brand-orange, $lightness: -6%) !important;
     }
 }
 

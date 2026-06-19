@@ -45,6 +45,7 @@ export default defineConfig({
                 WS_APP_ID: JSON.stringify(process.env.WS_APP_ID),
                 WS_SERVER_URL: JSON.stringify(process.env.WS_SERVER_URL),
                 OAUTH_CLIENT_ID: JSON.stringify(process.env.OAUTH_CLIENT_ID),
+                GATEWAY_URL: JSON.stringify(process.env.GATEWAY_URL ?? ''),
             },
         },
         alias: {
