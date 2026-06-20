@@ -58,24 +58,60 @@ const CallbackPage = () => {
         })();
     }, []);
 
-    if (phase === 'error') {
-        return (
-            <div className='callback-page'>
-                <div className='callback-page__card callback-page__card--error'>
-                    <span className='callback-page__icon'>✕</span>
-                    <h2>Authentication failed</h2>
-                    <p>{errorMsg}</p>
-                    <button onClick={() => (window.location.href = '/')}>Back to app</button>
-                </div>
-            </div>
-        );
-    }
-
     return (
-        <div className='callback-page'>
-            <div className='callback-page__card'>
-                <div className='callback-page__spinner' />
-                <p>{phase === 'exchanging' ? 'Completing sign-in…' : 'Loading your accounts…'}</p>
+        <div className='cb'>
+            {/* Background */}
+            <div className='cb__bg'>
+                <div className='cb__bg-grid' />
+                <div className='cb__bg-glow cb__bg-glow--teal' />
+                <div className='cb__bg-glow cb__bg-glow--purple' />
+            </div>
+
+            {/* Card */}
+            <div className={`cb__card ${phase === 'error' ? 'cb__card--error' : ''}`}>
+                {/* Brand */}
+                <div className='cb__brand'>
+                    <img src='/assets/images/bossmillan-logo.jpeg' alt='BossMillan' className='cb__brand-img' />
+                    <span className='cb__brand-name'>
+                        <span className='cb__brand-boss'>Boss</span>
+                        <span className='cb__brand-millan'>Millan</span>
+                    </span>
+                </div>
+
+                {phase === 'error' ? (
+                    <>
+                        <div className='cb__error-icon'>
+                            <svg
+                                width='28'
+                                height='28'
+                                viewBox='0 0 24 24'
+                                fill='none'
+                                stroke='currentColor'
+                                strokeWidth='2.5'
+                                strokeLinecap='round'
+                            >
+                                <line x1='18' y1='6' x2='6' y2='18' />
+                                <line x1='6' y1='6' x2='18' y2='18' />
+                            </svg>
+                        </div>
+                        <h2 className='cb__error-title'>Authentication Failed</h2>
+                        <p className='cb__error-msg'>{errorMsg}</p>
+                        <button className='cb__back-btn' onClick={() => (window.location.href = '/')}>
+                            Back to Home
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        <div className='cb__spinner-wrap'>
+                            <div className='cb__spinner-ring' />
+                            <div className='cb__spinner-dot' />
+                        </div>
+                        <p className='cb__status'>
+                            {phase === 'exchanging' ? 'Authenticating…' : 'Loading your accounts…'}
+                        </p>
+                        <p className='cb__sub'>Connecting securely to Deriv</p>
+                    </>
+                )}
             </div>
         </div>
     );

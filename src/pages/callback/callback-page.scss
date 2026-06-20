@@ -1,90 +1,270 @@
-@use 'components/shared/styles/constants' as *;
+@import 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap';
 
-.callback-page {
+$teal: #0bc4a6;
+$teal-bright: #00f5d4;
+$purple: #7625a8;
+
+// ── Root ──────────────────────────────────────────────────────────────────────
+.cb {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: var(--general-main-1, #050508);
+    width: 100vw;
+    background: #000;
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+}
 
-    &__card {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1.6rem;
-        padding: 4rem 5rem;
-        background: var(--general-main-2, #0d0d14);
-        border: 1px solid rgb(11 196 166 / 18%);
-        border-radius: 2rem;
-        box-shadow: 0 24px 64px rgb(0 0 0 / 60%);
+// ── Background layers ─────────────────────────────────────────────────────────
+.cb__bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
 
-        &--error {
-            border-color: rgb(239 68 68 / 25%);
+.cb__bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgb(11 196 166 / 5%) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(11 196 166 / 5%) 1px, transparent 1px);
+    background-size: 48px 48px;
+}
 
-            h2 {
-                color: #ef4444;
-                margin: 0;
-                font-size: 2rem;
-            }
+.cb__bg-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(130px);
 
-            p {
-                color: var(--text-less-prominent);
-                font-size: 1.3rem;
-                margin: 0;
-                text-align: center;
-                max-width: 32rem;
-            }
-
-            button {
-                margin-top: 0.8rem;
-                padding: 0.9rem 2.4rem;
-                border: 1.5px solid #{$bm-teal};
-                border-radius: 2.4rem;
-                background: transparent;
-                color: #{$bm-teal};
-                font-size: 1.3rem;
-                font-weight: 700;
-                cursor: pointer;
-                transition: background 0.18s ease;
-
-                &:hover {
-                    background: #{$bm-teal};
-                    color: #000;
-                }
-            }
-        }
-
-        p {
-            font-size: 1.4rem;
-            color: var(--text-less-prominent);
-            margin: 0;
-        }
+    &--teal {
+        width: 500px;
+        height: 500px;
+        background: $teal;
+        opacity: 0.09;
+        top: -150px;
+        left: -100px;
     }
 
-    &__icon {
-        font-size: 3.2rem;
-        width: 6rem;
-        height: 6rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        background: rgb(239 68 68 / 10%);
-        color: #ef4444;
-    }
-
-    &__spinner {
-        width: 4rem;
-        height: 4rem;
-        border: 3px solid rgb(11 196 166 / 15%);
-        border-top-color: #{$bm-teal};
-        border-radius: 50%;
-        animation: cb-spin 0.75s linear infinite;
+    &--purple {
+        width: 400px;
+        height: 400px;
+        background: $purple;
+        opacity: 0.1;
+        bottom: -100px;
+        right: -80px;
     }
 }
 
+// ── Card ──────────────────────────────────────────────────────────────────────
+.cb__card {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.6rem;
+    padding: 4rem 5rem;
+    width: min(42rem, calc(100vw - 3.2rem));
+    background: rgb(4 4 10 / 80%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgb(11 196 166 / 18%);
+    border-radius: 2.4rem;
+    box-shadow:
+        0 32px 80px rgb(0 0 0 / 70%),
+        0 0 60px rgb(11 196 166 / 5%);
+    animation: cb-in 0.4s ease;
+
+    // teal→purple top gradient line
+    &:before {
+        content: '';
+        position: absolute;
+        inset: 0 0 auto;
+        height: 2px;
+        border-radius: 2.4rem 2.4rem 0 0;
+        background: linear-gradient(90deg, $teal, $purple);
+    }
+
+    &--error {
+        border-color: rgb(239 68 68 / 22%);
+        box-shadow:
+            0 32px 80px rgb(0 0 0 / 70%),
+            0 0 40px rgb(239 68 68 / 5%);
+
+        &:before {
+            background: linear-gradient(90deg, #ef4444, $purple);
+        }
+    }
+}
+
+// ── Brand ─────────────────────────────────────────────────────────────────────
+.cb__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.8rem;
+}
+
+.cb__brand-img {
+    height: 38px;
+    width: 38px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.cb__brand-name {
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+}
+
+.cb__brand-boss {
+    background: linear-gradient(135deg, #e0e0e0, #fff);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.cb__brand-millan {
+    background: linear-gradient(135deg, $teal, $teal-bright);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+// ── Spinner ───────────────────────────────────────────────────────────────────
+.cb__spinner-wrap {
+    position: relative;
+    width: 6.4rem;
+    height: 6.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.4rem 0;
+}
+
+.cb__spinner-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2.5px solid rgb(11 196 166 / 12%);
+    border-top-color: $teal;
+    animation: cb-spin 0.85s linear infinite;
+    box-shadow: 0 0 16px rgb(11 196 166 / 25%);
+}
+
+.cb__spinner-dot {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: $teal;
+    box-shadow:
+        0 0 10px $teal,
+        0 0 24px $teal;
+    animation: cb-pulse 1.4s ease-in-out infinite;
+}
+
+// ── Text ──────────────────────────────────────────────────────────────────────
+.cb__status {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.cb__sub {
+    font-size: 1.15rem;
+    color: rgb(255 255 255 / 40%);
+    margin: -0.6rem 0 0;
+}
+
+// ── Error state ───────────────────────────────────────────────────────────────
+.cb__error-icon {
+    width: 6rem;
+    height: 6rem;
+    border-radius: 50%;
+    background: rgb(239 68 68 / 10%);
+    border: 1px solid rgb(239 68 68 / 25%);
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.4rem 0;
+    box-shadow: 0 0 20px rgb(239 68 68 / 12%);
+}
+
+.cb__error-title {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #ef4444;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.cb__error-msg {
+    font-size: 1.25rem;
+    color: rgb(255 255 255 / 45%);
+    margin: 0;
+    text-align: center;
+    max-width: 32rem;
+    line-height: 1.6;
+    word-break: break-word;
+}
+
+.cb__back-btn {
+    margin-top: 0.4rem;
+    padding: 0.9rem 2.8rem;
+    border: 1.5px solid $teal;
+    border-radius: 2.4rem;
+    background: transparent;
+    color: $teal;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.18s ease,
+        color 0.18s ease,
+        box-shadow 0.18s ease;
+
+    &:hover {
+        background: $teal;
+        color: #000;
+        box-shadow: 0 0 20px rgb(11 196 166 / 40%);
+    }
+}
+
+// ── Animations ────────────────────────────────────────────────────────────────
 @keyframes cb-spin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+@keyframes cb-pulse {
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(0.7);
+    }
+}
+
+@keyframes cb-in {
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }
