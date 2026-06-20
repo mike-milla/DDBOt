@@ -8,22 +8,24 @@
         transform: unset;
         opacity: unset;
         transition: unset;
-        background: var(--general-main-1, #09090f) !important;
-        border: 1px solid rgb(11 196 166 / 18%) !important;
+        position: relative !important;
+        background: var(--general-main-1) !important;
+        border: 1px solid rgb(11 196 166 / 20%) !important;
         border-radius: 1.8rem !important;
         box-shadow:
-            0 24px 64px rgb(0 0 0 / 65%),
+            0 24px 64px rgb(0 0 0 / 40%),
             0 0 48px rgb(11 196 166 / 5%) !important;
         overflow: hidden;
         padding: 0 !important;
 
-        // teal → purple gradient top line
+        // teal → purple top line (works on any theme background)
         &:before {
             content: '';
             position: absolute;
             inset: 0 0 auto;
             height: 2px;
             background: linear-gradient(90deg, #{$bm-teal}, #{$bm-purple});
+            z-index: 1;
         }
 
         @include mobile-screen {
@@ -31,7 +33,7 @@
         }
     }
 
-    // ── Header ────────────────────────────────────────────────────────────────
+    // ── Content ───────────────────────────────────────────────────────────────
     .dc-dialog__content {
         padding: 3.2rem 3.2rem 1.6rem !important;
 
@@ -39,11 +41,12 @@
             text-align: start;
             margin-bottom: 1.6rem;
 
-            // Target the Text component inside — make it gradient-branded
             .dc-text {
                 font-size: 2rem !important;
                 font-weight: 800 !important;
-                background: linear-gradient(135deg, #fff 20%, #{$bm-teal} 100%);
+
+                // purple → teal gradient is visible on both light and dark backgrounds
+                background: linear-gradient(135deg, #{$bm-purple} 0%, #{$bm-teal} 100%);
                 background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
@@ -63,7 +66,6 @@
                 line-height: 1.7;
             }
 
-            // body text
             .dc-text {
                 color: var(--text-less-prominent) !important;
                 font-size: 1.3rem !important;
@@ -76,7 +78,6 @@
                 font-size: 1.3rem;
                 line-height: 1.8;
 
-                // Bold highlights inside text (e.g. <strong>Tutorials</strong>)
                 strong {
                     color: #{$bm-teal};
                     font-weight: 700;
@@ -88,7 +89,7 @@
     // ── Footer / buttons ──────────────────────────────────────────────────────
     .dc-dialog__footer {
         padding: 1.6rem 3.2rem 2.8rem !important;
-        border-top: 1px solid rgb(255 255 255 / 6%);
+        border-top: 1px solid var(--border-normal);
         gap: 1rem;
 
         @include mobile-screen {
@@ -99,11 +100,9 @@
             align-content: flex-end;
             gap: 0.8rem;
 
-            button {
-                &:first-child {
-                    margin-bottom: unset;
-                    margin-inline-end: 0;
-                }
+            button:first-child {
+                margin-bottom: unset;
+                margin-inline-end: 0;
             }
         }
 
@@ -114,11 +113,11 @@
             }
         }
 
-        // Skip button (secondary)
+        // Skip (secondary)
         .dc-dialog__button.dc-btn--secondary,
         .dc-dialog__button:first-child {
             background: transparent !important;
-            border: 1.5px solid rgb(11 196 166 / 35%) !important;
+            border: 1.5px solid rgb(11 196 166 / 40%) !important;
             color: #{$bm-teal} !important;
             border-radius: 2.4rem !important;
             font-weight: 700 !important;
@@ -127,12 +126,12 @@
                 border-color 0.18s ease !important;
 
             &:hover {
-                background: rgb(11 196 166 / 8%) !important;
+                background: rgb(11 196 166 / 10%) !important;
                 border-color: #{$bm-teal} !important;
             }
         }
 
-        // Start button (primary)
+        // Start (primary)
         .dc-dialog__button.dc-btn--primary,
         .dc-dialog__button:last-child {
             background: linear-gradient(135deg, #{$bm-teal}, #{$bm-purple}) !important;
