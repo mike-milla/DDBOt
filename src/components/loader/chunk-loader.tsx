@@ -1,10 +1,5 @@
-import GooLoader from './goo-loader';
+import PageLoader from './page-loader';
 
 export default function ChunkLoader({ message }: { message: string }) {
-    return (
-        <div className='app-root'>
-            <GooLoader />
-            <div className='load-message'>{message}</div>
-        </div>
-    );
+    return <PageLoader message={message} />;
 }

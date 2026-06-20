@@ -9,7 +9,7 @@ import {
     Route,
     RouterProvider,
 } from 'react-router-dom';
-import GooLoader from '@/components/loader/goo-loader';
+import PageLoader from '@/components/loader/page-loader';
 import RoutePromptDialog from '@/components/route-prompt-dialog';
 import { crypto_currencies_display_order, fiat_currencies_display_order } from '@/components/shared';
 import { isLocal, isProduction } from '@/components/shared/utils/config/config';
@@ -20,12 +20,12 @@ import { loadAuthState } from '@/services/deriv-auth';
 import { TAuthData } from '@/types/api-types';
 import { initializeI18n, TranslationProvider } from '@deriv-com/translations';
 import CoreStoreProvider from './CoreStoreProvider';
+import './app-root.scss';
 
 const AuthGuard = () => {
     if (!loadAuthState()) return <Navigate to='/' replace />;
     return <Outlet />;
 };
-import './app-root.scss';
 
 const Layout = lazy(() => import('../components/layout'));
 const AppRoot = lazy(() => import('./app-root'));
@@ -42,9 +42,8 @@ const i18nInstance = initializeI18n({
     cdnUrl: `${TRANSLATIONS_CDN_URL}/${R2_PROJECT_NAME}/${CROWDIN_BRANCH_NAME}`,
 });
 
-// Simple Suspense wrapper without timeout that causes dark landing page
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => {
-    return <Suspense fallback={<GooLoader />}>{children}</Suspense>;
+    return <Suspense fallback={<PageLoader />}>{children}</Suspense>;
 };
 
 const router = createBrowserRouter(
