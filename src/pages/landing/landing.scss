@@ -175,22 +175,40 @@ $orange: #f58d15;
         }
     }
 
+    &__nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
     &__nav-btn {
         font-family: 'Outfit', sans-serif;
         font-size: 1.25rem;
         font-weight: 600;
-        color: rgb(255 255 255 / 80%);
-        background: rgb(255 255 255 / 5%);
-        border: 1px solid rgb(255 255 255 / 15%);
         border-radius: 8px;
         padding: 0.65rem 1.8rem;
         cursor: pointer;
         transition: all 0.2s ease;
 
-        &:hover {
+        &--login {
             color: $teal;
-            border-color: rgb(11 196 166 / 45%);
-            background: rgb(11 196 166 / 8%);
+            background: transparent;
+            border: 1.5px solid rgb(11 196 166 / 50%);
+
+            &:hover {
+                background: rgb(11 196 166 / 10%);
+                border-color: $teal;
+            }
+        }
+
+        &--signup {
+            color: #fff;
+            background: linear-gradient(135deg, $teal, #7625a8);
+            border: none;
+
+            &:hover {
+                opacity: 0.88;
+            }
         }
     }
 

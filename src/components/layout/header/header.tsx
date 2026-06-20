@@ -2,8 +2,6 @@ import { useCallback } from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import PWAInstallButton from '@/components/pwa-install-button';
-import { useDerivAuth } from '@/hooks/useDerivAuth';
-import { initiateLogin, initiateSignup } from '@/services/deriv-auth';
 import { useDevice } from '@deriv-com/ui';
 import { Header, Wrapper } from '@deriv-com/ui';
 import { AppLogo } from '../app-logo';
@@ -11,7 +9,6 @@ import ResourcesDropdown from './resources-dropdown/ResourcesDropdown';
 import AccountsInfoLoader from './account-info-loader';
 import BmAccountPanel from './bm-account-panel';
 import BossMillanLoginButton from './bossmillan-login';
-import ConnectDerivDropdown from './connect-deriv';
 import MenuItems from './menu-items';
 import MobileMenu from './mobile-menu';
 import './header.scss';
@@ -22,19 +19,11 @@ type TAppHeaderProps = {
 
 const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
     const { isDesktop } = useDevice();
-    const { isLoggedIn } = useDerivAuth();
 
     const renderAccountSection = useCallback(() => {
-        if (isAuthenticating) {
-            return <AccountsInfoLoader isLoggedIn isMobile={!isDesktop} speed={3} />;
-        }
-
-        if (isLoggedIn) {
-            return <BmAccountPanel />;
-        }
-
-        return <ConnectDerivDropdown onLogin={() => initiateLogin()} onSignup={() => initiateSignup()} />;
-    }, [isAuthenticating, isDesktop, isLoggedIn]);
+        if (isAuthenticating) return <AccountsInfoLoader isLoggedIn isMobile={!isDesktop} speed={3} />;
+        return <BmAccountPanel />;
+    }, [isAuthenticating, isDesktop]);
 
     return (
         <Header

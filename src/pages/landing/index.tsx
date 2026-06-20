@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { initiateLogin } from '@/services/deriv-auth';
 import './landing.scss';
 
 // ── Market ticker ─────────────────────────────────────────────────────────────
@@ -367,8 +367,6 @@ const IconShield = () => (
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 const LandingPage = () => {
-    const navigate = useNavigate();
-
     return (
         <div className='lp'>
             {/* Background layers */}
@@ -405,8 +403,8 @@ const LandingPage = () => {
                         <span className='lp__nav-brand--millan'>Millan</span>
                     </span>
                 </div>
-                <button className='lp__nav-btn' onClick={() => navigate('/app')}>
-                    Launch App
+                <button className='lp__nav-btn lp__nav-btn--login' onClick={() => initiateLogin()}>
+                    Login with Deriv
                 </button>
             </nav>
             <MarketTicker />

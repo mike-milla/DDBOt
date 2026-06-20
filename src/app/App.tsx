@@ -1,7 +1,14 @@
 import { initSurvicate } from '../public-path';
 import { lazy, Suspense } from 'react';
 import React from 'react';
-import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from 'react-router-dom';
+import {
+    createBrowserRouter,
+    createRoutesFromElements,
+    Navigate,
+    Outlet,
+    Route,
+    RouterProvider,
+} from 'react-router-dom';
 import GooLoader from '@/components/loader/goo-loader';
 import RoutePromptDialog from '@/components/route-prompt-dialog';
 import { crypto_currencies_display_order, fiat_currencies_display_order } from '@/components/shared';
@@ -9,9 +16,15 @@ import { isLocal, isProduction } from '@/components/shared/utils/config/config';
 import { StoreProvider } from '@/hooks/useStore';
 import CallbackPage from '@/pages/callback';
 import Endpoint from '@/pages/endpoint';
+import { loadAuthState } from '@/services/deriv-auth';
 import { TAuthData } from '@/types/api-types';
 import { initializeI18n, TranslationProvider } from '@deriv-com/translations';
 import CoreStoreProvider from './CoreStoreProvider';
+
+const AuthGuard = () => {
+    if (!loadAuthState()) return <Navigate to='/' replace />;
+    return <Outlet />;
+};
 import './app-root.scss';
 
 const Layout = lazy(() => import('../components/layout'));
@@ -46,30 +59,30 @@ const router = createBrowserRouter(
                 }
             />
             <Route path='/callback' element={<CallbackPage />} />
-            <Route
-                path='/app'
-                element={
-                    <SuspenseWrapper>
-                        <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
-                            <StoreProvider>
-                                <RoutePromptDialog />
-                                <CoreStoreProvider>
-                                    <Layout />
-                                </CoreStoreProvider>
-                            </StoreProvider>
-                        </TranslationProvider>
-                    </SuspenseWrapper>
-                }
-            >
-                {/* All child routes will be passed as children to Layout */}
-                <Route index element={<AppRoot />} />
-                <Route path='endpoint' element={isProduction() ? <Navigate to='/app' replace /> : <Endpoint />} />
-                <Route path='free-bots' element={<FreeBots />} />
-                <Route path='exclusive-bots' element={<ExclusiveBots />} />
-                <Route path='copy-trader' element={<CopyTrader />} />
-                <Route path='bulk-trader' element={<BulkTrader />} />
-                <Route path='analysis-tool' element={<AnalysisTool />} />
-                <Route path='dcircles' element={<DCircles />} />
+            <Route path='/app' element={<AuthGuard />}>
+                <Route
+                    element={
+                        <SuspenseWrapper>
+                            <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
+                                <StoreProvider>
+                                    <RoutePromptDialog />
+                                    <CoreStoreProvider>
+                                        <Layout />
+                                    </CoreStoreProvider>
+                                </StoreProvider>
+                            </TranslationProvider>
+                        </SuspenseWrapper>
+                    }
+                >
+                    <Route index element={<AppRoot />} />
+                    <Route path='endpoint' element={isProduction() ? <Navigate to='/app' replace /> : <Endpoint />} />
+                    <Route path='free-bots' element={<FreeBots />} />
+                    <Route path='exclusive-bots' element={<ExclusiveBots />} />
+                    <Route path='copy-trader' element={<CopyTrader />} />
+                    <Route path='bulk-trader' element={<BulkTrader />} />
+                    <Route path='analysis-tool' element={<AnalysisTool />} />
+                    <Route path='dcircles' element={<DCircles />} />
+                </Route>
             </Route>
         </>
     )
