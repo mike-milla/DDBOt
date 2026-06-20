@@ -134,7 +134,33 @@ export async function fetchAccounts(accessToken: string): Promise<DerivAccount[]
     }
 
     const json = await res.json();
-    return (json.data ?? []) as DerivAccount[];
+    console.log('accounts', json.data);
+    return ((json.data ?? []) as any[]).map(a => ({
+        ...a,
+        balance: Number(a.balance),
+    })) as DerivAccount[];
+}
+
+export async function createAccount(accessToken: string, account_type: 'demo' | 'real'): Promise<DerivAccount> {
+    const res = await fetch(`${API_BASE}/trading/v1/options/accounts`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Deriv-App-ID': CLIENT_ID,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ currency: 'USD', group: 'row', account_type }),
+    });
+
+    if (!res.ok) {
+        const body = await res.text().catch(() => '');
+        throw new Error(`Create account failed ${res.status}: ${body}`);
+    }
+
+    const json = await res.json();
+    // 200 = already exists (single object), 201 = created (array)
+    const raw = Array.isArray(json.data) ? json.data[0] : json.data;
+    return { ...raw, balance: Number(raw.balance) } as DerivAccount;
 }
 
 export async function fetchAccountOtp(accessToken: string, accountId: string): Promise<string> {
@@ -148,8 +174,8 @@ export async function fetchAccountOtp(accessToken: string, accountId: string): P
     });
 
     if (!res.ok) throw new Error(`Failed to get OTP: ${res.status}`);
-    const data = await res.json();
-    return data.otp as string;
+    const json = await res.json();
+    return json.data.url as string;
 }
 
 // ── Auth state persistence ────────────────────────────────────────────────────
@@ -169,11 +195,11 @@ export function loadAuthState(): DerivAuthState | null {
     if (!access_token || !accounts_raw || !active_account_id) return null;
 
     try {
-        return {
-            access_token,
-            accounts: JSON.parse(accounts_raw) as DerivAccount[],
-            active_account_id,
-        };
+        const accounts: DerivAccount[] = (JSON.parse(accounts_raw) as any[]).map(a => ({
+            ...a,
+            balance: Number(a.balance),
+        }));
+        return { access_token, accounts, active_account_id };
     } catch {
         return null;
     }

@@ -49,7 +49,7 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
                 {isDesktop && <MenuItems />}
                 <ResourcesDropdown />
             </Wrapper>
-            <Wrapper variant='right'>
+            <Wrapper variant='right' style={{ gap: '1rem' }}>
                 {!isDesktop && <PWAInstallButton variant='primary' size='medium' />}
                 {renderAccountSection()}
                 <BossMillanLoginButton />

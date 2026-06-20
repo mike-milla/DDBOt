@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
     clearAuthState,
+    createAccount as apiCreateAccount,
     type DerivAccount,
     type DerivAuthState,
     fetchAccountOtp,
+    fetchAccounts,
     loadAuthState,
     saveAuthState,
     setActiveAccount,
 } from '@/services/deriv-auth';
-
-const WS_BASE = 'wss://api.derivws.com';
 
 export type { DerivAccount };
 
@@ -40,6 +40,25 @@ export const useDerivAuth = () => {
         clearAuthState();
     }, []);
 
+    const refreshAccounts = useCallback(async () => {
+        if (!auth) return;
+        const accounts = await fetchAccounts(auth.access_token);
+        const updated: DerivAuthState = { ...auth, accounts };
+        saveAuthState(updated);
+    }, [auth]);
+
+    const createAccount = useCallback(
+        async (account_type: 'demo' | 'real') => {
+            if (!auth) throw new Error('Not authenticated');
+            const newAccount = await apiCreateAccount(auth.access_token, account_type);
+            const accounts = [...auth.accounts.filter(a => a.account_id !== newAccount.account_id), newAccount];
+            const updated: DerivAuthState = { ...auth, accounts, active_account_id: newAccount.account_id };
+            saveAuthState(updated);
+            return newAccount;
+        },
+        [auth]
+    );
+
     const getWsConnection = useCallback(
         async (accountId?: string) => {
             if (!auth) throw new Error('Not authenticated');
@@ -47,8 +66,8 @@ export const useDerivAuth = () => {
             const account = auth.accounts.find(a => a.account_id === id);
             if (!account) throw new Error(`Account ${id} not found`);
 
-            const otp = await fetchAccountOtp(auth.access_token, id);
-            return new WebSocket(`${WS_BASE}/trading/v1/options/ws/${account.account_type}?otp=${otp}`);
+            const wsUrl = await fetchAccountOtp(auth.access_token, id);
+            return new WebSocket(wsUrl);
         },
         [auth]
     );
@@ -69,6 +88,8 @@ export const useDerivAuth = () => {
         activeAccountId: auth?.active_account_id ?? null,
         switchAccount,
         logout,
+        createAccount,
+        refreshAccounts,
         getWsConnection,
         saveAuthState,
     };

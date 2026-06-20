@@ -54,15 +54,59 @@ const CheckIcon = () => (
     </svg>
 );
 
+const EyeIcon = ({ visible }: { visible: boolean }) =>
+    visible ? (
+        <svg
+            width='14'
+            height='14'
+            viewBox='0 0 24 24'
+            fill='none'
+            stroke='currentColor'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+        >
+            <path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' />
+            <circle cx='12' cy='12' r='3' />
+        </svg>
+    ) : (
+        <svg
+            width='14'
+            height='14'
+            viewBox='0 0 24 24'
+            fill='none'
+            stroke='currentColor'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+        >
+            <path d='M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94' />
+            <path d='M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19' />
+            <line x1='1' y1='1' x2='23' y2='23' />
+        </svg>
+    );
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+const fmt = new Intl.NumberFormat('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+function convertBalance(balance: number, currency: string, kesRate: number | null, useKes: boolean): string {
+    if (useKes && kesRate && currency !== 'KES') return `KES ${fmt.format(balance * kesRate)}`;
+    return `${currency} ${fmt.format(balance)}`;
+}
+
 // ── Account row ───────────────────────────────────────────────────────────────
 
 type AccountRowProps = {
     account: DerivAccount;
     isActive: boolean;
+    showBalance: boolean;
+    kesRate: number | null;
+    displayKes: boolean;
     onSwitch: (id: string) => void;
 };
 
-const AccountRow = ({ account, isActive, onSwitch }: AccountRowProps) => (
+const AccountRow = ({ account, isActive, showBalance, kesRate, displayKes, onSwitch }: AccountRowProps) => (
     <button
         className={classNames('bm-ap__account', { 'bm-ap__account--active': isActive })}
         onClick={() => onSwitch(account.account_id)}
@@ -80,7 +124,7 @@ const AccountRow = ({ account, isActive, onSwitch }: AccountRowProps) => (
         </div>
         <div className='bm-ap__account-right'>
             <span className='bm-ap__account-balance'>
-                {account.currency} {account.balance.toFixed(2)}
+                {showBalance ? convertBalance(account.balance, account.currency, kesRate, displayKes) : '•••••'}
             </span>
             {isActive && (
                 <span className='bm-ap__account-check'>
@@ -96,14 +140,32 @@ const AccountRow = ({ account, isActive, onSwitch }: AccountRowProps) => (
 type TabId = 'real' | 'demo';
 
 const BmAccountPanel = () => {
-    const { liveAccounts, demoAccounts, activeAccount, activeAccountId, switchAccount, logout } = useDerivAuth();
+    const { liveAccounts, demoAccounts, activeAccount, activeAccountId, switchAccount, logout, createAccount } =
+        useDerivAuth();
 
     const [open, setOpen] = useState(false);
     const [tab, setTab] = useState<TabId>('real');
     const [dropPos, setDropPos] = useState({ top: 0, right: 0 });
+    const [creating, setCreating] = useState<TabId | null>(null);
+    const [createError, setCreateError] = useState('');
+    const [showBalance, setShowBalance] = useState(true);
+    const [kesRate, setKesRate] = useState<number | null>(null);
+    const [displayKes, setDisplayKes] = useState(true);
     const triggerRef = useRef<HTMLButtonElement>(null);
+    const panelRef = useRef<HTMLDivElement>(null);
 
     const isActiveDemo = activeAccount?.account_type === 'demo';
+
+    // Fetch USD→KES rate once on mount
+    useEffect(() => {
+        fetch('https://open.er-api.com/v6/latest/USD')
+            .then(r => r.json())
+            .then(data => {
+                const rate = data?.rates?.KES;
+                if (typeof rate === 'number') setKesRate(rate);
+            })
+            .catch(() => {});
+    }, []);
 
     // Keep tab in sync with active account type
     useEffect(() => {
@@ -113,7 +175,7 @@ const BmAccountPanel = () => {
     const openPanel = () => {
         if (triggerRef.current) {
             const rect = triggerRef.current.getBoundingClientRect();
-            setDropPos({ top: rect.bottom + 8, right: window.innerWidth - rect.right });
+            setDropPos({ top: rect.bottom + 8, right: Math.max(8, window.innerWidth - rect.right) });
         }
         setOpen(v => !v);
     };
@@ -121,7 +183,10 @@ const BmAccountPanel = () => {
     useEffect(() => {
         if (!open) return;
         const close = (e: MouseEvent) => {
-            if (!triggerRef.current?.contains(e.target as Node)) setOpen(false);
+            const target = e.target as Node;
+            if (!triggerRef.current?.contains(target) && !panelRef.current?.contains(target)) {
+                setOpen(false);
+            }
         };
         document.addEventListener('mousedown', close);
         return () => document.removeEventListener('mousedown', close);
@@ -138,7 +203,32 @@ const BmAccountPanel = () => {
         window.location.replace('/');
     };
 
+    const handleCreateAccount = async (type: TabId) => {
+        setCreateError('');
+        setCreating(type);
+        try {
+            await createAccount(type);
+            setTab(type);
+        } catch (err) {
+            setCreateError(err instanceof Error ? err.message : String(err));
+        } finally {
+            setCreating(null);
+        }
+    };
+
     const tabAccounts = tab === 'real' ? liveAccounts : demoAccounts;
+
+    const activeCurrencyLabel = activeAccount
+        ? displayKes && kesRate && activeAccount.currency !== 'KES'
+            ? 'KES'
+            : activeAccount.currency
+        : '—';
+
+    const activeBalanceDisplay = activeAccount
+        ? showBalance
+            ? convertBalance(activeAccount.balance, activeAccount.currency, kesRate, displayKes)
+            : '•••••'
+        : '—';
 
     return (
         <>
@@ -157,11 +247,19 @@ const BmAccountPanel = () => {
                     {isActiveDemo ? 'Demo' : 'Live'}
                 </span>
                 <div className='bm-ap__trigger-info'>
-                    <span className='bm-ap__trigger-currency'>{activeAccount?.currency ?? '—'}</span>
-                    <span className='bm-ap__trigger-balance'>
-                        {activeAccount != null ? activeAccount.balance.toFixed(2) : '—'}
-                    </span>
+                    {/*<span className='bm-ap__trigger-currency'>{activeCurrencyLabel}</span>*/}
+                    <span className='bm-ap__trigger-balance'>{activeBalanceDisplay}</span>
                 </div>
+                <button
+                    className='bm-ap__balance-toggle'
+                    onClick={e => {
+                        e.stopPropagation();
+                        setShowBalance(v => !v);
+                    }}
+                    aria-label={showBalance ? 'Hide balance' : 'Show balance'}
+                >
+                    <EyeIcon visible={showBalance} />
+                </button>
                 <ChevronIcon up={open} />
             </button>
 
@@ -173,16 +271,43 @@ const BmAccountPanel = () => {
                         style={{ top: dropPos.top, right: dropPos.right }}
                         onMouseDown={e => e.stopPropagation()}
                     >
-                        {/* Header with active account summary */}
+                        {/* Header */}
                         <div className='bm-ap__header'>
                             <div className='bm-ap__header-account'>
                                 <span className='bm-ap__header-id'>{activeAccount?.account_id ?? '—'}</span>
-                                <span className='bm-ap__header-balance'>
-                                    {activeAccount
-                                        ? `${activeAccount.currency} ${activeAccount.balance.toFixed(2)}`
-                                        : '—'}
-                                </span>
+                                <div className='bm-ap__header-balance-row'>
+                                    <span className='bm-ap__header-balance'>{activeBalanceDisplay}</span>
+                                    <button
+                                        className='bm-ap__balance-toggle'
+                                        onClick={() => setShowBalance(v => !v)}
+                                        aria-label={showBalance ? 'Hide balance' : 'Show balance'}
+                                    >
+                                        <EyeIcon visible={showBalance} />
+                                    </button>
+                                </div>
                             </div>
+                            {kesRate && (
+                                <div className='bm-ap__currency-row'>
+                                    <span className='bm-ap__rate-hint'>1 USD ≈ KES {fmt.format(kesRate)}</span>
+                                    <button className='bm-ap__currency-toggle' onClick={() => setDisplayKes(v => !v)}>
+                                        <span
+                                            className={classNames('bm-ap__currency-opt', {
+                                                'bm-ap__currency-opt--active': displayKes,
+                                            })}
+                                        >
+                                            KES
+                                        </span>
+                                        <span className='bm-ap__currency-sep'>|</span>
+                                        <span
+                                            className={classNames('bm-ap__currency-opt', {
+                                                'bm-ap__currency-opt--active': !displayKes,
+                                            })}
+                                        >
+                                            USD
+                                        </span>
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         {/* Tab bar */}
@@ -222,10 +347,24 @@ const BmAccountPanel = () => {
                                         key={a.account_id}
                                         account={a}
                                         isActive={a.account_id === activeAccountId}
+                                        showBalance={showBalance}
+                                        kesRate={kesRate}
+                                        displayKes={displayKes}
                                         onSwitch={handleSwitch}
                                     />
                                 ))
                             )}
+                            <button
+                                className={classNames('bm-ap__create', { 'bm-ap__create--demo': tab === 'demo' })}
+                                onClick={() => handleCreateAccount(tab)}
+                                disabled={creating !== null}
+                            >
+                                {creating === tab ? '…' : '+'}
+                                <span>
+                                    {creating === tab ? 'Creating…' : `New ${tab === 'real' ? 'Live' : 'Demo'} account`}
+                                </span>
+                            </button>
+                            {createError && <p className='bm-ap__create-error'>{createError}</p>}
                         </div>
 
                         {/* Footer */}

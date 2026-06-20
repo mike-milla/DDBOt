@@ -34,9 +34,11 @@ const CallbackPage = () => {
         (async () => {
             try {
                 const access_token = await exchangeCode(code, state);
+                console.log('[callback] access_token:', access_token?.slice(0, 20) + '…');
 
                 setPhase('fetching');
                 const accounts = await fetchAccounts(access_token);
+                console.log('[callback] accounts:', accounts);
 
                 const first = accounts[0];
                 if (!first) throw new Error('No accounts returned from API.');
@@ -48,7 +50,7 @@ const CallbackPage = () => {
                 });
 
                 setPhase('done');
-                window.location.replace(`${window.location.origin}/bot`);
+                window.location.replace(`${window.location.origin}/app`);
             } catch (err) {
                 setErrorMsg(err instanceof Error ? err.message : String(err));
                 setPhase('error');

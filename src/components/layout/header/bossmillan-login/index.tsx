@@ -219,7 +219,6 @@ const BossMillanLoginButton = () => {
         <>
             <button className='bm-login-trigger' onClick={() => setOpen(true)} title='Login to BossMillan'>
                 <span className='bm-login-trigger__crown'>♔</span>
-                <span className='bm-login-trigger__label'>BossMillan</span>
                 <span className='bm-login-trigger__badge'>PRO</span>
             </button>
             {open && <BossMillanLoginDialog onClose={() => setOpen(false)} />}

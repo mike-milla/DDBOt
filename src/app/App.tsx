@@ -45,6 +45,7 @@ const router = createBrowserRouter(
                     </SuspenseWrapper>
                 }
             />
+            <Route path='/callback' element={<CallbackPage />} />
             <Route
                 path='/app'
                 element={
@@ -63,7 +64,6 @@ const router = createBrowserRouter(
                 {/* All child routes will be passed as children to Layout */}
                 <Route index element={<AppRoot />} />
                 <Route path='endpoint' element={isProduction() ? <Navigate to='/app' replace /> : <Endpoint />} />
-                <Route path='callback' element={<CallbackPage />} />
                 <Route path='free-bots' element={<FreeBots />} />
                 <Route path='exclusive-bots' element={<ExclusiveBots />} />
                 <Route path='copy-trader' element={<CopyTrader />} />

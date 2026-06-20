@@ -10,6 +10,8 @@
     border: 1.5px solid var(--border-normal);
     background: var(--general-main-2);
     cursor: pointer;
+    max-width: 22rem; // prevent trigger from growing unbounded
+    min-width: 0;
     transition:
         border-color 0.18s ease,
         box-shadow 0.18s ease;
@@ -40,6 +42,7 @@
     border-radius: 1.6rem;
     background: rgb(11 196 166 / 14%);
     color: #{$bm-teal};
+    flex-shrink: 0;
 
     &--demo {
         background: rgb(118 37 168 / 14%);
@@ -49,9 +52,13 @@
 
 .bm-ap__trigger-info {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
+    gap: 0.1rem;
     line-height: 1.2;
+    min-width: 0; // allow shrinking
+    flex: 1;
+    overflow: hidden;
 }
 
 .bm-ap__trigger-currency {
@@ -66,20 +73,24 @@
     font-size: 1.35rem;
     font-weight: 700;
     color: var(--text-general);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 // ── Panel (portal) ────────────────────────────────────────────────────────────
 .bm-ap__panel {
     position: fixed;
     z-index: 9999;
-    width: 30rem;
-    background: #09090f;
-    border: 1px solid rgb(11 196 166 / 18%);
+    width: min(30rem, calc(100vw - 1.6rem)); // never wider than the viewport
+    background: var(--general-main-1);
+    border: 1px solid var(--border-normal);
     border-radius: 1.6rem;
     overflow: hidden;
     box-shadow:
-        0 24px 64px rgb(0 0 0 / 70%),
-        0 0 40px rgb(11 196 166 / 5%);
+        0 24px 64px rgb(0 0 0 / 30%),
+        0 0 40px rgb(11 196 166 / 4%);
     animation: bm-ap-in 0.15s ease;
 
     &:before {
@@ -99,7 +110,9 @@
 .bm-ap__header-account {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    gap: 0.8rem;
+    flex-wrap: wrap; // wrap on very small panels
 }
 
 .bm-ap__header-id {
@@ -108,13 +121,92 @@
     color: var(--text-less-prominent);
     font-family: monospace;
     letter-spacing: 0.04em;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.bm-ap__header-balance-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-shrink: 0;
 }
 
 .bm-ap__header-balance {
-    font-size: 1.6rem;
+    font-size: clamp(1.2rem, 4vw, 1.6rem);
     font-weight: 800;
     color: var(--text-general);
     letter-spacing: -0.01em;
+    word-break: break-all; // long KES values wrap instead of overflow
+}
+
+.bm-ap__balance-toggle {
+    display: flex;
+    align-items: center;
+    padding: 0.3rem;
+    border: none;
+    border-radius: 0.4rem;
+    background: transparent;
+    color: var(--text-less-prominent);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: color 0.14s ease;
+
+    &:hover {
+        color: var(--text-general);
+    }
+}
+
+.bm-ap__currency-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+}
+
+.bm-ap__rate-hint {
+    font-size: 1rem;
+    color: var(--text-less-prominent);
+    opacity: 0.7;
+    white-space: nowrap;
+}
+
+.bm-ap__currency-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--border-normal);
+    border-radius: 2rem;
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 0.14s ease;
+
+    &:hover {
+        border-color: #{$bm-teal};
+    }
+}
+
+.bm-ap__currency-sep {
+    font-size: 1rem;
+    color: var(--border-normal);
+}
+
+.bm-ap__currency-opt {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-less-prominent);
+    transition: color 0.14s ease;
+
+    &--active {
+        color: #{$bm-teal};
+    }
 }
 
 // ── Tab bar ───────────────────────────────────────────────────────────────────
@@ -122,7 +214,7 @@
     display: flex;
     gap: 0.3rem;
     padding: 0 1rem;
-    border-bottom: 1px solid rgb(255 255 255 / 6%);
+    border-bottom: 1px solid var(--border-normal);
     margin-bottom: 0.4rem;
 }
 
@@ -139,6 +231,7 @@
     cursor: pointer;
     border-bottom: 2px solid transparent;
     margin-bottom: -1px;
+    white-space: nowrap;
     transition:
         color 0.15s ease,
         border-color 0.15s ease;
@@ -179,6 +272,7 @@
     min-height: 6rem;
     max-height: 24rem;
     overflow-y: auto;
+    overflow-x: hidden; // never scroll horizontally
 }
 
 .bm-ap__empty {
@@ -202,9 +296,11 @@
     cursor: pointer;
     transition: background 0.14s ease;
     text-align: left;
+    min-width: 0; // critical for flex overflow
+    overflow: hidden;
 
     &:hover {
-        background: rgb(255 255 255 / 5%);
+        background: var(--general-section-1);
     }
 
     &--active {
@@ -220,13 +316,16 @@
     display: flex;
     align-items: center;
     gap: 0.85rem;
+    min-width: 0; // allow shrinking
+    flex: 1;
+    overflow: hidden;
 }
 
 .bm-ap__account-dot {
     width: 0.7rem;
     height: 0.7rem;
     border-radius: 50%;
-    background: rgb(255 255 255 / 18%);
+    background: var(--border-normal);
     flex-shrink: 0;
 
     &--active {
@@ -239,6 +338,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.15rem;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .bm-ap__account-id {
@@ -247,6 +348,9 @@
     color: var(--text-general);
     font-family: monospace;
     letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .bm-ap__account-group {
@@ -255,19 +359,27 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--text-less-prominent);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .bm-ap__account-right {
     display: flex;
     align-items: center;
     gap: 0.7rem;
+    flex-shrink: 0;
+    max-width: 55%; // balance + check never dominate the row
 }
 
 .bm-ap__account-balance {
-    font-size: 1.25rem;
+    font-size: 1.15rem; // slightly smaller so long KES values fit
     font-weight: 700;
     color: var(--text-general);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .bm-ap__account-check {
@@ -277,9 +389,59 @@
     flex-shrink: 0;
 }
 
+// ── Create account button ────────────────────────────────────────────────────
+.bm-ap__create {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px dashed rgb(11 196 166 / 35%);
+    border-radius: 0.9rem;
+    background: transparent;
+    color: #{$bm-teal};
+    font-size: 1.15rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    transition:
+        background 0.14s ease,
+        border-color 0.14s ease;
+
+    &:hover:not(:disabled) {
+        background: rgb(11 196 166 / 7%);
+        border-color: rgb(11 196 166 / 60%);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &--demo {
+        border-color: rgb(118 37 168 / 35%);
+        color: rgb(180 100 255);
+
+        &:hover:not(:disabled) {
+            background: rgb(118 37 168 / 7%);
+            border-color: rgb(118 37 168 / 60%);
+        }
+    }
+}
+
+.bm-ap__create-error {
+    font-size: 1rem;
+    color: #ef4444;
+    padding: 0.4rem 0.9rem 0;
+    margin: 0;
+    word-break: break-word;
+}
+
 // ── Footer ────────────────────────────────────────────────────────────────────
 .bm-ap__footer {
-    border-top: 1px solid rgb(255 255 255 / 6%);
+    border-top: 1px solid var(--border-normal);
     padding: 0.5rem 0.6rem 0.6rem;
     margin-top: 0.2rem;
 }
@@ -299,6 +461,7 @@
     cursor: pointer;
     transition: background 0.14s ease;
     text-align: left;
+    white-space: nowrap;
 
     &:hover {
         background: rgb(239 68 68 / 8%);
