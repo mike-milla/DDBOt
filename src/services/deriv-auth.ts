@@ -54,7 +54,7 @@ export async function initiateLogin() {
     const params = new URLSearchParams({
         response_type: 'code',
         client_id: CLIENT_ID,
-        redirect_uri: `${window.location.origin}/callback`,
+        redirect_uri: window.location.origin,
         scope: SCOPE,
         state,
         code_challenge: codeChallenge,
@@ -73,7 +73,7 @@ export async function initiateSignup() {
     const params = new URLSearchParams({
         response_type: 'code',
         client_id: CLIENT_ID,
-        redirect_uri: `${window.location.origin}/callback`,
+        redirect_uri: window.location.origin,
         scope: SCOPE,
         state,
         code_challenge: codeChallenge,
@@ -101,7 +101,7 @@ export async function exchangeCode(code: string, returnedState: string): Promise
             client_id: CLIENT_ID,
             code,
             code_verifier: codeVerifier,
-            redirect_uri: `${window.location.origin}/callback`,
+            redirect_uri: window.location.origin,
         }),
     });
 

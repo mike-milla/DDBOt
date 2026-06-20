@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
-import ChunkLoader from '@/components/loader/chunk-loader';
+import TabLoader from '@/components/loader/tab-loader';
 import { generateOAuthURL } from '@/components/shared';
 import DesktopWrapper from '@/components/shared_ui/desktop-wrapper';
 import Dialog from '@/components/shared_ui/dialog';
@@ -501,9 +501,7 @@ const AppWrapper = observer(() => {
                                         : 'id-charts'
                                 }
                             >
-                                <Suspense
-                                    fallback={<ChunkLoader message={localize('Please wait, loading chart...')} />}
-                                >
+                                <Suspense fallback={<TabLoader message='Loading chart…' />}>
                                     <ChartWrapper show_digits_stats={false} />
                                 </Suspense>
                             </div>
@@ -522,11 +520,7 @@ const AppWrapper = observer(() => {
                                 id='id-free-bots'
                             >
                                 <div className='free-bots-wrapper'>
-                                    <Suspense
-                                        fallback={
-                                            <ChunkLoader message={localize('Please wait, loading free bots...')} />
-                                        }
-                                    >
+                                    <Suspense fallback={<TabLoader message='Loading free bots…' />}>
                                         <FreeBots />
                                     </Suspense>
                                 </div>
@@ -546,11 +540,7 @@ const AppWrapper = observer(() => {
                                 id='id-exclusive-bots'
                             >
                                 <div className='exclusive-bots-wrapper'>
-                                    <Suspense
-                                        fallback={
-                                            <ChunkLoader message={localize('Please wait, loading exclusive bots...')} />
-                                        }
-                                    >
+                                    <Suspense fallback={<TabLoader message='Loading exclusive bots…' />}>
                                         <ExclusiveBots />
                                     </Suspense>
                                 </div>
@@ -570,11 +560,7 @@ const AppWrapper = observer(() => {
                                 id='id-copy-trader'
                             >
                                 <div className='copy-trader-wrapper'>
-                                    <Suspense
-                                        fallback={
-                                            <ChunkLoader message={localize('Please wait, loading Copy Trader...')} />
-                                        }
-                                    >
+                                    <Suspense fallback={<TabLoader message='Loading Copy Trader…' />}>
                                         <CopyTrader />
                                     </Suspense>
                                 </div>
@@ -594,11 +580,7 @@ const AppWrapper = observer(() => {
                                 id='id-bulk-trader'
                             >
                                 <div className='bulk-trader-wrapper'>
-                                    <Suspense
-                                        fallback={
-                                            <ChunkLoader message={localize('Please wait, loading Bulk Trader...')} />
-                                        }
-                                    >
+                                    <Suspense fallback={<TabLoader message='Loading Bulk Trader…' />}>
                                         <BulkTrader />
                                     </Suspense>
                                 </div>
@@ -618,11 +600,7 @@ const AppWrapper = observer(() => {
                                 id='id-analysis-tool'
                             >
                                 <div className='dcircles-wrapper'>
-                                    <Suspense
-                                        fallback={
-                                            <ChunkLoader message={localize('Please wait, loading DCircles...')} />
-                                        }
-                                    >
+                                    <Suspense fallback={<TabLoader message='Loading Analysis Tool…' />}>
                                         <DCircles />
                                     </Suspense>
                                 </div>
@@ -640,7 +618,7 @@ const AppWrapper = observer(() => {
                                 }
                                 id='id-manual-trader'
                             >
-                                <Suspense fallback={<ChunkLoader message={localize('Loading Manual Trader…')} />}>
+                                <Suspense fallback={<TabLoader message='Loading Manual Trader…' />}>
                                     <ManualTrader />
                                 </Suspense>
                             </div>
@@ -659,11 +637,7 @@ const AppWrapper = observer(() => {
                                 id='id-tutorials'
                             >
                                 <div className='tutorials-wrapper'>
-                                    <Suspense
-                                        fallback={
-                                            <ChunkLoader message={localize('Please wait, loading tutorials...')} />
-                                        }
-                                    >
+                                    <Suspense fallback={<TabLoader message='Loading tutorials…' />}>
                                         <Tutorial handleTabChange={handleTabChange} />
                                     </Suspense>
                                 </div>

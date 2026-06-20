@@ -250,16 +250,24 @@ const BmAccountPanel = () => {
                     {/*<span className='bm-ap__trigger-currency'>{activeCurrencyLabel}</span>*/}
                     <span className='bm-ap__trigger-balance'>{activeBalanceDisplay}</span>
                 </div>
-                <button
+                <div
+                    role='button'
+                    tabIndex={0}
                     className='bm-ap__balance-toggle'
                     onClick={e => {
                         e.stopPropagation();
                         setShowBalance(v => !v);
                     }}
+                    onKeyDown={e => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.stopPropagation();
+                            setShowBalance(v => !v);
+                        }
+                    }}
                     aria-label={showBalance ? 'Hide balance' : 'Show balance'}
                 >
                     <EyeIcon visible={showBalance} />
-                </button>
+                </div>
                 <ChevronIcon up={open} />
             </button>
 

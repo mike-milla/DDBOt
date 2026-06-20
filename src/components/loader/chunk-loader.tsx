@@ -1,5 +1,5 @@
-import PageLoader from './page-loader';
+import TabLoader from './tab-loader';
 
 export default function ChunkLoader({ message }: { message: string }) {
-    return <PageLoader message={message} />;
+    return <TabLoader message={message} />;
 }
