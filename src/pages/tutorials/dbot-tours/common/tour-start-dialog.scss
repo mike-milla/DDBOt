@@ -1,4 +1,5 @@
 @use 'components/shared/styles/mixins' as *;
+@use 'components/shared/styles/constants' as *;
 
 .tour-dialog {
     transition: unset;
@@ -7,44 +8,101 @@
         transform: unset;
         opacity: unset;
         transition: unset;
+        background: var(--general-main-1, #09090f) !important;
+        border: 1px solid rgb(11 196 166 / 18%) !important;
+        border-radius: 1.8rem !important;
+        box-shadow:
+            0 24px 64px rgb(0 0 0 / 65%),
+            0 0 48px rgb(11 196 166 / 5%) !important;
+        overflow: hidden;
+        padding: 0 !important;
+
+        // teal → purple gradient top line
+        &:before {
+            content: '';
+            position: absolute;
+            inset: 0 0 auto;
+            height: 2px;
+            background: linear-gradient(90deg, #{$bm-teal}, #{$bm-purple});
+        }
 
         @include mobile-screen {
             width: 90vw;
-            padding: 1.6rem;
         }
     }
 
+    // ── Header ────────────────────────────────────────────────────────────────
     .dc-dialog__content {
+        padding: 3.2rem 3.2rem 1.6rem !important;
+
         &__header {
             text-align: start;
-            margin-bottom: 2.4rem;
+            margin-bottom: 1.6rem;
+
+            // Target the Text component inside — make it gradient-branded
+            .dc-text {
+                font-size: 2rem !important;
+                font-weight: 800 !important;
+                background: linear-gradient(135deg, #fff 20%, #{$bm-teal} 100%);
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                line-height: 1.25;
+
+                @include mobile-screen {
+                    font-size: 1.6rem !important;
+                }
+            }
         }
 
         &__description {
             text-align: start;
-            line-height: 2.8;
+            line-height: 1.8;
 
             @include mobile-or-tablet-screen {
-                line-height: 2.2;
+                line-height: 1.7;
+            }
+
+            // body text
+            .dc-text {
+                color: var(--text-less-prominent) !important;
+                font-size: 1.3rem !important;
+                line-height: 1.8;
             }
 
             &__text {
-                margin-bottom: 1.6rem;
+                margin-bottom: 1.2rem;
+                color: var(--text-less-prominent);
+                font-size: 1.3rem;
+                line-height: 1.8;
+
+                // Bold highlights inside text (e.g. <strong>Tutorials</strong>)
+                strong {
+                    color: #{$bm-teal};
+                    font-weight: 700;
+                }
             }
         }
     }
 
+    // ── Footer / buttons ──────────────────────────────────────────────────────
     .dc-dialog__footer {
+        padding: 1.6rem 3.2rem 2.8rem !important;
+        border-top: 1px solid rgb(255 255 255 / 6%);
+        gap: 1rem;
+
         @include mobile-screen {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            flex-wrap: wrap;
             height: unset;
             align-content: flex-end;
+            gap: 0.8rem;
 
             button {
                 &:first-child {
                     margin-bottom: unset;
-                    margin-inline-end: 0.8rem;
+                    margin-inline-end: 0;
                 }
             }
         }
@@ -53,6 +111,40 @@
             button {
                 flex-basis: unset;
                 margin-bottom: unset;
+            }
+        }
+
+        // Skip button (secondary)
+        .dc-dialog__button.dc-btn--secondary,
+        .dc-dialog__button:first-child {
+            background: transparent !important;
+            border: 1.5px solid rgb(11 196 166 / 35%) !important;
+            color: #{$bm-teal} !important;
+            border-radius: 2.4rem !important;
+            font-weight: 700 !important;
+            transition:
+                background 0.18s ease,
+                border-color 0.18s ease !important;
+
+            &:hover {
+                background: rgb(11 196 166 / 8%) !important;
+                border-color: #{$bm-teal} !important;
+            }
+        }
+
+        // Start button (primary)
+        .dc-dialog__button.dc-btn--primary,
+        .dc-dialog__button:last-child {
+            background: linear-gradient(135deg, #{$bm-teal}, #{$bm-purple}) !important;
+            border: none !important;
+            border-radius: 2.4rem !important;
+            color: #fff !important;
+            font-weight: 700 !important;
+            box-shadow: 0 4px 20px rgb(11 196 166 / 25%) !important;
+            transition: opacity 0.18s ease !important;
+
+            &:hover {
+                opacity: 0.88 !important;
             }
         }
     }
