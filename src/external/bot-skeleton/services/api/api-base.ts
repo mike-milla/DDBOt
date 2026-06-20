@@ -1,7 +1,6 @@
-import Cookies from 'js-cookie';
+import { fetchAccountOtp, loadAuthState } from '@/services/deriv-auth';
 import CommonStore from '@/stores/common-store';
 import { TAuthData } from '@/types/api-types';
-import { clearAuthData } from '@/utils/auth-utils';
 import { observer as globalObserver } from '../../utils/observer';
 import { doUntilDone, socket_state } from '../tradeEngine/utils/helpers';
 import {
@@ -13,7 +12,7 @@ import {
     setIsAuthorizing,
 } from './observables/connection-status-stream';
 import ApiHelpers from './api-helpers';
-import { generateDerivApiInstance, V2GetActiveClientId, V2GetActiveToken } from './appId';
+import { generateDerivApiInstance, V2GetActiveToken } from './appId';
 import chart_api from './chart-api';
 
 type CurrentSubscription = {
@@ -157,37 +156,63 @@ class APIBase {
     };
 
     async authorizeAndSubscribe() {
-        const token = V2GetActiveToken();
-        if (!token || !this.api) return;
-        this.token = token;
-        this.account_id = V2GetActiveClientId() ?? '';
+        if (!this.api) return;
         setIsAuthorizing(true);
         setIsAuthorized(false);
 
         try {
-            const { authorize, error } = await this.api.authorize(this.token);
-            if (error) {
-                if (error.code === 'InvalidToken') {
-                    const is_tmb_enabled = window.is_tmb_enabled === true;
-                    if (Cookies.get('logged_state') === 'true' && !is_tmb_enabled) {
-                        globalObserver.emit('InvalidToken', { error });
-                    } else {
-                        clearAuthData();
-                    }
-                } else {
-                    console.error('Authorization error:', error);
-                }
+            const authState = loadAuthState();
+            if (!authState) {
                 setIsAuthorizing(false);
-                return error;
+                return;
             }
 
+            // Get a pre-authenticated WebSocket URL — the OTP URL already embeds auth,
+            // so no separate WS "authorize" message is needed after connecting.
+            const wsUrl = await fetchAccountOtp(authState.access_token, authState.active_account_id);
+
+            // Replace the existing WS connection with the OTP-authenticated one.
+            this.api.disconnect();
+            this.api.connection.removeEventListener('open', this.onsocketopen.bind(this));
+            this.api.connection.removeEventListener('close', this.onsocketclose.bind(this));
+
+            this.api = generateDerivApiInstance(wsUrl);
+            this.api.connection.addEventListener('open', this.onsocketopen.bind(this));
+            this.api.connection.addEventListener('close', this.onsocketclose.bind(this));
+
+            await new Promise<void>((resolve, reject) => {
+                const ws = this.api!.connection as unknown as WebSocket;
+                ws.addEventListener('open', () => resolve(), { once: true });
+                ws.addEventListener('error', () => reject(new Error('WS connection failed')), { once: true });
+            });
+
+            // Build auth data from our stored REST state — no WS authorize call needed.
+            const activeAccount = authState.accounts.find(a => a.account_id === authState.active_account_id);
+            const account_list = authState.accounts.map(a => ({
+                loginid: a.account_id,
+                currency: a.currency ?? '',
+                is_virtual: a.account_type === 'demo' ? 1 : 0,
+                is_disabled: 0,
+                is_active: a.account_id === authState.active_account_id ? 1 : 0,
+                landing_company_name: a.group ?? 'svg',
+            }));
+
+            const authorize = {
+                loginid: authState.active_account_id,
+                account_list,
+                currency: activeAccount?.currency ?? 'USD',
+                balance: activeAccount?.balance ?? 0,
+                email: activeAccount?.email ?? '',
+            } as unknown as TAuthData;
+
+            this.account_id = authState.active_account_id;
             this.account_info = authorize;
-            setAccountList(authorize?.account_list || []);
+            localStorage.setItem('client_account_details', JSON.stringify(account_list));
+
+            setAccountList(account_list as unknown as TAuthData['account_list']);
             setAuthData(authorize);
             setIsAuthorized(true);
             this.is_authorized = true;
-            localStorage.setItem('client_account_details', JSON.stringify(authorize?.account_list));
-            localStorage.setItem('client.country', authorize?.country);
 
             if (this.has_active_symbols) {
                 this.toggleRunButton(false);
@@ -195,11 +220,9 @@ class APIBase {
                 this.active_symbols_promise = this.getActiveSymbols();
             }
             this.subscribe();
-            // this.getSelfExclusion(); commented this so we dont call it from two places
         } catch (e) {
             console.error('Authorization failed:', e);
             this.is_authorized = false;
-            clearAuthData();
             setIsAuthorized(false);
             globalObserver.emit('Error', e);
         } finally {
@@ -220,7 +243,6 @@ class APIBase {
                     const subscription = this.api?.send({
                         [streamName]: 1,
                         subscribe: 1,
-                        ...(streamName === 'balance' ? { account: 'all' } : {}),
                     });
                     if (subscription) {
                         this.current_auth_subscriptions.push(subscription);

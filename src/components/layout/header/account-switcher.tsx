@@ -5,9 +5,9 @@ import { CurrencyIcon } from '@/components/currency/currency-icon';
 import { addComma, getDecimalPlaces } from '@/components/shared';
 import Popover from '@/components/shared_ui/popover';
 import { api_base } from '@/external/bot-skeleton';
-import { useOauth2 } from '@/hooks/auth/useOauth2';
 import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
+import { clearAuthState, setActiveAccount } from '@/services/deriv-auth';
 import { waitForDomElement } from '@/utils/dom-observer';
 import { Analytics } from '@deriv-com/analytics';
 import { localize } from '@deriv-com/translations';
@@ -34,7 +34,12 @@ const RenderAccountItems = ({
     activeLoginId,
     client,
 }: TAccountSwitcherProps) => {
-    const { oAuthLogout } = useOauth2({ handleLogout: async () => client.logout(), client });
+    const handleLogout = () => {
+        client.logout().then(() => {
+            clearAuthState();
+            window.location.replace('/');
+        });
+    };
     const is_low_risk_country = LOW_RISK_COUNTRIES().includes(client.account_settings?.country_code ?? '');
     const is_virtual = !!isVirtual;
     const residence = client.residence;
@@ -62,7 +67,7 @@ const RenderAccountItems = ({
                     activeLoginId={activeLoginId}
                     isVirtual={is_virtual}
                     tabs_labels={tabs_labels}
-                    oAuthLogout={oAuthLogout}
+                    oAuthLogout={handleLogout}
                     is_logging_out={client.is_logging_out}
                 />
             </>
@@ -76,7 +81,7 @@ const RenderAccountItems = ({
                 isVirtual={is_virtual}
                 tabs_labels={tabs_labels}
                 is_low_risk_country={is_low_risk_country}
-                oAuthLogout={oAuthLogout}
+                oAuthLogout={handleLogout}
                 loginid={activeLoginId}
                 is_logging_out={client.is_logging_out}
                 upgradeable_landing_companies={client?.landing_companies?.all_company ?? null}
@@ -137,11 +142,7 @@ const AccountSwitcher = observer(({ activeAccount }: TAccountSwitcher) => {
 
     const switchAccount = async (loginId: number) => {
         if (loginId.toString() === activeAccount?.loginid) return;
-        const account_list = JSON.parse(localStorage.getItem('accountsList') ?? '{}');
-        const token = account_list[loginId];
-        if (!token) return;
-        localStorage.setItem('authToken', token);
-        localStorage.setItem('active_loginid', loginId.toString());
+        setActiveAccount(loginId.toString());
         const account_type =
             loginId
                 .toString()

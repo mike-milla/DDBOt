@@ -56,7 +56,7 @@ const getDefaultServerURL = () => {
         active_loginid_from_url = params.get('acct1');
     }
 
-    const loginid = window.localStorage.getItem('active_loginid') ?? active_loginid_from_url;
+    const loginid = window.localStorage.getItem('deriv_active_account') ?? active_loginid_from_url;
     const is_real = loginid && !/^(VRT|VRW)/.test(loginid);
 
     const server = is_real ? 'green' : 'blue';

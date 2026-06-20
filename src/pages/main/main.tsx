@@ -4,29 +4,24 @@ import { observer } from 'mobx-react-lite';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import TabLoader from '@/components/loader/tab-loader';
-import { generateOAuthURL } from '@/components/shared';
 import DesktopWrapper from '@/components/shared_ui/desktop-wrapper';
 import Dialog from '@/components/shared_ui/dialog';
 import MobileWrapper from '@/components/shared_ui/mobile-wrapper';
-import Tabs from '@/components/shared_ui/tabs/tabs';
 import TradingViewModal from '@/components/trading-view-chart/trading-view-modal';
 import { DBOT_TABS, TAB_IDS } from '@/constants/bot-contents';
 import { api_base, updateWorkspaceName } from '@/external/bot-skeleton';
 import { CONNECTION_STATUS } from '@/external/bot-skeleton/services/api/observables/connection-status-stream';
 import { isDbotRTL } from '@/external/bot-skeleton/utils/workspace';
-import { useOauth2 } from '@/hooks/auth/useOauth2';
 import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
-import useTMB from '@/hooks/useTMB';
-import { handleOidcAuthFailure } from '@/utils/auth-utils';
+import { initiateLogin } from '@/services/deriv-auth';
 import {
     LabelPairedChartLineCaptionRegularIcon,
     LabelPairedLaptopMobileCaptionRegularIcon,
     LabelPairedObjectsColumnCaptionRegularIcon,
     LabelPairedPuzzlePieceTwoCaptionBoldIcon,
 } from '@deriv/quill-icons/LabelPaired';
-import { LegacyCircleTrendUpIcon, LegacyGuide1pxIcon } from '@deriv/quill-icons/Legacy';
-import { requestOidcAuthentication } from '@deriv-com/auth-client';
+import { LegacyGuide1pxIcon } from '@deriv/quill-icons/Legacy';
 import { Localize, localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
 import AiFab from '../../components/ai-fab';
@@ -42,11 +37,10 @@ const FreeBots = lazy(() => import('../free-bots'));
 const ExclusiveBots = lazy(() => import('../exclusive-bots'));
 const CopyTrader = lazy(() => import('../copy-trader'));
 const BulkTrader = lazy(() => import('../bulk-trader'));
-const AnalysisTool = lazy(() => import('../analysis-tool'));
 const DCircles = lazy(() => import('../dcircles'));
 const ManualTrader = lazy(() => import('../manual-trader'));
 
-// Single source of truth for all tab metadata. Array index = Tabs child position.
+// Tab definitions: array index == the active_tab value used by the store.
 const TAB_DEFS = [
     { id: 'id-dbot-dashboard', name: 'Dashboard' }, // 0
     { id: 'id-bot-builder', name: 'Bot Builder' }, // 1
@@ -71,14 +65,12 @@ const MoreToolsMenu = ({ activeTab, onSelect }: { activeTab: number; onSelect: (
     const btnRef = useRef<HTMLButtonElement>(null);
     const dropRef = useRef<HTMLDivElement>(null);
 
-    // Track window width so the hidden-tab slice updates on resize.
     useEffect(() => {
         const handler = () => setWidth(window.innerWidth);
         window.addEventListener('resize', handler);
         return () => window.removeEventListener('resize', handler);
     }, []);
 
-    // Recalculate dropdown anchor whenever it is open OR the window is resized.
     useEffect(() => {
         if (!open) return;
         const recalc = () => {
@@ -92,7 +84,6 @@ const MoreToolsMenu = ({ activeTab, onSelect }: { activeTab: number; onSelect: (
         return () => window.removeEventListener('resize', recalc);
     }, [open]);
 
-    // Close on outside click.
     useEffect(() => {
         const handler = (e: MouseEvent) => {
             if (!btnRef.current?.contains(e.target as Node) && !dropRef.current?.contains(e.target as Node))
@@ -103,16 +94,15 @@ const MoreToolsMenu = ({ activeTab, onSelect }: { activeTab: number; onSelect: (
     }, []);
 
     const visibleCount = getVisibleCount(width);
-    const hidden = TAB_DEFS.slice(visibleCount); // the overflow items
+    const hidden = TAB_DEFS.slice(visibleCount);
     const isActiveInMore = hidden.some((_, i) => visibleCount + i === activeTab);
 
     const toggleOpen = (e: React.MouseEvent) => {
-        e.stopPropagation(); // prevent the enclosing Tab <li> from switching tabs
+        e.stopPropagation();
         setOpen(o => !o);
     };
 
     return (
-        // stopPropagation on the wrapper catches any bubbled events from children
         <div className='main__more' onClick={e => e.stopPropagation()}>
             {hidden.length > 0 && (
                 <button
@@ -186,6 +176,36 @@ const MoreToolsMenu = ({ activeTab, onSelect }: { activeTab: number; onSelect: (
     );
 };
 
+/** Returns the icon for a tab at the given index. */
+const TabIcon = ({ idx, active }: { idx: number; active: boolean }) => {
+    const fill = active ? '#0bc4a6' : 'currentColor';
+    const s20 = { height: '20px', width: '20px' };
+    switch (idx) {
+        case 0:
+            return <LabelPairedObjectsColumnCaptionRegularIcon {...s20} fill={fill} />;
+        case 1:
+            return <LabelPairedPuzzlePieceTwoCaptionBoldIcon {...s20} fill={fill} />;
+        case 2:
+            return <LabelPairedChartLineCaptionRegularIcon {...s20} fill={fill} />;
+        case 3:
+            return <LabelPairedObjectsColumnCaptionRegularIcon {...s20} fill={fill} />;
+        case 4:
+            return <LabelPairedObjectsColumnCaptionRegularIcon {...s20} fill={fill} />;
+        case 5:
+            return <LabelPairedObjectsColumnCaptionRegularIcon {...s20} fill={fill} />;
+        case 6:
+            return <LabelPairedObjectsColumnCaptionRegularIcon {...s20} fill={fill} />;
+        case 7:
+            return <LabelPairedChartLineCaptionRegularIcon {...s20} fill={fill} />;
+        case 8:
+            return <LabelPairedLaptopMobileCaptionRegularIcon {...s20} fill={fill} />;
+        case 9:
+            return <LegacyGuide1pxIcon height='18px' width='18px' fill={fill} className='icon-general-fill-g-path' />;
+        default:
+            return null;
+    }
+};
+
 const AppWrapper = observer(() => {
     const { connectionStatus } = useApiBase();
     const { dashboard, load_modal, run_panel, quick_strategy, summary_card } = useStore();
@@ -217,7 +237,6 @@ const AppWrapper = observer(() => {
     const { DASHBOARD, BOT_BUILDER } = DBOT_TABS;
     const init_render = React.useRef(true);
 
-    // Track window width to drive both CSS tab hiding and the More dropdown.
     const [winWidth, setWinWidth] = useState(window.innerWidth);
     useEffect(() => {
         const handler = () => setWinWidth(window.innerWidth);
@@ -225,15 +244,14 @@ const AppWrapper = observer(() => {
         return () => window.removeEventListener('resize', handler);
     }, []);
     const visibleCount = getVisibleCount(winWidth);
-    // Build a CSS rule that hides every tab beyond the visible slice.
-    const hiddenTabStyle = React.useMemo(() => {
-        const ids = TAB_DEFS.slice(visibleCount)
-            .map(t => `#${t.id}`)
-            .join(', ');
-        return ids ? `${ids} { display: none !important; }` : '';
-    }, [visibleCount]);
 
-    const tabIconFill = (tabIdx: number) => (active_tab === tabIdx ? '#0bc4a6' : 'currentColor');
+    const [left_tab_shadow, setLeftTabShadow] = useState<boolean>(false);
+    const [right_tab_shadow, setRightTabShadow] = useState<boolean>(false);
+
+    const { isDesktop } = useDevice();
+    const location = useLocation();
+    const navigate = useNavigate();
+
     const hash = [
         'dashboard',
         'bot_builder',
@@ -243,15 +261,9 @@ const AppWrapper = observer(() => {
         'copy_trader',
         'bulk_trader',
         'analysis_tool',
-        'dcircles',
         'manual_trader',
         'tutorial',
     ];
-    const { isDesktop } = useDevice();
-    const location = useLocation();
-    const navigate = useNavigate();
-    const [left_tab_shadow, setLeftTabShadow] = useState<boolean>(false);
-    const [right_tab_shadow, setRightTabShadow] = useState<boolean>(false);
 
     let tab_value: number | string = active_tab;
     const GetHashedValue = (tab: number) => {
@@ -261,43 +273,28 @@ const AppWrapper = observer(() => {
     };
     const active_hash_tab = GetHashedValue(active_tab);
 
-    const { onRenderTMBCheck, isTmbEnabled } = useTMB();
-
+    // ── Tab shadows ───────────────────────────────────────────────────────────
     React.useEffect(() => {
-        const el_dashboard = document.getElementById('id-dbot-dashboard');
-        const el_tutorial = document.getElementById('id-tutorials');
+        const el_first = document.getElementById('id-dbot-dashboard');
+        const el_last = document.getElementById('id-tutorials');
 
-        const observer_dashboard = new window.IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setLeftTabShadow(false);
-                    return;
-                }
-                setLeftTabShadow(true);
-            },
-            {
-                root: null,
-                threshold: 0.5, // set offset 0.1 means trigger if atleast 10% of element in viewport
-            }
-        );
-
-        const observer_tutorial = new window.IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setRightTabShadow(false);
-                    return;
-                }
-                setRightTabShadow(true);
-            },
-            {
-                root: null,
-                threshold: 0.5, // set offset 0.1 means trigger if atleast 10% of element in viewport
-            }
-        );
-        observer_dashboard.observe(el_dashboard);
-        observer_tutorial.observe(el_tutorial);
+        const obs_first = new window.IntersectionObserver(([entry]) => setLeftTabShadow(!entry.isIntersecting), {
+            root: null,
+            threshold: 0.5,
+        });
+        const obs_last = new window.IntersectionObserver(([entry]) => setRightTabShadow(!entry.isIntersecting), {
+            root: null,
+            threshold: 0.5,
+        });
+        if (el_first) obs_first.observe(el_first);
+        if (el_last) obs_last.observe(el_last);
+        return () => {
+            obs_first.disconnect();
+            obs_last.disconnect();
+        };
     });
 
+    // ── Stop bot on disconnect ────────────────────────────────────────────────
     React.useEffect(() => {
         if (connectionStatus !== CONNECTION_STATUS.OPENED) {
             const is_bot_running = document.getElementById('db-animation__stop-button') !== null;
@@ -310,26 +307,28 @@ const AppWrapper = observer(() => {
         }
     }, [clear, connectionStatus, setWebSocketState, stopBot]);
 
-    // Update tab shadows height to match bot builder height
-    const updateTabShadowsHeight = () => {
-        const botBuilderEl = document.getElementById('id-bot-builder');
-        const leftShadow = document.querySelector('.tabs-shadow--left') as HTMLElement;
-        const rightShadow = document.querySelector('.tabs-shadow--right') as HTMLElement;
-
-        if (botBuilderEl && leftShadow && rightShadow) {
-            const height = botBuilderEl.offsetHeight;
-            leftShadow.style.height = `${height}px`;
-            rightShadow.style.height = `${height}px`;
-        }
-    };
+    // ── Tab change side-effects ───────────────────────────────────────────────
+    React.useEffect(() => {
+        // Update trashcan position after Blockly renders
+        const id = setTimeout(() => {
+            if (active_tab === BOT_BUILDER && Blockly?.derivWorkspace?.trashcan) {
+                const trashcanY = window.innerHeight - 250;
+                const trashcanX = is_drawer_open
+                    ? isDbotRTL()
+                        ? 380
+                        : window.innerWidth - 460
+                    : isDbotRTL()
+                      ? 20
+                      : window.innerWidth - 100;
+                Blockly?.derivWorkspace?.trashcan?.setTrashcanPosition(trashcanX, trashcanY);
+            }
+        }, 100);
+        return () => clearTimeout(id);
+        //eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [active_tab, is_drawer_open]);
 
     React.useEffect(() => {
-        // Run on mount and when active tab changes
-        updateTabShadowsHeight();
-
-        if (is_open) {
-            setTourDialogVisibility(false);
-        }
+        if (is_open) setTourDialogVisibility(false);
 
         if (init_render.current) {
             setActiveTab(Number(active_hash_tab));
@@ -338,54 +337,24 @@ const AppWrapper = observer(() => {
         } else {
             navigate(`#${hash[active_tab] || hash[0]}`);
         }
-        if (active_tour !== '') {
-            setActiveTour('');
-        }
+        if (active_tour !== '') setActiveTour('');
 
-        // Prevent scrolling when tutorial tab is active (only on mobile)
-        const mainElement = document.querySelector('.main__container');
+        // Prevent body scroll on tutorial tab (mobile only)
+        const mainEl = document.querySelector('.main__container');
         if (active_tab === DBOT_TABS.TUTORIAL && !isDesktop) {
             document.body.style.overflow = 'hidden';
-            if (mainElement instanceof HTMLElement) {
-                mainElement.classList.add('no-scroll');
-            }
+            (mainEl as HTMLElement)?.classList.add('no-scroll');
         } else {
             document.body.style.overflow = '';
-            if (mainElement instanceof HTMLElement) {
-                mainElement.classList.remove('no-scroll');
-            }
+            (mainEl as HTMLElement)?.classList.remove('no-scroll');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [active_tab]);
 
-    React.useEffect(() => {
-        const trashcan_init_id = setTimeout(() => {
-            if (active_tab === BOT_BUILDER && Blockly?.derivWorkspace?.trashcan) {
-                const trashcanY = window.innerHeight - 250;
-                let trashcanX;
-                if (is_drawer_open) {
-                    trashcanX = isDbotRTL() ? 380 : window.innerWidth - 460;
-                } else {
-                    trashcanX = isDbotRTL() ? 20 : window.innerWidth - 100;
-                }
-                Blockly?.derivWorkspace?.trashcan?.setTrashcanPosition(trashcanX, trashcanY);
-            }
-        }, 100);
-
-        return () => {
-            clearTimeout(trashcan_init_id); // Clear the timeout on unmount
-        };
-        //eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [active_tab, is_drawer_open]);
-
     useEffect(() => {
         let timer: ReturnType<typeof setTimeout>;
         if (dashboard_strategies.length > 0) {
-            // Needed to pass this to the Callback Queue as on tab changes
-            // document title getting override by 'Bot | Deriv' only
-            timer = setTimeout(() => {
-                updateWorkspaceName();
-            });
+            timer = setTimeout(() => updateWorkspaceName());
         }
         return () => {
             if (timer) clearTimeout(timer);
@@ -398,52 +367,15 @@ const AppWrapper = observer(() => {
             const el_id = TAB_IDS[tab_index];
             if (el_id) {
                 const el_tab = document.getElementById(el_id);
-                setTimeout(() => {
-                    el_tab?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-                }, 10);
+                setTimeout(() => el_tab?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }), 10);
             }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [active_tab]
     );
 
-    const { isOAuth2Enabled } = useOauth2();
-    const handleLoginGeneration = async () => {
-        if (!isOAuth2Enabled) {
-            window.location.replace(generateOAuthURL());
-        } else {
-            const getQueryParams = new URLSearchParams(window.location.search);
-            const currency = getQueryParams.get('account') ?? '';
-            const query_param_currency = currency || sessionStorage.getItem('query_param_currency') || 'USD';
+    const panel = (idx: number) => (active_tab === idx ? ' bm-tabs__panel--active' : '');
 
-            try {
-                // First, explicitly wait for TMB status to be determined
-                const tmbEnabled = await isTmbEnabled();
-                // Now use the result of the explicit check
-                if (tmbEnabled) {
-                    await onRenderTMBCheck();
-                } else {
-                    try {
-                        await requestOidcAuthentication({
-                            redirectCallbackUri: `${window.location.origin}/callback`,
-                            ...(query_param_currency
-                                ? {
-                                      state: {
-                                          account: query_param_currency,
-                                      },
-                                  }
-                                : {}),
-                        });
-                    } catch (err) {
-                        handleOidcAuthFailure(err);
-                    }
-                }
-            } catch (error) {
-                // eslint-disable-next-line no-console
-                console.error(error);
-            }
-        }
-    };
     return (
         <React.Fragment>
             <div className='main'>
@@ -452,207 +384,117 @@ const AppWrapper = observer(() => {
                         'main__container--active': active_tour && active_tab === DASHBOARD && !isDesktop,
                     })}
                 >
+                    {/* ── Tab bar ── */}
                     <div className='main__tab-bar-wrap'>
-                        {hiddenTabStyle && <style>{hiddenTabStyle}</style>}
-                        {!isDesktop && left_tab_shadow && <span className='tabs-shadow tabs-shadow--left' />}{' '}
-                        <Tabs active_index={active_tab} className='main__tabs' onTabItemClick={handleTabChange} top>
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedObjectsColumnCaptionRegularIcon
-                                            height='20px'
-                                            width='20px'
-                                            fill={tabIconFill(DBOT_TABS.DASHBOARD)}
-                                        />
-                                        <Localize i18n_default_text='Dashboard' />
-                                    </>
-                                }
-                                id='id-dbot-dashboard'
-                            >
-                                <Dashboard handleTabChange={handleTabChange} />
-                            </div>
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedPuzzlePieceTwoCaptionBoldIcon
-                                            height='20px'
-                                            width='20px'
-                                            fill={tabIconFill(DBOT_TABS.BOT_BUILDER)}
-                                        />
-                                        <Localize i18n_default_text='Bot Builder' />
-                                    </>
-                                }
-                                id='id-bot-builder'
-                            />
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedChartLineCaptionRegularIcon
-                                            height='20px'
-                                            width='20px'
-                                            fill={tabIconFill(DBOT_TABS.CHART)}
-                                        />
-                                        <Localize i18n_default_text='Charts' />
-                                    </>
-                                }
-                                id={
-                                    is_chart_modal_visible || is_trading_view_modal_visible
-                                        ? 'id-charts--disabled'
-                                        : 'id-charts'
-                                }
-                            >
-                                <Suspense fallback={<TabLoader message='Loading chart…' />}>
-                                    <ChartWrapper show_digits_stats={false} />
+                        {!isDesktop && left_tab_shadow && <span className='tabs-shadow tabs-shadow--left' />}
+                        {!isDesktop && right_tab_shadow && <span className='tabs-shadow tabs-shadow--right' />}
+
+                        <div className='bm-tabs__list' role='tablist'>
+                            {TAB_DEFS.slice(0, visibleCount).map((tab, idx) => (
+                                <button
+                                    key={tab.id}
+                                    id={tab.id}
+                                    role='tab'
+                                    aria-selected={active_tab === idx}
+                                    className={`bm-tabs__item${active_tab === idx ? ' bm-tabs__item--active' : ''}`}
+                                    onClick={() => handleTabChange(idx)}
+                                >
+                                    <TabIcon idx={idx} active={active_tab === idx} />
+                                    <Localize i18n_default_text={tab.name} />
+                                </button>
+                            ))}
+                            <MoreToolsMenu activeTab={active_tab} onSelect={handleTabChange} />
+                        </div>
+                    </div>
+
+                    {/* ── Tab content ── */}
+                    <div className='bm-tabs__content'>
+                        {/* 0 – Dashboard */}
+                        <div className={`bm-tabs__panel${panel(0)}`}>
+                            <Dashboard handleTabChange={handleTabChange} />
+                        </div>
+
+                        {/* 1 – Bot Builder: always in DOM so Blockly can inject into it */}
+                        <div id='id-bot-builder' />
+
+                        {/* 2 – Charts */}
+                        <div
+                            id={
+                                is_chart_modal_visible || is_trading_view_modal_visible
+                                    ? 'id-charts--disabled'
+                                    : 'id-charts'
+                            }
+                            className={`bm-tabs__panel${panel(2)}`}
+                        >
+                            <Suspense fallback={<TabLoader message='Loading chart…' />}>
+                                <ChartWrapper show_digits_stats={false} />
+                            </Suspense>
+                        </div>
+
+                        {/* 3 – Free Bots */}
+                        <div className={`bm-tabs__panel${panel(3)}`}>
+                            <div className='free-bots-wrapper'>
+                                <Suspense fallback={<TabLoader message='Loading free bots…' />}>
+                                    <FreeBots />
                                 </Suspense>
                             </div>
+                        </div>
 
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedObjectsColumnCaptionRegularIcon
-                                            height='20px'
-                                            width='20px'
-                                            fill={tabIconFill(DBOT_TABS.FREE_BOTS)}
-                                        />
-                                        <Localize i18n_default_text='Free Bots' />
-                                    </>
-                                }
-                                id='id-free-bots'
-                            >
-                                <div className='free-bots-wrapper'>
-                                    <Suspense fallback={<TabLoader message='Loading free bots…' />}>
-                                        <FreeBots />
-                                    </Suspense>
-                                </div>
-                            </div>
-
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedObjectsColumnCaptionRegularIcon
-                                            height='20px'
-                                            width='20px'
-                                            fill={tabIconFill(DBOT_TABS.EXCLUSIVE_BOTS)}
-                                        />
-                                        <Localize i18n_default_text='Exclusive Bots' />
-                                    </>
-                                }
-                                id='id-exclusive-bots'
-                            >
-                                <div className='exclusive-bots-wrapper'>
-                                    <Suspense fallback={<TabLoader message='Loading exclusive bots…' />}>
-                                        <ExclusiveBots />
-                                    </Suspense>
-                                </div>
-                            </div>
-
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedObjectsColumnCaptionRegularIcon
-                                            height='20px'
-                                            width='20px'
-                                            fill={tabIconFill(DBOT_TABS.COPY_TRADER)}
-                                        />
-                                        <Localize i18n_default_text='Copy Trader' />
-                                    </>
-                                }
-                                id='id-copy-trader'
-                            >
-                                <div className='copy-trader-wrapper'>
-                                    <Suspense fallback={<TabLoader message='Loading Copy Trader…' />}>
-                                        <CopyTrader />
-                                    </Suspense>
-                                </div>
-                            </div>
-
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedObjectsColumnCaptionRegularIcon
-                                            height='20px'
-                                            width='20px'
-                                            fill={tabIconFill(DBOT_TABS.BULK_TRADER)}
-                                        />
-                                        <Localize i18n_default_text='Bulk Trader' />
-                                    </>
-                                }
-                                id='id-bulk-trader'
-                            >
-                                <div className='bulk-trader-wrapper'>
-                                    <Suspense fallback={<TabLoader message='Loading Bulk Trader…' />}>
-                                        <BulkTrader />
-                                    </Suspense>
-                                </div>
-                            </div>
-
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedChartLineCaptionRegularIcon
-                                            height='20px'
-                                            width='20px'
-                                            fill={tabIconFill(DBOT_TABS.ANALYSIS_TOOL)}
-                                        />
-                                        <Localize i18n_default_text='Analysis Tool' />
-                                    </>
-                                }
-                                id='id-analysis-tool'
-                            >
-                                <div className='dcircles-wrapper'>
-                                    <Suspense fallback={<TabLoader message='Loading Analysis Tool…' />}>
-                                        <DCircles />
-                                    </Suspense>
-                                </div>
-                            </div>
-                            <div
-                                label={
-                                    <>
-                                        <LabelPairedLaptopMobileCaptionRegularIcon
-                                            height='20px'
-                                            width='20px'
-                                            fill={tabIconFill(DBOT_TABS.MANUAL_TRADER)}
-                                        />
-                                        <Localize i18n_default_text='Manual Trader' />
-                                    </>
-                                }
-                                id='id-manual-trader'
-                            >
-                                <Suspense fallback={<TabLoader message='Loading Manual Trader…' />}>
-                                    <ManualTrader />
+                        {/* 4 – Exclusive Bots */}
+                        <div className={`bm-tabs__panel${panel(4)}`}>
+                            <div className='exclusive-bots-wrapper'>
+                                <Suspense fallback={<TabLoader message='Loading exclusive bots…' />}>
+                                    <ExclusiveBots />
                                 </Suspense>
                             </div>
-                            <div
-                                label={
-                                    <>
-                                        <LegacyGuide1pxIcon
-                                            height='18px'
-                                            width='18px'
-                                            fill={tabIconFill(DBOT_TABS.TUTORIAL)}
-                                            className='icon-general-fill-g-path'
-                                        />
-                                        <Localize i18n_default_text='Tutorials' />
-                                    </>
-                                }
-                                id='id-tutorials'
-                            >
-                                <div className='tutorials-wrapper'>
-                                    <Suspense fallback={<TabLoader message='Loading tutorials…' />}>
-                                        <Tutorial handleTabChange={handleTabChange} />
-                                    </Suspense>
-                                </div>
+                        </div>
+
+                        {/* 5 – Copy Trader */}
+                        <div className={`bm-tabs__panel${panel(5)}`}>
+                            <div className='copy-trader-wrapper'>
+                                <Suspense fallback={<TabLoader message='Loading Copy Trader…' />}>
+                                    <CopyTrader />
+                                </Suspense>
                             </div>
-                            <div
-                                label={<MoreToolsMenu activeTab={active_tab} onSelect={handleTabChange} />}
-                                id='id-more-tools'
-                            >
-                                <></>
+                        </div>
+
+                        {/* 6 – Bulk Trader */}
+                        <div className={`bm-tabs__panel${panel(6)}`}>
+                            <div className='bulk-trader-wrapper'>
+                                <Suspense fallback={<TabLoader message='Loading Bulk Trader…' />}>
+                                    <BulkTrader />
+                                </Suspense>
                             </div>
-                        </Tabs>
-                        {!isDesktop && right_tab_shadow && <span className='tabs-shadow tabs-shadow--right' />}{' '}
+                        </div>
+
+                        {/* 7 – Analysis Tool */}
+                        <div className={`bm-tabs__panel${panel(7)}`}>
+                            <div className='dcircles-wrapper'>
+                                <Suspense fallback={<TabLoader message='Loading Analysis Tool…' />}>
+                                    <DCircles />
+                                </Suspense>
+                            </div>
+                        </div>
+
+                        {/* 8 – Manual Trader */}
+                        <div className={`bm-tabs__panel${panel(8)}`}>
+                            <Suspense fallback={<TabLoader message='Loading Manual Trader…' />}>
+                                <ManualTrader />
+                            </Suspense>
+                        </div>
+
+                        {/* 9 – Tutorials */}
+                        <div className={`bm-tabs__panel${panel(9)}`}>
+                            <div className='tutorials-wrapper'>
+                                <Suspense fallback={<TabLoader message='Loading tutorials…' />}>
+                                    <Tutorial handleTabChange={handleTabChange} />
+                                </Suspense>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
             <DesktopWrapper>
                 <div className='main__run-strategy-wrapper'>
                     <RunStrategy />
@@ -675,8 +517,8 @@ const AppWrapper = observer(() => {
                 onConfirm={onOkButtonClick || onCloseDialog}
                 portal_element_id='modal_root'
                 title={title}
-                login={handleLoginGeneration}
-                dismissable={dismissable} // Prevents closing on outside clicks
+                login={() => initiateLogin()}
+                dismissable={dismissable}
                 is_closed_on_cancel={is_closed_on_cancel}
             >
                 {message}

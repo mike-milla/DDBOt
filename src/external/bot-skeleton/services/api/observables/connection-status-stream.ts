@@ -38,7 +38,7 @@ export const setAccountList = (accountList: TAuthData['account_list']) => {
 // Set the auth data
 export const setAuthData = (authData: TAuthData | null) => {
     if (authData?.loginid) {
-        localStorage.setItem('active_loginid', authData.loginid);
+        localStorage.setItem('deriv_active_account', authData.loginid);
     }
     authData$.next(authData);
 };

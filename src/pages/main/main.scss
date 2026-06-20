@@ -62,169 +62,15 @@
                 z-index: 100;
             }
         }
-
-        .dc-tabs {
-            // ── Active indicator line — teal glow ─────────────
-            &__active-line {
-                background: linear-gradient(90deg, var(--brand-teal) 0%, rgb(11 196 166 / 50%) 100%);
-                height: 3px;
-                box-shadow:
-                    0 0 8px rgb(11 196 166 / 80%),
-                    0 0 20px rgb(11 196 166 / 30%);
-                border-radius: 3px 3px 0 0;
-                transition:
-                    left 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-                    width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            }
-
-            // ── Active tab pill ───────────────────────────────
-            &__active {
-                background: rgb(11 196 166 / 8%) !important;
-                color: var(--brand-teal) !important;
-                font-weight: 700;
-
-                svg path,
-                svg g > path {
-                    fill: var(--brand-teal) !important;
-                    transition: fill 0.2s ease;
-                }
-            }
-
-            // ── Tab bar — glassmorphism ───────────────────────
-            &__list {
-                background: rgb(0 0 0 / 92%);
-                backdrop-filter: blur(20px);
-                backdrop-filter: blur(20px);
-                border-bottom: 1px solid rgb(11 196 166 / 20%) !important;
-                justify-content: start;
-                padding: 0 0.8rem;
-                gap: 0.2rem;
-
-                @include mobile-or-tablet-screen {
-                    overflow-x: auto;
-                    overflow-y: hidden;
-                    -ms-overflow-style: none;
-                    scrollbar-width: none;
-                    padding: 0 0.4rem;
-
-                    &::-webkit-scrollbar {
-                        display: none;
-                    }
-                }
-
-                &--header {
-                    &--main {
-                        &__tabs {
-                            @include mobile-or-tablet-screen {
-                                width: 100%;
-                                overflow-x: auto;
-                                padding: 0 0.8rem;
-                            }
-                        }
-                    }
-                }
-
-                &--border-bottom {
-                    @include mobile-or-tablet-screen {
-                        border-bottom: 1px solid rgb(11 196 166 / 15%) !important;
-                    }
-                }
-            }
-
-            // ── Content area ──────────────────────────────────
-            &__content {
-                @include mobile-or-tablet-screen {
-                    width: 100%;
-                    overflow-x: auto;
-
-                    &--no-result {
-                        @include flex-center;
-
-                        flex-direction: column;
-                        justify-content: flex-start;
-                        height: 100vh;
-                        margin-top: 5rem;
-
-                        svg {
-                            margin-bottom: 2.4rem;
-                        }
-
-                        h1 {
-                            margin-bottom: 0.8rem;
-                        }
-
-                        span {
-                            word-break: break-word;
-                            text-align: center;
-                        }
-                    }
-                }
-
-                &--main {
-                    &__tabs {
-                        display: flex;
-                        justify-content: space-between;
-
-                        @include mobile-or-tablet-screen {
-                            flex-direction: column;
-                            background-color: var(--general-main-1);
-                        }
-                    }
-                }
-            }
-
-            // ── Tab item ──────────────────────────────────────
-            &__item {
-                border-radius: 0.8rem 0.8rem 0 0;
-                height: 4.8rem;
-                padding: 0 1.6rem;
-                width: auto;
-                color: var(--text-less-prominent);
-                font-size: 1.3rem;
-                font-weight: 500;
-                letter-spacing: 0.01em;
-                cursor: pointer;
-                transition:
-                    color 0.2s ease,
-                    background-color 0.2s ease;
-
-                @include flex-center;
-
-                &:not(.dc-tabs__active):hover {
-                    color: var(--brand-teal);
-                    background: rgb(11 196 166 / 5%);
-
-                    svg path,
-                    svg g > path {
-                        fill: var(--brand-teal) !important;
-                    }
-                }
-
-                svg {
-                    padding-inline-end: 0;
-                    margin-inline-end: 0.7rem;
-                    flex-shrink: 0;
-                    transition: fill 0.2s ease;
-
-                    @include mobile-or-tablet-screen {
-                        margin-inline-end: 0.4rem;
-                    }
-                }
-
-                &__icon {
-                    @include mobile-or-tablet-screen {
-                        padding-top: 0.5rem;
-                    }
-                }
-            }
-        }
     }
 
     &__run-strategy-wrapper {
         // ── Center at bottom ─────────────────────────────────────────────────
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 2rem;
+        // left: 50%;
+        right: 0;
+
+        // transform: translateX(-50%);
+        top: 2rem;
         z-index: 70;
 
         @include desktop-screen {
@@ -245,44 +91,6 @@
         --rsw-teal-glow: rgb(11 196 166 / 12%);
         --rsw-shadow: rgb(0 0 0 / 12%);
 
-        background: var(--rsw-bg);
-        border: 1px solid var(--rsw-border);
-        backdrop-filter: blur(24px) saturate(180%);
-        backdrop-filter: blur(24px) saturate(180%);
-        box-shadow:
-            0 8px 32px var(--rsw-shadow),
-            0 0 0 1px rgb(11 196 166 / 8%),
-            0 0 48px var(--rsw-glow),
-            inset 0 1px 0 rgb(255 255 255 / 20%);
-
-        // Animated gradient top-border shimmer
-        &:before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(
-                90deg,
-                transparent 0%,
-                rgb(124 58 237 / 70%) 25%,
-                rgb(11 196 166 / 70%) 50%,
-                rgb(245 158 11 / 50%) 75%,
-                transparent 100%
-            );
-            background-size: 200% 100%;
-            mask:
-                linear-gradient(#fff 0 0) content-box,
-                linear-gradient(#fff 0 0);
-            mask:
-                linear-gradient(#fff 0 0) content-box,
-                linear-gradient(#fff 0 0);
-            mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            animation: rsw-shimmer 4s linear infinite;
-        }
-
         // Dark / BossMillan theme
         .theme--bossmillan &,
         [data-theme='dark'] & {
@@ -295,6 +103,68 @@
 
         // ── Run button — purple → teal gradient ──────────────────────────────
         .animation {
+            &.animation__wrapper {
+                position: fixed;
+                bottom: 1.6rem;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--rsw-bg);
+                backdrop-filter: blur(24px) saturate(180%);
+                border-radius: 10rem;
+                border: none;
+                isolation: isolate;
+                box-shadow:
+                    0 8px 32px var(--rsw-shadow),
+                    inset 0 1px 0 rgb(255 255 255 / 15%);
+
+                // Spinning conic border — only the ring is visible, interior is cut out
+                &:before {
+                    content: '';
+                    position: absolute;
+                    inset: -2px;
+                    border-radius: inherit;
+                    padding: 2px;
+                    background: conic-gradient(
+                        from var(--rsw-angle),
+                        #{$bm-teal} 0%,
+                        #{$bm-purple} 33%,
+                        #{$bm-orange} 66%,
+                        #{$bm-teal} 100%
+                    );
+                    mask:
+                        linear-gradient(#fff 0 0) content-box,
+                        linear-gradient(#fff 0 0);
+                    mask-composite: xor;
+                    mask:
+                        linear-gradient(#fff 0 0) content-box,
+                        linear-gradient(#fff 0 0);
+                    mask-composite: exclude;
+                    pointer-events: none;
+                    animation: rsw-spin-border 3s linear infinite;
+                    z-index: 1;
+                }
+
+                // Blurred copy behind — creates the glow bloom
+                &:after {
+                    content: '';
+                    position: absolute;
+                    inset: -4px;
+                    border-radius: inherit;
+                    background: conic-gradient(
+                        from var(--rsw-angle),
+                        #{$bm-teal} 0%,
+                        #{$bm-purple} 33%,
+                        #{$bm-orange} 66%,
+                        #{$bm-teal} 100%
+                    );
+                    filter: blur(10px);
+                    opacity: 0.5;
+                    z-index: -1;
+                    pointer-events: none;
+                    animation: rsw-spin-border 3s linear infinite;
+                }
+            }
+
             &__button#db-animation {
                 &__run-button {
                     background: linear-gradient(135deg, #7c3aed 0%, #0bc4a6 100%) !important;
@@ -929,73 +799,118 @@
     }
 }
 
-.main .dc-tabs__list {
-    justify-content: flex-start !important;
-}
+// ── Custom tab bar (bm-tabs) ──────────────────────────────────────────────────
 
-// ── Main tab bar — modern AI/trading style ────────────────────────────────────
-.dc-tabs__list--main__tabs {
-    position: relative;
-    background: var(--general-main-1) !important;
-    border-bottom: none !important;
-    align-items: center !important;
-    padding: 0 0.5rem !important;
-    gap: 0.2rem;
-    height: 4.8rem !important;
+.bm-tabs {
+    // ── List / header ─────────────────────────────────────────────────────────
+    &__list {
+        position: relative;
+        display: flex;
+        align-items: center;
+        height: 4.8rem;
+        padding: 0 0.5rem;
+        gap: 0.2rem;
+        background: var(--general-main-1);
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
 
-    // teal→purple gradient accent line at bottom
-    &:after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg, transparent 0%, #{$bm-teal} 25%, #{$bm-purple} 75%, transparent 100%);
-        opacity: 0.5;
-        pointer-events: none;
-    }
-}
+        &::-webkit-scrollbar {
+            display: none;
+        }
 
-// Hide the sliding underline — pill bg is the active indicator now
-.dc-tabs--main__tabs .dc-tabs__active-line {
-    display: none !important;
-}
+        // teal → purple gradient accent line at bottom
+        &:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #{$bm-teal} 25%, #{$bm-purple} 75%, transparent 100%);
+            opacity: 0.5;
+            pointer-events: none;
+        }
 
-// Inactive tabs — pill-shaped, dim in dark, legible in light
-.dc-tabs__item--main__tabs {
-    display: flex !important;
-    align-items: center !important;
-    height: 3.2rem !important;
-    line-height: normal !important;
-    border-radius: 0.7rem !important;
-    margin: 0 0.1rem !important;
-    padding: 0 1rem !important;
-    color: rgb(160 170 190 / 60%) !important;
-    font-weight: 600;
-    transition:
-        color 0.18s ease,
-        background 0.18s ease,
-        outline 0.18s ease !important;
-
-    &:not(.dc-tabs__active--main__tabs):hover {
-        color: #{$bm-teal} !important;
-        background: rgb(11 196 166 / 8%) !important;
-    }
-}
-
-// Light theme overrides — darken inactive tabs so they read on white
-.theme--light {
-    .dc-tabs__item--main__tabs {
-        color: rgb(10 15 35 / 85%) !important;
-
-        &:not(.dc-tabs__active--main__tabs):hover {
-            color: #{$bm-teal} !important;
-            background: rgb(11 196 166 / 10%) !important;
+        @include mobile-or-tablet-screen {
+            padding: 0 0.4rem;
         }
     }
 
-    .dc-tabs__list--main__tabs:after {
+    // ── Tab button ────────────────────────────────────────────────────────────
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        flex-shrink: 0;
+        height: 3.2rem;
+        padding: 0 1rem;
+        border: none;
+        border-radius: 0.7rem;
+        background: transparent;
+        color: rgb(160 170 190 / 60%);
+        font-size: 1.3rem;
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: pointer;
+        transition:
+            color 0.18s ease,
+            background 0.18s ease,
+            outline 0.18s ease;
+
+        @include mobile-or-tablet-screen {
+            gap: 0.4rem;
+            padding: 0 0.8rem;
+        }
+
+        &:hover:not(&--active) {
+            color: #{$bm-teal};
+            background: rgb(11 196 166 / 8%);
+        }
+
+        // ── Active pill ───────────────────────────────────────────────────────
+        &--active {
+            color: #{$bm-teal};
+            font-weight: 700;
+            background: linear-gradient(135deg, rgb(11 196 166 / 14%) 0%, rgb(118 37 168 / 10%) 100%);
+            outline: 1px solid rgb(11 196 166 / 35%);
+            box-shadow:
+                0 0 20px rgb(11 196 166 / 14%),
+                inset 0 0 28px rgb(118 37 168 / 5%);
+        }
+    }
+
+    // ── Content wrapper ───────────────────────────────────────────────────────
+    &__content {
+        position: relative;
+        width: 100%;
+        height: calc(100% - 4.8rem);
+    }
+
+    // ── Individual panel ──────────────────────────────────────────────────────
+    &__panel {
+        display: none;
+        width: 100%;
+        height: 100%;
+
+        &--active {
+            display: block;
+        }
+    }
+}
+
+// ── Light theme adjustments ───────────────────────────────────────────────────
+.theme--light {
+    .bm-tabs__item {
+        color: rgb(10 15 35 / 85%);
+
+        &:hover:not(&--active) {
+            color: #{$bm-teal};
+            background: rgb(11 196 166 / 10%);
+        }
+    }
+
+    .bm-tabs__list:after {
         opacity: 0.35;
     }
 
@@ -1025,27 +940,6 @@
             color: #{$bm-teal};
         }
     }
-}
-
-// Active pill — gradient glass + teal glow
-.dc-tabs__active--main__tabs {
-    color: #{$bm-teal} !important;
-    font-weight: 700 !important;
-    background: linear-gradient(135deg, rgb(11 196 166 / 14%) 0%, rgb(118 37 168 / 10%) 100%) !important;
-    outline: 1px solid rgb(11 196 166 / 35%) !important;
-    box-shadow:
-        0 0 20px rgb(11 196 166 / 14%),
-        inset 0 0 28px rgb(118 37 168 / 5%) !important;
-}
-
-// ── More tab item: strip all tab chrome ───────────────────────────────────────
-#id-more-tools {
-    padding: 0 !important;
-    min-width: unset !important;
-    background: transparent !important;
-    outline: none !important;
-    box-shadow: none !important;
-    cursor: default !important;
 }
 
 // ── More button ───────────────────────────────────────────────────────────────
@@ -1176,5 +1070,17 @@
 
     100% {
         background-position: -200% center;
+    }
+}
+
+@property --rsw-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes rsw-spin-border {
+    to {
+        --rsw-angle: 360deg;
     }
 }

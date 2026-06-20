@@ -192,7 +192,10 @@ export function loadAuthState(): DerivAuthState | null {
     const accounts_raw = localStorage.getItem('deriv_accounts');
     const active_account_id = localStorage.getItem('deriv_active_account');
 
-    if (!access_token || !accounts_raw || !active_account_id) return null;
+    if (!access_token || !accounts_raw || !active_account_id) {
+        console.error('hh');
+        return null;
+    }
 
     try {
         const accounts: DerivAccount[] = (JSON.parse(accounts_raw) as any[]).map(a => ({
@@ -200,7 +203,8 @@ export function loadAuthState(): DerivAuthState | null {
             balance: Number(a.balance),
         }));
         return { access_token, accounts, active_account_id };
-    } catch {
+    } catch (e) {
+        console.error('hhh', e);
         return null;
     }
 }

@@ -9,8 +9,6 @@ import ResourcesDropdown from './resources-dropdown/ResourcesDropdown';
 import AccountsInfoLoader from './account-info-loader';
 import BmAccountPanel from './bm-account-panel';
 import BossMillanLoginButton from './bossmillan-login';
-import MenuItems from './menu-items';
-import MobileMenu from './mobile-menu';
 import './header.scss';
 
 type TAppHeaderProps = {
@@ -34,8 +32,6 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
         >
             <Wrapper variant='left'>
                 <AppLogo />
-                <MobileMenu />
-                {isDesktop && <MenuItems />}
                 <ResourcesDropdown />
             </Wrapper>
             <Wrapper variant='right' style={{ gap: '1rem' }}>

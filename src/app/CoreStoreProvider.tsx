@@ -6,10 +6,10 @@ import { FORM_ERROR_MESSAGES } from '@/components/shared/constants/form-error-me
 import { initFormErrorMessages } from '@/components/shared/utils/validation/declarative-validation-rules';
 import { api_base } from '@/external/bot-skeleton';
 import { CONNECTION_STATUS } from '@/external/bot-skeleton/services/api/observables/connection-status-stream';
-import { useOauth2 } from '@/hooks/auth/useOauth2';
 import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
 import useTMB from '@/hooks/useTMB';
+import { clearAuthState, loadAuthState } from '@/services/deriv-auth';
 import { TLandingCompany, TSocketResponseData } from '@/types/api-types';
 import { useTranslations } from '@deriv-com/translations';
 
@@ -36,22 +36,12 @@ const CoreStoreProvider: React.FC<{ children: React.ReactNode }> = observer(({ c
 
     const { currentLang } = useTranslations();
 
-    const { oAuthLogout } = useOauth2({ handleLogout: async () => client.logout(), client });
-
     const { is_tmb_enabled: tmb_enabled_from_hook } = useTMB();
 
     const is_tmb_enabled = useMemo(
         () => window.is_tmb_enabled === true || tmb_enabled_from_hook,
         [tmb_enabled_from_hook]
     );
-
-    const isLoggedOutCookie = Cookies.get('logged_state') === 'false' && !is_tmb_enabled;
-
-    useEffect(() => {
-        if (isLoggedOutCookie && client?.is_logged_in) {
-            oAuthLogout();
-        }
-    }, [isLoggedOutCookie, oAuthLogout, client?.is_logged_in]);
 
     const activeAccount = useMemo(
         () => accountList?.find(account => account.loginid === activeLoginid),
@@ -73,6 +63,11 @@ const CoreStoreProvider: React.FC<{ children: React.ReactNode }> = observer(({ c
             client?.setLoginId(activeLoginid);
             client?.setAccountList(accountList);
             client?.setIsLoggedIn(true);
+            // Mark landing company as loaded so app-content.jsx can finish initializing.
+            // The new API doesn't have a landing_company WS call, so we signal readiness directly.
+            if (!client.is_landing_company_loaded) {
+                client?.setLandingCompany({} as unknown as TLandingCompany);
+            }
         }
     }, [accountList, activeAccount, activeLoginid, client]);
 
@@ -114,9 +109,12 @@ const CoreStoreProvider: React.FC<{ children: React.ReactNode }> = observer(({ c
         if (client && connectionStatus === CONNECTION_STATUS.OPENED && api_base?.api) {
             if (!appInitialization.current) {
                 appInitialization.current = true;
-                api_base.api?.websiteStatus().then((res: TSocketResponseData<'website_status'>) => {
-                    client.setWebsiteStatus(res.website_status);
-                });
+                api_base.api
+                    ?.websiteStatus()
+                    .then((res: TSocketResponseData<'website_status'>) => {
+                        client.setWebsiteStatus(res.website_status);
+                    })
+                    .catch(() => {});
             }
 
             // Initial time update
@@ -146,7 +144,9 @@ const CoreStoreProvider: React.FC<{ children: React.ReactNode }> = observer(({ c
                 error?.code === 'DisabledClient' ||
                 error?.code === 'InvalidToken'
             ) {
-                await oAuthLogout();
+                clearAuthState();
+                window.location.replace('/');
+                return;
             }
 
             if (msg_type === 'balance' && data && !error) {
@@ -170,7 +170,7 @@ const CoreStoreProvider: React.FC<{ children: React.ReactNode }> = observer(({ c
                 }
             }
         },
-        [client, oAuthLogout]
+        [client]
     );
 
     useEffect(() => {
@@ -189,36 +189,22 @@ const CoreStoreProvider: React.FC<{ children: React.ReactNode }> = observer(({ c
     useEffect(() => {
         if (!isAuthorizing && isAuthorized && !accountInitialization.current && client) {
             accountInitialization.current = true;
-            api_base.api.getSettings().then((settingRes: TSocketResponseData<'get_settings'>) => {
-                client?.setAccountSettings(settingRes.get_settings);
-                const client_information: TClientInformation = {
-                    loginid: activeAccount?.loginid,
-                    email: settingRes.get_settings?.email,
-                    currency: client?.currency,
-                    residence: settingRes.get_settings?.residence,
-                    first_name: settingRes.get_settings?.first_name,
-                    last_name: settingRes.get_settings?.last_name,
-                    preferred_language: settingRes.get_settings?.preferred_language,
-                    user_id: ((api_base.account_info as any)?.user_id as number) || activeLoginid,
-                    landing_company_shortcode: activeAccount?.landing_company_name,
-                };
+            const authState = loadAuthState();
+            const activeAuthAccount = authState?.accounts.find(a => a.account_id === authState.active_account_id);
+            const client_information: TClientInformation = {
+                loginid: activeAccount?.loginid ?? authState?.active_account_id,
+                email: activeAuthAccount?.email ?? '',
+                currency: client?.currency ?? activeAuthAccount?.currency,
+                landing_company_shortcode: activeAccount?.landing_company_name,
+            };
+            Cookies.set('client_information', JSON.stringify(client_information), { domain: currentDomain });
 
-                Cookies.set('client_information', JSON.stringify(client_information), {
-                    domain: currentDomain,
-                });
-
-                api_base.api
-                    .landingCompany({
-                        landing_company: settingRes.get_settings?.country_code,
-                    })
-                    .then((res: TSocketResponseData<'landing_company'>) => {
-                        client?.setLandingCompany(res.landing_company as unknown as TLandingCompany);
-                    });
-            });
-
-            api_base.api.getAccountStatus().then((res: TSocketResponseData<'get_account_status'>) => {
-                client?.setAccountStatus(res.get_account_status);
-            });
+            api_base.api
+                .getAccountStatus()
+                .then((res: TSocketResponseData<'get_account_status'>) => {
+                    client?.setAccountStatus(res.get_account_status);
+                })
+                .catch(() => {});
         }
     }, [isAuthorizing, isAuthorized, client]);
 

@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie';
 import { action, makeObservable, reaction, when } from 'mobx';
 import { BOT_RESTRICTED_COUNTRIES_LIST } from '@/components/layout/header/utils';
 import {
@@ -88,14 +87,7 @@ export default class AppStore {
 
         // Check if we're in the process of logging in
         // When isSingleLoggingIn is true, we don't want to show the EU error message
-        const is_tmb_enabled = window.is_tmb_enabled === true;
-        const isSingleLoggingIn =
-            window.location.pathname === '/callback' ||
-            (Cookies.get('logged_state') === 'true' &&
-                !is_tmb_enabled &&
-                Object.keys(JSON.parse(localStorage.getItem('accountsList') || '{}')).length === 0);
-
-        if (isSingleLoggingIn) {
+        if (window.location.pathname === '/callback') {
             common.setError(false, {});
             return false;
         }

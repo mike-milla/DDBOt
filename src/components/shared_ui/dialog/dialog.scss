@@ -13,31 +13,25 @@
     flex-direction: column;
     z-index: 999;
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
 
     &__wrapper {
         position: fixed;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
+        inset: 0;
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 999;
         transition: opacity 0.25s cubic-bezier(0.25, 0.1, 0.1, 0.25);
-        background-color: rgba(15 23 42 / 30%);
-        backdrop-filter: blur(4px);
+        background-color: rgb(0 0 0 / 45%);
+        backdrop-filter: blur(6px);
 
         &--enter,
         &--exit {
             opacity: 0;
 
             .dc-dialog__dialog {
-                transform: translate3d(0, 24px, 0) scale(0.98);
+                transform: translate3d(0, 24px, 0) scale(0.97);
                 opacity: 0;
             }
         }
@@ -58,26 +52,47 @@
     }
 
     &__dialog {
+        // ── Theme tokens ──────────────────────────────────────────────────────
+        --dlg-bg: var(--general-main-1);
+        --dlg-border: var(--border-normal);
+        --dlg-title: var(--text-prominent);
+        --dlg-body: var(--text-general);
+        --dlg-divider: var(--border-normal);
+        --dlg-close-hover: var(--general-section-1);
+
+        position: relative;
         max-width: 560px;
         max-height: 380px;
         min-width: 440px;
         min-height: 176px;
         margin-top: -#{$HEADER_HEIGHT};
-        padding: 2.8rem;
-        border-radius: 16px;
+        padding: 3.2rem;
+        border-radius: 2rem;
         box-sizing: border-box;
         display: flex;
         justify-content: space-around;
         flex-direction: column;
         align-items: center;
-        background: #fff;
-        border: 1px solid #e2e8f0;
+        background: var(--dlg-bg);
+        border: 1px solid rgb(11 196 166 / 20%);
         box-shadow:
-            0 4px 6px rgba(0 0 0 / 4%),
-            0 12px 40px rgba(0 0 0 / 10%);
+            0 0 0 1px rgb(118 37 168 / 10%),
+            0 24px 60px rgb(0 0 0 / 25%),
+            0 0 60px rgb(11 196 166 / 4%);
         transition:
-            transform 0.25s cubic-bezier(0.25, 0.1, 0.1, 0.25),
-            opacity 0.25s cubic-bezier(0.25, 0.1, 0.1, 0.25);
+            transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+            opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+        // Teal → purple gradient top line
+        &:before {
+            content: '';
+            position: absolute;
+            inset: 0 0 auto;
+            height: 3px;
+            border-radius: 2rem 2rem 0 0;
+            background: linear-gradient(90deg, transparent 5%, #{$bm-teal} 35%, #{$bm-purple} 65%, transparent 95%);
+            box-shadow: 0 0 16px rgb(11 196 166 / 30%);
+        }
     }
 
     &__header {
@@ -88,7 +103,7 @@
             align-items: center;
             margin-bottom: 1.2rem;
             padding-bottom: 1.2rem;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid var(--dlg-divider);
 
             &--end {
                 justify-content: flex-end;
@@ -100,23 +115,29 @@
 
         &--title {
             align-self: flex-start;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #0f172a;
+            font-size: 1.6rem !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.02em;
+
+            // multi-color gradient title
+            background: linear-gradient(135deg, #{$bm-teal} 0%, #{$bm-purple} 60%, #{$bm-orange} 100%);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         &--close {
             cursor: pointer;
-            color: #94a3b8;
-            border-radius: 6px;
-            padding: 0.2rem;
+            color: var(--text-less-prominent);
+            border-radius: 8px;
+            padding: 0.3rem;
             transition:
                 color 0.15s ease,
                 background-color 0.15s ease;
 
             &:hover {
-                color: #0f172a;
-                background-color: #f1f5f9;
+                color: #{$bm-teal};
+                background-color: rgb(11 196 166 / 8%);
             }
         }
     }
@@ -126,13 +147,13 @@
         margin-bottom: 2rem;
         max-width: calc(440px - 4.8rem);
         width: 100%;
-        color: #475569;
+        color: var(--dlg-body);
         font-size: 1.3rem;
         line-height: 1.65;
 
         /* postcss-bem-linter: ignore */
         .dc-input__label {
-            background-color: #fff;
+            background-color: var(--dlg-bg);
         }
 
         &--centered {
@@ -145,23 +166,51 @@
         display: flex;
         justify-content: flex-end;
         align-items: center;
-        gap: 0.8rem;
+        gap: 1rem;
         width: 100%;
         padding-top: 1.2rem;
-        border-top: 1px solid #e2e8f0;
+        border-top: 1px solid var(--dlg-divider);
 
         @include mobile-or-tablet-screen {
             flex-wrap: wrap;
             align-items: flex-start;
         }
-    }
 
-    &__button {
-        margin-left: 0;
+        // Override shared button styles for the two dialog actions
+        .dc-dialog__button {
+            margin-left: 0;
 
-        @include mobile-or-tablet-screen {
-            &:not(:last-child) {
-                margin-bottom: 0.8rem;
+            // Cancel / secondary — teal outline
+            &.dc-btn--secondary {
+                background: transparent;
+                border: 1.5px solid #{$bm-teal};
+                color: #{$bm-teal};
+                border-radius: 2.4rem;
+
+                &:hover {
+                    background: rgb(11 196 166 / 8%);
+                    box-shadow: 0 0 16px rgb(11 196 166 / 20%);
+                }
+            }
+
+            // Confirm / primary — teal → purple gradient
+            &.dc-btn--primary {
+                background: linear-gradient(135deg, #{$bm-teal} 0%, #{$bm-purple} 100%);
+                border: none;
+                color: #fff;
+                border-radius: 2.4rem;
+                box-shadow: 0 4px 16px rgb(11 196 166 / 25%);
+
+                &:hover {
+                    opacity: 0.88;
+                    box-shadow: 0 4px 24px rgb(11 196 166 / 40%);
+                }
+            }
+
+            @include mobile-or-tablet-screen {
+                &:not(:last-child) {
+                    margin-bottom: 0.8rem;
+                }
             }
         }
     }
@@ -171,7 +220,8 @@
     .dc-dialog {
         &__dialog {
             min-width: auto;
-            border-radius: 12px;
+            border-radius: 1.6rem;
+            padding: 2.4rem;
 
             &--has-margin {
                 min-width: unset;

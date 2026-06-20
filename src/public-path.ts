@@ -54,12 +54,14 @@ const loadSurvicateScript = (callback: () => void) => {
 const initSurvicate = () => {
     if (initSurvicateCalled) return;
     setSurvicateCalledValue(true);
-    const active_loginid = localStorage.getItem('active_loginid');
-    const client_accounts = JSON.parse(localStorage.getItem('accountsList') as string) || undefined;
+    const active_loginid = localStorage.getItem('deriv_active_account');
+    const deriv_accounts: Array<{ account_id: string; account_type: string; created_at?: string }> = JSON.parse(
+        localStorage.getItem('deriv_accounts') ?? '[]'
+    );
     const setAttributesIfAvailable = () => {
-        if (active_loginid && client_accounts) {
-            const { residence, account_type, created_at } = client_accounts[active_loginid] || {};
-            setSurvicateUserAttributes(residence, account_type, created_at);
+        if (active_loginid) {
+            const acct = deriv_accounts.find(a => a.account_id === active_loginid);
+            if (acct) setSurvicateUserAttributes(undefined, acct.account_type, acct.created_at);
         }
     };
 

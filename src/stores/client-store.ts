@@ -268,13 +268,14 @@ export default class ClientStore {
     };
 
     getCurrency = () => {
-        const clientAccounts = JSON.parse(localStorage.getItem('clientAccounts') ?? '{}');
-        return clientAccounts[this.loginid]?.currency ?? '';
+        const accounts: Array<{ account_id: string; currency: string }> = JSON.parse(
+            localStorage.getItem('deriv_accounts') ?? '[]'
+        );
+        return accounts.find(a => a.account_id === this.loginid)?.currency ?? '';
     };
 
     getToken = () => {
-        const accountList = JSON.parse(localStorage.getItem('accountsList') ?? '{}');
-        return accountList[this.loginid] ?? '';
+        return localStorage.getItem('deriv_access_token') ?? '';
     };
 
     setAccountStatus(status: GetAccountStatus | undefined) {
@@ -347,10 +348,9 @@ export default class ClientStore {
 
         this.all_accounts_balance = null;
 
-        localStorage.removeItem('active_loginid');
-        localStorage.removeItem('accountsList');
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('clientAccounts');
+        localStorage.removeItem('deriv_access_token');
+        localStorage.removeItem('deriv_accounts');
+        localStorage.removeItem('deriv_active_account');
         removeCookies('client_information');
 
         setIsAuthorized(false);

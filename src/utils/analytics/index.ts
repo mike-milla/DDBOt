@@ -5,7 +5,8 @@ import getCountry from '../getCountry';
 import FIREBASE_INIT_DATA from '../remote_config.json';
 
 export const AnalyticsInitializer = async () => {
-    const account_type = LocalStore?.get('active_loginid')
+    const account_type = localStorage
+        .getItem('deriv_active_account')
         ?.match(/[a-zA-Z]+/g)
         ?.join('');
 
