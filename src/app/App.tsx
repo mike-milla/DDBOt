@@ -61,6 +61,8 @@ const router = createBrowserRouter(
             <Route path='/app' element={<AuthGuard />}>
                 <Route
                     element={
+                        // SuspenseWrapper (full-page PageLoader) only fires once when Layout chunk loads.
+                        // Each child tab gets its own silent Suspense so tab-switches never trigger the full-page loader.
                         <SuspenseWrapper>
                             <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
                                 <StoreProvider>
@@ -73,14 +75,63 @@ const router = createBrowserRouter(
                         </SuspenseWrapper>
                     }
                 >
-                    <Route index element={<AppRoot />} />
+                    <Route
+                        index
+                        element={
+                            <Suspense fallback={null}>
+                                <AppRoot />
+                            </Suspense>
+                        }
+                    />
                     <Route path='endpoint' element={isProduction() ? <Navigate to='/app' replace /> : <Endpoint />} />
-                    <Route path='free-bots' element={<FreeBots />} />
-                    <Route path='exclusive-bots' element={<ExclusiveBots />} />
-                    <Route path='copy-trader' element={<CopyTrader />} />
-                    <Route path='bulk-trader' element={<BulkTrader />} />
-                    <Route path='analysis-tool' element={<AnalysisTool />} />
-                    <Route path='dcircles' element={<DCircles />} />
+                    <Route
+                        path='free-bots'
+                        element={
+                            <Suspense fallback={null}>
+                                <FreeBots />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path='exclusive-bots'
+                        element={
+                            <Suspense fallback={null}>
+                                <ExclusiveBots />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path='copy-trader'
+                        element={
+                            <Suspense fallback={null}>
+                                <CopyTrader />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path='bulk-trader'
+                        element={
+                            <Suspense fallback={null}>
+                                <BulkTrader />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path='analysis-tool'
+                        element={
+                            <Suspense fallback={null}>
+                                <AnalysisTool />
+                            </Suspense>
+                        }
+                    />
+                    <Route
+                        path='dcircles'
+                        element={
+                            <Suspense fallback={null}>
+                                <DCircles />
+                            </Suspense>
+                        }
+                    />
                 </Route>
             </Route>
         </>
