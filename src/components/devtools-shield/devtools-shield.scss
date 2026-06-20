@@ -1,0 +1,392 @@
+@use 'components/shared/styles/constants' as *;
+
+// ── Root ──────────────────────────────────────────────────────────────────────
+.dt-shield {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #080608;
+    font-family: 'IBM Plex Sans', sans-serif;
+    overflow: hidden;
+    padding: 1.6rem;
+}
+
+// ── Glow orbs ─────────────────────────────────────────────────────────────────
+.dt-shield__glow {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+
+    // Large teal — top-left
+    &--teal {
+        width: 700px;
+        height: 700px;
+        background: radial-gradient(circle, #{$bm-teal} 0%, transparent 65%);
+        opacity: 0.13;
+        top: -280px;
+        left: -200px;
+        filter: blur(40px);
+        animation: dt-drift-a 12s ease-in-out infinite alternate;
+    }
+
+    // Large purple — bottom-right
+    &--purple {
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, #{$bm-purple} 0%, transparent 65%);
+        opacity: 0.16;
+        bottom: -200px;
+        right: -150px;
+        filter: blur(40px);
+        animation: dt-drift-b 14s ease-in-out infinite alternate;
+    }
+}
+
+// Extra glow accents rendered via pseudo-elements on root
+.dt-shield:before {
+    content: '';
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #{$bm-purple} 0%, transparent 70%);
+    opacity: 0.1;
+    top: 5%;
+    right: 8%;
+    filter: blur(50px);
+    pointer-events: none;
+    animation: dt-drift-a 9s ease-in-out infinite alternate-reverse;
+}
+
+.dt-shield:after {
+    content: '';
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #{$bm-teal} 0%, transparent 70%);
+    opacity: 0.09;
+    bottom: 8%;
+    left: 6%;
+    filter: blur(50px);
+    pointer-events: none;
+    animation: dt-drift-b 11s ease-in-out infinite alternate;
+}
+
+// ── Noise texture overlay ─────────────────────────────────────────────────────
+.dt-shield__noise {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        linear-gradient(rgb(11 196 166 / 3%) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(11 196 166 / 3%) 1px, transparent 1px);
+    background-size: 52px 52px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, #000 40%, transparent 100%);
+}
+
+// ── Card ──────────────────────────────────────────────────────────────────────
+.dt-shield__card {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding: 4.8rem 4.4rem;
+    width: min(52rem, 100%);
+    background: linear-gradient(160deg, #1e1425 0%, #120e1a 60%, #0e1318 100%);
+    border: 1px solid rgb(255 255 255 / 7%);
+    border-radius: 3.2rem;
+    box-shadow:
+        0 0 0 1px rgb(11 196 166 / 8%),
+        0 48px 120px rgb(0 0 0 / 70%),
+        0 0 80px rgb(118 37 168 / 8%),
+        inset 0 1px 0 rgb(255 255 255 / 6%);
+    text-align: center;
+    animation: dt-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(24px);
+
+    // Inner top glow
+    &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #{$bm-teal}, #{$bm-purple}, transparent);
+    }
+
+    // Ambient card glow
+    &:after {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: 3.2rem;
+        background: transparent;
+        box-shadow:
+            0 0 40px rgb(11 196 166 / 5%),
+            0 0 80px rgb(118 37 168 / 5%);
+        pointer-events: none;
+    }
+}
+
+.dt-shield__top-line {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    border-radius: 3.2rem 3.2rem 0 0;
+    background: linear-gradient(90deg, transparent 5%, #{$bm-teal} 35%, #{$bm-purple} 65%, transparent 95%);
+    box-shadow:
+        0 0 20px rgb(11 196 166 / 35%),
+        0 0 40px rgb(118 37 168 / 20%);
+}
+
+// ── Badges ────────────────────────────────────────────────────────────────────
+.dt-shield__badges {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.dt-shield__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.3rem;
+    border-radius: 2rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    backdrop-filter: blur(8px);
+
+    &--alert {
+        background: rgb(239 68 68 / 10%);
+        border: 1.5px solid rgb(239 68 68 / 30%);
+        color: #f87171;
+    }
+
+    &--warning {
+        background: rgb(245 158 11 / 10%);
+        border: 1.5px solid rgb(245 158 11 / 30%);
+        color: #fbbf24;
+    }
+}
+
+.dt-shield__badge-dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: #ef4444;
+    box-shadow:
+        0 0 6px #ef4444,
+        0 0 12px rgb(239 68 68 / 50%);
+    animation: dt-blink 1.1s ease-in-out infinite;
+}
+
+// ── Title ─────────────────────────────────────────────────────────────────────
+.dt-shield__title {
+    font-size: clamp(2.4rem, 5vw, 3.2rem);
+    font-weight: 800;
+    margin: -0.4rem 0 0;
+    letter-spacing: -0.03em;
+    color: #fff;
+    line-height: 1.1;
+    text-shadow: 0 0 40px rgb(11 196 166 / 15%);
+}
+
+// ── Body text ─────────────────────────────────────────────────────────────────
+.dt-shield__msg {
+    font-size: clamp(1.25rem, 2.5vw, 1.4rem);
+    color: rgb(255 255 255 / 48%);
+    line-height: 1.7;
+    margin: -0.6rem 0 0;
+    max-width: 38rem;
+}
+
+// ── Alarm text ────────────────────────────────────────────────────────────────
+.dt-shield__arming {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #{$bm-teal};
+    margin: -0.4rem 0 0;
+    letter-spacing: 0.02em;
+    text-shadow: 0 0 16px rgb(11 196 166 / 50%);
+    animation: dt-pulse 1s ease-in-out infinite;
+}
+
+// ── Divider ───────────────────────────────────────────────────────────────────
+.dt-shield__divider {
+    width: 90%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 10%), transparent);
+}
+
+// ── Label ─────────────────────────────────────────────────────────────────────
+.dt-shield__contact-label {
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: #{$bm-teal};
+    letter-spacing: 0.01em;
+    text-shadow: 0 0 12px rgb(11 196 166 / 30%);
+}
+
+// ── Social buttons ────────────────────────────────────────────────────────────
+.dt-shield__socials {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    width: 100%;
+
+    // last item centered if it's alone in its row
+    > :last-child:nth-child(3n + 1) {
+        grid-column: 1 / -1;
+        justify-self: center;
+        min-width: 14rem;
+        max-width: 16rem;
+    }
+}
+
+.dt-shield__social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    padding: 1.1rem 1.6rem;
+    border-radius: 1.6rem;
+    background: rgb(255 255 255 / 4%);
+    border: 1.5px solid rgb(255 255 255 / 8%);
+    color: rgb(255 255 255 / 80%);
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+    &:hover {
+        background: rgb(11 196 166 / 10%);
+        border-color: rgb(11 196 166 / 40%);
+        color: #{$bm-teal};
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgb(11 196 166 / 15%);
+    }
+
+    &:active {
+        transform: translateY(-1px);
+    }
+}
+
+.dt-shield__social-emoji {
+    font-size: 1.55rem;
+    line-height: 1;
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (width <= 480px) {
+    .dt-shield__card {
+        padding: 3.6rem 2.4rem;
+        border-radius: 2.4rem;
+        gap: 1.6rem;
+    }
+
+    .dt-shield__badges {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .dt-shield__socials {
+        grid-template-columns: 1fr 1fr;
+
+        > :last-child:nth-child(3n + 1) {
+            grid-column: auto;
+            justify-self: auto;
+            max-width: unset;
+        }
+
+        > :last-child:nth-child(odd) {
+            grid-column: 1 / -1;
+            justify-self: center;
+            min-width: 14rem;
+            max-width: 18rem;
+        }
+    }
+}
+
+@media (width <= 360px) {
+    .dt-shield__card {
+        padding: 3.2rem 1.8rem;
+        border-radius: 2rem;
+    }
+
+    .dt-shield__socials {
+        grid-template-columns: 1fr;
+    }
+}
+
+// ── Keyframes ─────────────────────────────────────────────────────────────────
+@keyframes dt-in {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.95);
+        filter: blur(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes dt-blink {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+}
+
+@keyframes dt-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.45;
+    }
+}
+
+@keyframes dt-drift-a {
+    from {
+        transform: translate(0, 0) scale(1);
+    }
+
+    to {
+        transform: translate(40px, 30px) scale(1.08);
+    }
+}
+
+@keyframes dt-drift-b {
+    from {
+        transform: translate(0, 0) scale(1);
+    }
+
+    to {
+        transform: translate(-35px, -25px) scale(1.06);
+    }
+}

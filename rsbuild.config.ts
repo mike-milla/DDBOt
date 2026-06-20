@@ -46,6 +46,10 @@ export default defineConfig({
                 WS_SERVER_URL: JSON.stringify(process.env.WS_SERVER_URL),
                 OAUTH_CLIENT_ID: JSON.stringify(process.env.OAUTH_CLIENT_ID),
                 GATEWAY_URL: JSON.stringify(process.env.GATEWAY_URL ?? ''),
+                CONTACT_WHATSAPP: JSON.stringify(process.env.CONTACT_WHATSAPP ?? ''),
+                CONTACT_TELEGRAM: JSON.stringify(process.env.CONTACT_TELEGRAM ?? ''),
+                CONTACT_TIKTOK: JSON.stringify(process.env.CONTACT_TIKTOK ?? ''),
+                CONTACT_INSTAGRAM: JSON.stringify(process.env.CONTACT_INSTAGRAM ?? ''),
             },
         },
         alias: {
