@@ -4,19 +4,13 @@ import './bot-card.scss';
 export interface BotCardProps {
     name: string;
     description: string;
-    category: string;
-    icon: React.ReactNode;
-    color: string;
-    glow: string;
+    category?: string;
     onLoad: () => void;
     isLoading?: boolean;
-    tier?: 'gold' | 'platinum' | 'diamond';
     locked?: boolean;
     winRate?: string;
     trades?: string;
 }
-
-const TIER_LABEL: Record<string, string> = { gold: 'Gold', platinum: 'Platinum', diamond: 'Diamond' };
 
 const LockIcon = () => (
     <svg
@@ -49,44 +43,13 @@ const ArrowIcon = () => (
     </svg>
 );
 
-const StarIcon = () => (
-    <svg width='10' height='10' viewBox='0 0 24 24' fill='currentColor' stroke='none'>
-        <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2' />
-    </svg>
-);
-
-const BotCard = ({
-    name,
-    description,
-    category,
-    icon,
-    color,
-    glow,
-    onLoad,
-    isLoading,
-    tier,
-    locked,
-    winRate,
-    trades,
-}: BotCardProps) => (
-    <div
-        className={`bot-card${locked ? ' bot-card--locked' : ''}`}
-        style={{ '--bc-color': color, '--bc-glow': glow } as React.CSSProperties}
-    >
-        {tier && (
-            <div className='bot-card__tier'>
-                <StarIcon />
-                {TIER_LABEL[tier]}
-            </div>
-        )}
-
-        <div className='bot-card__top'>
-            <div className='bot-card__icon'>{icon}</div>
-            <span className='bot-card__category'>{category}</span>
-        </div>
+const BotCard = ({ name, description, category, onLoad, isLoading, locked, winRate, trades }: BotCardProps) => (
+    <div className={`bot-card${locked ? ' bot-card--locked' : ''}`}>
+        <div className='bot-card__accent' />
 
         <div className='bot-card__body'>
             <h3 className='bot-card__name'>{name}</h3>
+            {category && <span className='bot-card__category'>{category}</span>}
             <p className='bot-card__desc'>{description}</p>
         </div>
 
@@ -116,7 +79,7 @@ const BotCard = ({
                     <span className='bot-card__spinner' aria-hidden='true' />
                 ) : (
                     <>
-                        <span>Load</span>
+                        <span>Load Bot</span>
                         <ArrowIcon />
                     </>
                 )}

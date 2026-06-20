@@ -10,130 +10,8 @@ interface Bot {
     name: string;
     description: string;
     fileName: string;
-    category: string;
+    category?: string;
 }
-
-const CATEGORY_CONFIG: Record<string, { color: string; glow: string; icon: JSX.Element }> = {
-    'Speed Trading': {
-        color: '#0BC4A6',
-        glow: 'rgba(11,196,166,0.35)',
-        icon: (
-            <svg
-                viewBox='0 0 24 24'
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='2'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-            >
-                <path d='M13 2L3 14h9l-1 8 10-12h-9l1-8z' />
-            </svg>
-        ),
-    },
-    'Pattern Analysis': {
-        color: '#F58D15',
-        glow: 'rgba(245,141,21,0.35)',
-        icon: (
-            <svg
-                viewBox='0 0 24 24'
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='2'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-            >
-                <rect x='3' y='4' width='3' height='16' rx='1' />
-                <rect x='9' y='8' width='3' height='12' rx='1' />
-                <rect x='15' y='2' width='3' height='18' rx='1' />
-                <line x1='2' y1='20' x2='22' y2='20' />
-            </svg>
-        ),
-    },
-    Accumulators: {
-        color: '#2ECC71',
-        glow: 'rgba(46,204,113,0.35)',
-        icon: (
-            <svg
-                viewBox='0 0 24 24'
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='2'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-            >
-                <polyline points='22 7 13.5 15.5 8.5 10.5 2 17' />
-                <polyline points='16 7 22 7 22 13' />
-            </svg>
-        ),
-    },
-    'AI Trading': {
-        color: '#7625A8',
-        glow: 'rgba(118,37,168,0.35)',
-        icon: (
-            <svg
-                viewBox='0 0 24 24'
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='2'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-            >
-                <circle cx='12' cy='12' r='3' />
-                <path d='M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12' />
-            </svg>
-        ),
-    },
-    Premium: {
-        color: '#F58D15',
-        glow: 'rgba(245,141,21,0.35)',
-        icon: (
-            <svg
-                viewBox='0 0 24 24'
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='2'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-            >
-                <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2' />
-            </svg>
-        ),
-    },
-    Differ: {
-        color: '#0BC4A6',
-        glow: 'rgba(11,196,166,0.35)',
-        icon: (
-            <svg
-                viewBox='0 0 24 24'
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='2'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-            >
-                <path d='M16 3h5v5M8 3H3v5M21 3l-9 9M3 3l9 9M16 21h5v-5M8 21H3v-5M21 21l-9-9M3 21l9-9' />
-            </svg>
-        ),
-    },
-    'Even/Odd': {
-        color: '#7625A8',
-        glow: 'rgba(118,37,168,0.35)',
-        icon: (
-            <svg
-                viewBox='0 0 24 24'
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='2'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-            >
-                <path d='M12 3v18M3 9l9-6 9 6M3 15l9 6 9-6' />
-            </svg>
-        ),
-    },
-};
-
-const DEFAULT_CFG = CATEGORY_CONFIG['AI Trading'];
 
 const BOTS: Bot[] = [
     {
@@ -229,7 +107,7 @@ const FreeBots = observer(() => {
 
     const filtered = BOTS.filter(b => {
         const q = query.toLowerCase();
-        return !q || b.name.toLowerCase().includes(q) || b.category.toLowerCase().includes(q);
+        return !q || b.name.toLowerCase().includes(q) || (b.category ?? '').toLowerCase().includes(q);
     });
 
     const loadBot = async (bot: Bot) => {
@@ -314,22 +192,16 @@ const FreeBots = observer(() => {
             </div>
 
             <div className='free-bots__grid'>
-                {filtered.map(bot => {
-                    const cfg = CATEGORY_CONFIG[bot.category] ?? DEFAULT_CFG;
-                    return (
-                        <BotCard
-                            key={bot.id}
-                            name={bot.name}
-                            description={bot.description}
-                            category={bot.category}
-                            icon={cfg.icon}
-                            color={cfg.color}
-                            glow={cfg.glow}
-                            onLoad={() => loadBot(bot)}
-                            isLoading={loadingId === bot.id}
-                        />
-                    );
-                })}
+                {filtered.map(bot => (
+                    <BotCard
+                        key={bot.id}
+                        name={bot.name}
+                        description={bot.description}
+                        category={bot.category}
+                        onLoad={() => loadBot(bot)}
+                        isLoading={loadingId === bot.id}
+                    />
+                ))}
             </div>
 
             <div className='free-bots__footer'>

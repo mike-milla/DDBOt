@@ -1,39 +1,26 @@
 @use 'components/shared/styles/constants' as *;
 
 .bot-card {
-    --bc-color: #{$bm-teal};
-    --bc-glow: #{$bm-teal-glow};
-
     position: relative;
     background: var(--general-main-2);
     border-radius: 1.2rem;
     padding: 1.4rem 1.4rem 1.2rem;
     border: 1px solid var(--border-normal);
-    border-left: 2px solid var(--bc-color);
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
+    overflow: hidden;
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease,
         border-color 0.2s ease;
 
-    &:before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: inherit;
-        background: linear-gradient(135deg, var(--bc-glow) 0%, transparent 55%);
-        opacity: 0.3;
-        pointer-events: none;
-    }
-
     &:hover {
         transform: translateY(-3px);
-        border-color: var(--bc-color);
+        border-color: rgb(11 196 166 / 50%);
         box-shadow:
-            0 6px 24px var(--bc-glow),
-            0 0 0 1px var(--bc-color);
+            0 6px 24px rgb(11 196 166 / 15%),
+            0 0 0 1px rgb(11 196 166 / 25%);
     }
 
     // Locked overlay
@@ -48,84 +35,28 @@
             pointer-events: none;
         }
 
-        .bot-card__icon,
         .bot-card__body,
         .bot-card__stats {
             opacity: 0.4;
         }
     }
 
-    // ── Tier badge ──────────────────────────────────────────────────────────
-    &__tier {
+    // ── Top gradient accent bar ──────────────────────────────────────────────
+    &__accent {
         position: absolute;
-        top: 1rem;
-        right: 1rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        padding: 0.2rem 0.7rem;
-        border-radius: 2rem;
-        background: color-mix(in srgb, var(--bc-color) 12%, transparent);
-        border: 1px solid color-mix(in srgb, var(--bc-color) 40%, transparent);
-        color: var(--bc-color);
-        font-size: 1rem;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        z-index: 1;
-
-        svg {
-            fill: var(--bc-color);
-        }
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #{$bm-teal} 0%, #{$bm-purple} 50%, #{$bm-orange} 100%);
     }
 
-    // ── Top row: icon + category ─────────────────────────────────────────────
-    &__top {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        padding-right: 6rem; // avoid overlap with tier badge
-    }
-
-    &__icon {
-        width: 3rem;
-        height: 3rem;
-        border-radius: 0.8rem;
-        background: color-mix(in srgb, var(--bc-color) 14%, transparent);
-        border: 1px solid color-mix(in srgb, var(--bc-color) 35%, transparent);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--bc-color);
-        flex-shrink: 0;
-
-        svg {
-            width: 1.5rem;
-            height: 1.5rem;
-        }
-    }
-
-    &__category {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--bc-color);
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        padding: 0.25rem 0.7rem;
-        border-radius: 1rem;
-        background: color-mix(in srgb, var(--bc-color) 10%, transparent);
-        border: 1px solid color-mix(in srgb, var(--bc-color) 28%, transparent);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
-    }
-
-    // ── Body: name + description ─────────────────────────────────────────────
+    // ── Body: name + category + description ──────────────────────────────────
     &__body {
         display: flex;
         flex-direction: column;
-        gap: 0.3rem;
+        gap: 0.4rem;
+        margin-top: 0.4rem;
     }
 
     &__name {
@@ -134,6 +65,20 @@
         color: var(--text-prominent);
         margin: 0;
         line-height: 1.25;
+    }
+
+    &__category {
+        display: inline-block;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #{$bm-teal};
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 0.2rem 0.6rem;
+        border-radius: 1rem;
+        background: rgb(11 196 166 / 10%);
+        border: 1px solid rgb(11 196 166 / 25%);
+        align-self: flex-start;
     }
 
     &__desc {
@@ -147,17 +92,17 @@
         overflow: hidden;
     }
 
-    // ── Stats row (exclusive only) ───────────────────────────────────────────
+    // ── Stats row ────────────────────────────────────────────────────────────
     &__stats {
         display: flex;
         gap: 1rem;
         padding: 0.5rem 0.8rem;
-        background: color-mix(in srgb, var(--bc-color) 7%, transparent);
+        background: rgb(11 196 166 / 7%);
         border-radius: 0.7rem;
-        border: 1px solid color-mix(in srgb, var(--bc-color) 18%, transparent);
+        border: 1px solid rgb(11 196 166 / 18%);
 
         strong {
-            color: var(--bc-color);
+            color: #{$bm-teal};
         }
     }
 
@@ -182,18 +127,16 @@
         gap: 0.5rem;
         width: 100%;
         padding: 0.85rem 1.2rem;
-        background: var(--bc-color);
-        color: #000;
+        background: linear-gradient(135deg, #{$bm-teal} 0%, #{$bm-purple} 100%);
+        color: #fff;
         border: none;
         border-radius: 0.8rem;
         font-size: 1.25rem;
         font-weight: 700;
         cursor: pointer;
         transition:
-            box-shadow 0.2s ease,
-            opacity 0.2s ease;
-        position: relative;
-        z-index: 1;
+            opacity 0.2s ease,
+            box-shadow 0.2s ease;
 
         svg {
             transition: transform 0.15s ease;
@@ -201,7 +144,8 @@
         }
 
         &:hover:not(:disabled) {
-            box-shadow: 0 3px 12px var(--bc-glow);
+            opacity: 0.9;
+            box-shadow: 0 4px 16px rgb(11 196 166 / 30%);
 
             svg {
                 transform: translateX(3px);
@@ -209,15 +153,14 @@
         }
 
         &:disabled {
-            opacity: 0.65;
+            opacity: 0.6;
             cursor: not-allowed;
         }
 
         &--locked {
-            background: var(--general-section-2, #f1f5f9);
+            background: var(--general-section-1);
             color: var(--text-less-prominent);
             box-shadow: none;
-            cursor: not-allowed;
         }
     }
 
@@ -225,8 +168,8 @@
     &__spinner {
         width: 1.4rem;
         height: 1.4rem;
-        border: 2px solid rgb(0 0 0 / 25%);
-        border-top-color: #000;
+        border: 2px solid rgb(255 255 255 / 25%);
+        border-top-color: #fff;
         border-radius: 50%;
         animation: bc-spin 0.7s linear infinite;
         display: inline-block;
