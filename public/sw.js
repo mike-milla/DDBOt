@@ -9,21 +9,21 @@ console.log('[SW] Service worker script loaded');
 
 // Install event - cache essential files
 self.addEventListener('install', event => {
-    console.log('[SW] Installing service worker...');
+    // console.log('[SW] Installing service worker...');
 
     event.waitUntil(
         (async () => {
             try {
                 const cache = await caches.open(CACHE_NAME);
-                console.log('[SW] Caching precache URLs');
+                // console.log('[SW] Caching precache URLs');
 
                 // Cache essential files
                 await cache.addAll(PRECACHE_URLS);
-                console.log('[SW] Precache URLs cached successfully');
+                // console.log('[SW] Precache URLs cached successfully');
 
                 // Force activation
                 await self.skipWaiting();
-                console.log('[SW] Service worker installed and skipping waiting');
+                // console.log('[SW] Service worker installed and skipping waiting');
             } catch (error) {
                 console.error('[SW] Install failed:', error);
                 // Still skip waiting even if caching fails
@@ -35,7 +35,7 @@ self.addEventListener('install', event => {
 
 // Activate event - clean up and take control
 self.addEventListener('activate', event => {
-    console.log('[SW] Activating service worker...');
+    // console.log('[SW] Activating service worker...');
 
     event.waitUntil(
         (async () => {
@@ -45,7 +45,7 @@ self.addEventListener('activate', event => {
                 await Promise.all(
                     cacheNames.map(cacheName => {
                         if (cacheName !== CACHE_NAME) {
-                            console.log('[SW] Deleting old cache:', cacheName);
+                            // console.log('[SW] Deleting old cache:', cacheName);
                             return caches.delete(cacheName);
                         }
                     })
@@ -53,7 +53,7 @@ self.addEventListener('activate', event => {
 
                 // Take control of all clients
                 await self.clients.claim();
-                console.log('[SW] Service worker activated and claimed clients');
+                // console.log('[SW] Service worker activated and claimed clients');
 
                 // Notify all clients that SW is ready
                 const clients = await self.clients.matchAll();

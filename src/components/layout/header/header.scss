@@ -10,14 +10,14 @@ $brand-orange: #f58d15;
 $brand-purple: #7625a8;
 $brand-white: #fff;
 
-// Light-theme-only surface tokens (used in account switcher panel etc.)
-$surface: #fff;
-$surface-2: #f8fafc;
-$surface-3: #f1f5f9;
-$border: #e2e8f0;
-$text: #0f172a;
-$text-muted: #64748b;
-$text-subtle: #94a3b8;
+// Surface tokens — map to CSS variables so they flip with dark/light theme
+$surface: var(--general-main-1);
+$surface-2: var(--general-main-2);
+$surface-3: var(--general-section-1);
+$border: var(--border-normal);
+$text: var(--text-prominent);
+$text-muted: var(--text-general);
+$text-subtle: var(--text-less-prominent);
 
 /* ═══════════════════════════════════════════
    APP HEADER BAR
